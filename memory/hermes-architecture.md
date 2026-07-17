@@ -47,10 +47,11 @@ Runs continuously via @reboot crontab.
 
 ### Fixed (2026-07-17)
 - **Proactive layer**: interest_model.py + proactive_orchestrator.py deployed to scripts/proactive/. Both run every 4h via scheduler. Interest model built from 3 sources (research, telegram, sessions). Orchestrator coordinates curiosity engine and pushes briefings to alerts_inbox.
+- **13 failing scheduler jobs**: Root cause found — scheduler uses `cmd.split()` not shell, so `cd &&` commands failed instantly. Fixed: full paths for career-ops scripts, separate shell wrappers for logrotate/disk_watch/unhealthy_restart, timeout increases for slow jobs (cve_monitor 60→300s, package_tracker 60→120s, gdrive_keepalive 30→60s, backup_health 30→60s), career_autonomous.py KeyError bug fixed (state dict missing keys).
+- **commitment_executor.py**: Built from scratch. Checks commitments.json every 5min, alerts on overdue/due-soon/stale commitments. Integrates with alerts_inbox → Telegram.
+- **task_executor.py**: Built from scratch. Every 15min picks highest-priority pending task from task_queue.json, executes by domain (infra → docker restart/troubleshooter, research → research_consumer, general → auto-detect infra keywords). Clears the stale backlog.
+- **self_correction.py**: Built from scratch. Every 10min verifies completed tasks (checks container health, system health). Alerts if fix didn't actually work. Also monitors scheduler failure rate.
+- **Feedback loop**: Wired through self_correction.py's state tracking. Records successes/failures per cycle for long-term learning.
 
 ### Still Open
-- **commitment_executor.py**: MISSING
-- **self_correction.py**: MISSING
-- **Task queue**: no executor built
-- **Feedback loop**: no data flowing
-- **13 scheduler jobs failing** (career pipeline, some timeouts, path issues)
+- (None critical — all known gaps addressed)
