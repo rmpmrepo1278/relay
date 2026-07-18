@@ -70,3 +70,37 @@ Interests: career, automation, ai_agents
   • Regressive JPEGs
     https://maurycyz.com/projects/bad_jpeg/
     (591 points on HN)
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, career
+
+🌱 **Adjacent to self hosting:** talos linux
+  • Linux OS for Kubernetes - Sidero Labs
+    https://www.siderolabs.com/talos-linux
+🌱 **Adjacent to ai agents:** rlhf
+  • RLHF Book: Reinforcement Learning from Human Feedback and LLM Post-Training
+    https://rlhfbook.com/
+  • GitHub - opendilab/awesome-RLHF: A curated list of reinforcement learning with h
+    https://github.com/opendilab/awesome-RLHF
+🔀 **Intersection:** career × llm inference
+  • Jobs and Careers - Find Jobs Near You - Career.com
+    https://career.com/
+📄 **arXiv (infrastructure):**
+  • Memory-Exhaustion Attack on the Blocklace Byzantine-Repelling Conflict-Free Repl
+    http://arxiv.org/abs/2607.15185v1
+  • Don't Predict, Prioritize: Rethinking GPU Reliability Assessment
+    http://arxiv.org/abs/2607.15115v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐18699
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐12294
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • deepseek-ai/DeepSpec ⭐6690
+    DeepSpec: a full-stack codebase for training and evaluating speculative decoding
+    https://github.com/deepseek-ai/DeepSpec
+🎲 **Serendipity:**
+  • Goodbye, and Thanks for All the Bikesheds
+    https://queue.acm.org/detail.cfm?id=3818307
+    (169 points on HN)
