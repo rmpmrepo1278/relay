@@ -6,7 +6,8 @@
 - [hermes-architecture.md](hermes-architecture.md) — Hermes agent architecture and state
 - [vision.md](vision.md) — what Rohit wants to build
 
-## The Collaboration
+## The Collaborator
+- [relay.md](relay.md) — who Relay is
 - [grants.md](grants.md) — standing permissions → ../grants.md
 - [tempo.md](tempo.md) — calibration data → ../tempo.md
 - [seedline.md](seedline.md) — version vector → ../seedline.md
