@@ -58,3 +58,23 @@ Interests: self_hosting, ai_agents, career
   • The death and rebirth of my home server
     https://sgt.hootr.club/blog/home-server-rebirth/
     (87 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, career
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agent Evaluation: A Detailed Guide - Deep (Learning) Focus
+    https://cameronrwolfe.substack.com/p/agent-evals
+  • What's New in Cursor — Latest Updates & Release Notes
+    https://cursor.com/changelog
+🔀 **Intersection:** ai agents × llm inference
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐19989
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐12432
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • deepseek-ai/DeepSpec ⭐6696
+    DeepSpec: a full-stack codebase for training and evaluating speculative decoding
+    https://github.com/deepseek-ai/DeepSpec
