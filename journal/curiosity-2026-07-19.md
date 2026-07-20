@@ -78,3 +78,34 @@ Interests: self_hosting, ai_agents, career
   • deepseek-ai/DeepSpec ⭐6696
     DeepSpec: a full-stack codebase for training and evaluating speculative decoding
     https://github.com/deepseek-ai/DeepSpec
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, career
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Getting started with Home Assistant
+    https://www.home-assistant.io/getting-started/
+  • Kent WA Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/kent-wa/?msockid=07613121450a6b4f365926bd44686a0c
+🔀 **Intersection:** career × self hosting
+  • Job Opportunities List - Civil Service Commission (CSC)
+    https://csc.gov.ph/career/
+📄 **arXiv (ai agents):**
+  • Evaluating Open-Weight LLMs for Generating Structured Threat Information for Aut
+    http://arxiv.org/abs/2607.16175v1
+  • When Does Muon Help Agentic Reinforcement Learning?
+    http://arxiv.org/abs/2607.16169v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐20215
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐12481
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • deepseek-ai/DeepSpec ⭐6696
+    DeepSpec: a full-stack codebase for training and evaluating speculative decoding
+    https://github.com/deepseek-ai/DeepSpec
+🎲 **Serendipity:**
+  • We want Texans to know their rights
+    https://www.eff.org/deeplinks/2026/07/we-want-texans-know-their-rights-qa-mayday-health-impact-surveillance-abortion
+    (150 points on HN)
