@@ -109,3 +109,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • deepseek-ai/DeepSpec ⭐6704
     DeepSpec: a full-stack codebase for training and evaluating speculative decoding
     https://github.com/deepseek-ai/DeepSpec
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • How to Get Started with HashiCorp Nomad
+    https://oneuptime.com/blog/post/2026-01-26-hashicorp-nomad-getting-started/view
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (security):**
+  • DoSQ: A Cross-Layer Denial of Service Quality Attack by Exploiting Side Channels
+    http://arxiv.org/abs/2607.16102v1
+  • Gasp: A DeFi Application Specic Rollup as a Consolidation Layer for All Assets
+    http://arxiv.org/abs/2607.16052v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐20724
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐12610
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • deepseek-ai/DeepSpec ⭐6704
+    DeepSpec: a full-stack codebase for training and evaluating speculative decoding
+    https://github.com/deepseek-ai/DeepSpec
