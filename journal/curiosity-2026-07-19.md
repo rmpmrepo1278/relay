@@ -171,3 +171,30 @@ Interests: self_hosting, ai_agents, career
   • C64 Basic Dungeon Crawler: Goblin Attack (C64 Basic Part 8)
     https://retrogamecoders.com/c64-basic-dungeon-part8/
     (63 points on HN)
+
+## Curiosity — 20:47 UTC
+Interests: self_hosting, ai_agents, career
+
+🌱 **Adjacent to self hosting:** incus
+  • Incus - Wikipedia
+    https://en.wikipedia.org/wiki/Incus
+  • Incus documentation
+    https://linuxcontainers.org/incus/docs/main/
+🔀 **Intersection:** career × self hosting
+📄 **arXiv (llm inference):**
+  • Cluster-Aware Matching via Laplacian Optimal Transport
+    http://arxiv.org/abs/2607.16178v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐20240
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐12492
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • deepseek-ai/DeepSpec ⭐6698
+    DeepSpec: a full-stack codebase for training and evaluating speculative decoding
+    https://github.com/deepseek-ai/DeepSpec
+🎲 **Serendipity:**
+  • Terence McKenna's Mega Bad Trip (2025)
+    https://psychedelics.community/cultural-icons/terence-mckennas-mega-bad-trip
+    (74 points on HN)
