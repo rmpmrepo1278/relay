@@ -60,3 +60,35 @@ Interests: self_hosting, ai_agents, llm_inference
   • deepseek-ai/DeepSpec ⭐6722
     DeepSpec: a full-stack codebase for training and evaluating speculative decoding
     https://github.com/deepseek-ai/DeepSpec
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nixos
+  • NixOS Wiki/getting started - Official NixOS Wiki
+    https://wiki.nixos.org/wiki/NixOS_Wiki/getting_started
+  • NixOS Wiki - Official NixOS Wiki
+    https://wiki.nixos.org/wiki/NixOS_Wiki/en
+🌱 **Adjacent to ai agents:** multi agent systems
+  • How to Build Multi-Agent Systems: Complete 2026 Guide - DEV Community
+    https://dev.to/eira-wexford/how-to-build-multi-agent-systems-complete-2026-guide-1io6
+  • Multi-Agent Systems (MAS) in 2026: The Complete Guide to Architecture, Models, U
+    https://santageai.com/learn/concepts/multi-agent-systems
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (llm inference):**
+  • Causal Discovery on Irregular Time Series
+    http://arxiv.org/abs/2607.18226v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐21365
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐12772
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • deepseek-ai/DeepSpec ⭐6725
+    DeepSpec: a full-stack codebase for training and evaluating speculative decoding
+    https://github.com/deepseek-ai/DeepSpec
+🎲 **Serendipity:**
+  • Apple Private Cloud Compute SoC 3 audit reports
+    https://support.apple.com/guide/certifications/apple-private-cloud-compute-soc-3-audit-apc95a31b9d8/web
+    (83 points on HN)
