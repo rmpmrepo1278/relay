@@ -92,3 +92,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • Apple Private Cloud Compute SoC 3 audit reports
     https://support.apple.com/guide/certifications/apple-private-cloud-compute-soc-3-audit-apc95a31b9d8/web
     (83 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • dashboard.mux.com
+    https://dashboard.mux.com/login
+🔀 **Intersection:** self hosting × ai agents
+  • 8 Best Self-Hosted AI Agent Platforms for 2025 | Fastio
+    https://fast.io/resources/best-self-hosted-ai-agent-platforms/
+📄 **arXiv (ai agents):**
+  • Copy Less, Ground More: Overcoming Repetitive Copying in Long-Context Reasoning 
+    http://arxiv.org/abs/2607.19345v1
+  • Appearance Pointers -- Multimodal Region Control of Diffusion Transformers
+    http://arxiv.org/abs/2607.19344v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐21462
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐12795
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • deepseek-ai/DeepSpec ⭐6729
+    DeepSpec: a full-stack codebase for training and evaluating speculative decoding
+    https://github.com/deepseek-ai/DeepSpec
+🎲 **Serendipity:**
+  • Jack Dorsey launches Buzz to combine team chat, AI agents and Git hosting
+    https://runtimewire.com/article/jack-dorsey-block-buzz-team-chat-ai-agents-git
+    (259 points on HN)
