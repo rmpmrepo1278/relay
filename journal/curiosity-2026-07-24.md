@@ -56,3 +56,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐7115
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × ai agents
+  • Rustic Canvas Framed Christmas Pictures - Etsy
+    https://www.etsy.com/market/rustic_canvas_framed_christmas_pictures?msockid=0ae715433b3d65fd22b002e33a1e6483
+  • [2607.20468] InferenceBench: A Benchmark for Open-Ended LLM Inference ...
+    https://arxiv.org/abs/2607.20468
+📄 **arXiv (llm inference):**
+  • Expanding Flow Maps
+    http://arxiv.org/abs/2607.21585v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22336
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13165
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7126
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Kimi K3 exploited the latest Redis server
+    https://twitter.com/fried_rice/status/2080059356322918777
+    (110 points on HN)
