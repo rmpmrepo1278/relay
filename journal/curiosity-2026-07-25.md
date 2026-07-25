@@ -122,3 +122,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • GC and Exceptions in Wasmtime
     https://bytecodealliance.org/articles/wasmtime-gc
     (133 points on HN)
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** talos linux
+  • Talos - Wikipedia
+    https://en.m.wikipedia.org/wiki/Talos
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (infrastructure):**
+  • Solving Large Traveling Salesman Problems (TSPs) by a Recursive Clustering Algor
+    http://arxiv.org/abs/2607.21182v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22495
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13221
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7261
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • UK AISI / Caisi Preliminary Assessment of Kimi K3's Cyber Capabilities
+    https://www.nist.gov/news-events/news/2026/07/uk-aisi-caisi-preliminary-assessment-kimi-k3s-cyber-capabilities
+    (118 points on HN)
