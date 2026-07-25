@@ -59,3 +59,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • IRGC claims it destroyed Amazon's Bahrain data center
     https://houseofsaud.com/irgc-claims-destroyed-amazon-bahrain-data-center/
     (302 points on HN)
+
+## Curiosity — 08:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • MCP Tools 2026: The Complete Model Context Protocol Guide for AI Agents
+    https://explore.n1n.ai/blog/mcp-tools-2026-model-context-protocol-guide-2026-05-12
+🔀 **Intersection:** llm inference × ai agents
+  • From LLM Reasoning to Autonomous AI Agents: - arXiv.org
+    https://arxiv.org/pdf/2504.19678
+📄 **arXiv (automation):**
+  • Toward Federated Cognitive Digital Twins over the Edge-to-Cloud Continuum
+    http://arxiv.org/abs/2607.21357v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22470
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13214
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7240
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Claude Opus 5
+    https://www.anthropic.com/news/claude-opus-5
+    (1690 points on HN)
