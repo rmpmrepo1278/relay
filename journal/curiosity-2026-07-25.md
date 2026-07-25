@@ -86,3 +86,39 @@ Interests: self_hosting, ai_agents, llm_inference
   • Claude Opus 5
     https://www.anthropic.com/news/claude-opus-5
     (1690 points on HN)
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Paso Robles CA Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/paso-robles-ca/?msockid=05dbe27a82d26115287cf5db838560fe
+  • Paso Robles, CA homes for sale & real estate - realtor.com
+    https://www.realtor.com/realestateandhomes-search/Paso-Robles_CA?msockid=05dbe27a82d26115287cf5db838560fe
+🌱 **Adjacent to ai agents:** rlhf
+  • 恰饭、肝不动了、氪金大佬等游戏界的术语你懂多少？ - 知乎
+    https://zhuanlan.zhihu.com/p/119372641
+  • What Is RLHF & How Does It Work? | Mercor
+    https://www.mercor.com/resources/experts/what-is-rlhf/
+🔀 **Intersection:** ai agents × llm inference
+  • Distributed inference with collaborative AI agents for Telco-powered Smart-X | A
+    https://aws.amazon.com/blogs/industries/distributed-inference-with-collaborative-ai-agents-for-telco-powered-smart-x/
+📄 **arXiv (infrastructure):**
+  • Controlled Periodic Synchronization for Efficient Data-Parallel Training
+    http://arxiv.org/abs/2607.21224v1
+  • GLP: A Grassroots, Multiagent, Concurrent, Logic Programming Language for AI
+    http://arxiv.org/abs/2607.21189v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22474
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13216
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7241
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • GC and Exceptions in Wasmtime
+    https://bytecodealliance.org/articles/wasmtime-gc
+    (133 points on HN)
