@@ -147,3 +147,24 @@ Interests: self_hosting, ai_agents, llm_inference
   • UK AISI / Caisi Preliminary Assessment of Kimi K3's Cyber Capabilities
     https://www.nist.gov/news-events/news/2026/07/uk-aisi-caisi-preliminary-assessment-kimi-k3s-cyber-capabilities
     (118 points on HN)
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × llm inference
+  • Monitoring LLM inference and inference routing - IBM
+    https://www.ibm.com/docs/en/ai-optimizer-for-z/2.1.0?topic=routing-monitoring-llm-inference
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22506
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13230
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7276
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Spatial languages: Writing code in 2D
+    https://shukla.io/blog/2026-07/cccx.html
+    (99 points on HN)
