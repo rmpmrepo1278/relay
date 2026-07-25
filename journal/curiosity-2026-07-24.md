@@ -82,3 +82,23 @@ Interests: self_hosting, ai_agents, llm_inference
   • Kimi K3 exploited the latest Redis server
     https://twitter.com/fried_rice/status/2080059356322918777
     (110 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (self hosting):**
+  • Out-of-Distribution Detection in Wireless Multimodal Foundation Models for 6G IS
+    http://arxiv.org/abs/2607.21455v1
+  • DISCO: Distributed Spectrum Compliance and Orchestration for Scalable IoT Coexis
+    http://arxiv.org/abs/2607.21387v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22371
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13174
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7148
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
