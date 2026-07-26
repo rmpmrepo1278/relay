@@ -168,3 +168,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • Spatial languages: Writing code in 2D
     https://shukla.io/blog/2026-07/cccx.html
     (99 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (security):**
+  • Where You Tap Matters: A Probe-and-Model Benchmark for Open-Set RF Fingerprintin
+    http://arxiv.org/abs/2607.21564v1
+  • Unconditional Unclonable Encryption
+    http://arxiv.org/abs/2607.21551v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22533
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13241
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7299
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Zero roadkill as Amazon canopy bridges secure 15,000 crossings
+    https://news.mongabay.com/2026/07/zero-roadkill-as-amazon-canopy-bridges-secure-15000-crossings/
+    (308 points on HN)
