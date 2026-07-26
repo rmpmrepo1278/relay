@@ -62,3 +62,13 @@ Interests: self_hosting, ai_agents, llm_inference
   • I learned PCB design, 3D printing and C just to listen to music
     https://pentaton.app/blog/2026-07-12-introducing-pentaton-lp/
     (124 points on HN)
+
+## CRG Integration Completed
+
+- Fixed malformed n8n_bridge_server.py (orphaned elif block)
+- Added code-review-graph bridge endpoints to bridge server (port 9199)
+- Installed embeddings support, embedded 1548 nodes for semantic search
+- Created crg-daemon watching agentharness + hermes-agent (systemd service)
+- Added code-graph-query Hermes skill with bridge endpoint documentation
+- Added CRG instructions to agentharness/CLAUDE.md, global ~/.claude/CLAUDE.md, and opencode init-relay.md
+- MCP server registered in opencode.json pointing to http://home-hp:8095/mcp
