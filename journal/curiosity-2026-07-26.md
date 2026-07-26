@@ -72,3 +72,29 @@ Interests: self_hosting, ai_agents, llm_inference
 - Added code-graph-query Hermes skill with bridge endpoint documentation
 - Added CRG instructions to agentharness/CLAUDE.md, global ~/.claude/CLAUDE.md, and opencode init-relay.md
 - MCP server registered in opencode.json pointing to http://home-hp:8095/mcp
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Make an Appointment - MultiCare
+    https://www.multicare.org/patient-resources/make-an-appointment/
+  • MultiCare Rockwood Clinic – Liberty Lake
+    https://www.multicare.org/location/multicare-rockwood-clinic-liberty-lake/
+🔀 **Intersection:** llm inference × self hosting
+  • Large language model - Wikipedia
+    https://en.m.wikipedia.org/wiki/Large_language_model
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22745
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13293
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7403
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • The relay market powering token resellers and fraud
+    https://vectoral.com/blog/token-relay-market
+    (139 points on HN)
