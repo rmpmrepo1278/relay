@@ -12,7 +12,7 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
 **Storage:** 221GB root (77% used), 4.6TB USB at /mnt/usb (5% used)
 **User:** rohit
 
-## Container Stack (~60 running)
+## Container Stack (~58 running)
 
 ### Core Infrastructure
 - NPM (Nginx Proxy Manager) — reverse proxy + SSL on 80/443
@@ -38,12 +38,13 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
 - OpenViking (1933/8020) — map server
 
 ### AI / LLM
+- OmniRoute (20128, Docker host networking) — unified LLM gateway: smart routing, token compression, MCP/A2A, 80+ pre-configured models via built-in providers (aug/ oc/ tllm/ dgw/ etc.), Ollama integration
 - Ollama (11434, host) — local inference with 5 models (llama3.2:3b, qwen2.5:7b, qwen2.5:14b, mistral, nomic-embed-text)
-- LLM Proxy (8080, host systemd) — multi-provider routing (8 free providers: groq, cerebras, sambanova, mistral, owl, google-alt, openrouter, local)
+- ~~LLM Proxy (8080)~~ — **DEPRECATED** (2026-07-26), replaced by OmniRoute
 - Open WebUI (8082) — LLM chat UI
 - Khoj (4321) — AI second brain with pgvector
 - Qdrant (6333) — vector database
-- FreeLLMAPI (3005) — free provider aggregator
+- ~~FreeLLMAPI (3005)~~ — **DEPRECATED** (2026-07-26), replaced by OmniRoute built-in providers
 - MenteDB (6677) — cognitive memory graph
 
 ### Monitoring
