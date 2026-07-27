@@ -41,3 +41,34 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐7602
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Claude's Constitution \ Anthropic
+    https://www.anthropic.com/research/claudes-constitution
+🔀 **Intersection:** llm inference × ai agents
+  • GopherCon 2025 - Go for Experienced Programmers Workshop Prep
+    https://gist.github.com/jboursiquot/59a1050718b8600848ffe17ec56b46cb
+  • GitHub - jboursiquot/pantry-agent: Pantry Agent is used for teaching ...
+    https://github.com/jboursiquot/pantry-agent
+📄 **arXiv (llm inference):**
+  • PinEqualizer: Full Funnel Content Exploration and Debiasing System at Pinterest
+    http://arxiv.org/abs/2607.22518v1
+  • Quantum Spectral Model: Data Reuploading with Input-Conditioned Frequency Suppor
+    http://arxiv.org/abs/2607.22516v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22997
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13374
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7612
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Forth
+    https://xkcd.com/3277/
+    (56 points on HN)
