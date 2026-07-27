@@ -98,3 +98,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • The relay market powering token resellers and fraud
     https://vectoral.com/blog/token-relay-market
     (139 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • The Complete Guide to AI Agent Evaluation (2026) | Clawvard
+    https://clawvard.school/blog/ai-agent-evaluation-guide-2026
+  • How to Evaluate AI Agent Systems in 2026: Metrics, Methods, and Tools
+    https://tomvsaji.com/blogs/agent-evaluation-2026
+🔀 **Intersection:** llm inference × monitoring
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐22790
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13309
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7411
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • The relay market powering token resellers and fraud
+    https://vectoral.com/blog/token-relay-market
+    (164 points on HN)
