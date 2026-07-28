@@ -72,3 +72,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • Forth
     https://xkcd.com/3277/
     (56 points on HN)
+
+## Curiosity — 20:17 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (research):**
+  • AI Strategy: How to Choose What AI Product to Implement
+    http://arxiv.org/abs/2607.23733v1
+  • An Exact Counterexample to Carlson's Associated-Prime Depth Conjecture from a Gr
+    http://arxiv.org/abs/2607.23732v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23051
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13394
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7621
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Show HN: FeyNoBg – Automatic background removal model and training library
+    https://usefeyn.com/blog/feynobg/
+    (97 points on HN)
