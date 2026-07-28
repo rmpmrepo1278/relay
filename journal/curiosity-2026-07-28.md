@@ -70,3 +70,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐7675
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF …
+    https://arxiv.org/html/2405.11143v6
+  • RLHF Explained: How Human Feedback Trains AI Models in 2026
+    https://decodethefuture.org/en/rlhf-explained/
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (self hosting):**
+  • Denial of Deadline: Network-Driven Accuracy Collapse in Distributed Inference Pi
+    http://arxiv.org/abs/2607.24692v1
+  • Experimental Side Channel Analysis of Protocol Stages in Quantum Identity Authen
+    http://arxiv.org/abs/2607.24639v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23192
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13451
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7676
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
