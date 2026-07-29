@@ -61,3 +61,24 @@ Interests: self_hosting, ai_agents, llm_inference
   • SpecForge – A Platform for Authoring Formal Specifications
     https://docs.imiron.io/v/0.5.10/en/tour.html
     (54 points on HN)
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • rlhf-book/teach/SALA-2026 at main - GitHub
+    https://github.com/natolambert/rlhf-book/tree/main/teach/SALA-2026
+🔀 **Intersection:** ai agents × monitoring
+📄 **arXiv (ai agents):**
+  • Desktop-Delta Bench: Do Computer-Use Models Understand Desktop GUI Transitions?
+    http://arxiv.org/abs/2607.26041v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23390
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13543
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7795
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
