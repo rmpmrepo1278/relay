@@ -82,3 +82,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐7795
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • multi- - Microsoft Style Guide | Microsoft Learn
+    https://learn.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/m/multi
+  • How to use multiple monitors in Windows | Microsoft Support
+    https://support.microsoft.com/en-US/Windows/Hardware/Display-Graphics/how-to-use-multiple-monitors-in-windows
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (self hosting):**
+  • MAC-Gyver: Open, Programmable, Scheduling for AI-RAN 6G Systems
+    http://arxiv.org/abs/2607.26012v1
+  • Untangling Co-Drift: Proactive Multi-Intent Failure Prediction and Root-Cause Di
+    http://arxiv.org/abs/2607.25989v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23409
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13556
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7812
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
