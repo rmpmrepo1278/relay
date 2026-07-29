@@ -133,3 +133,23 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐7709
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (ai agents):**
+  • Pass the Baton: Trajectory-Relayed On-Policy Distillation
+    http://arxiv.org/abs/2607.26057v1
+  • $π\mathbf{R}^2$: Reactive Real-time Flow Policies
+    http://arxiv.org/abs/2607.26055v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23273
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13496
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7731
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
