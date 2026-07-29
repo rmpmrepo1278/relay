@@ -32,3 +32,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • Show HN: I was tired of opening 2 tabs for every HN link, so I made a userscript
     https://github.com/twalichiewicz/HNewhere
     (265 points on HN)
+
+## Curiosity — 08:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • RLHF是什么？一文说清RLHF（人类反馈强化学习）的概念和实现过程
+    https://zhuanlan.zhihu.com/p/1899472091121682346
+  • GitHub - OpenRLHF/OpenRLHF: An Easy-to-use, Scalable and High ...
+    https://github.com/OpenRLHF/OpenRLHF
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (automation):**
+  • RepoReasoner: Evaluating Repository-Level Code Reasoning Ability of Long-Context
+    http://arxiv.org/abs/2607.25996v1
+  • \textsc{IH-Benchmark}: A Conflict-Centered Benchmark for Instruction-Hierarchy R
+    http://arxiv.org/abs/2607.25987v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23386
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13542
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐7794
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • SpecForge – A Platform for Authoring Formal Specifications
+    https://docs.imiron.io/v/0.5.10/en/tour.html
+    (54 points on HN)
