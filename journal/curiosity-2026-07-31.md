@@ -48,3 +48,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐8565
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • An introduction to reinforcement learning from human feedback and post ...
+    https://rlhfbook.com/teach/SALA-2026/
+  • Reinforcement Learning from Human Feedback - arXiv.org
+    https://arxiv.org/pdf/2504.12501v8
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (self hosting):**
+  • A Taxonomy of Performance Metrics for the Distributed Computing Continuum
+    http://arxiv.org/abs/2607.28407v1
+  • Observing the Relationship between QoS Unpredictability, Prediction Error, and U
+    http://arxiv.org/abs/2607.28216v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23697
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13757
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8575
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Run Kimi K3 using 29 GB of RAM at 0.50 tok/s
+    https://github.com/sqliteai/waste
+    (118 points on HN)
