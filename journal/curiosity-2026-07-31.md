@@ -77,3 +77,34 @@ Interests: self_hosting, ai_agents, llm_inference
   • Run Kimi K3 using 29 GB of RAM at 0.50 tok/s
     https://github.com/sqliteai/waste
     (118 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Model Context Protocol (MCP): Security Design Considerations ...
+    https://www.nsa.gov/Portals/75/documents/Cybersecurity/CSI_MCP_SECURITY.pdf
+  • MCP: Code Directory (mcp code dir) - Medi-Cal
+    https://mcweb.apps.prd.cammis.medi-cal.ca.gov/file/manual?fn=mcpcodedir.pdf
+🔀 **Intersection:** monitoring × ai agents
+  • Azure Monitor overview - Azure Monitor | Microsoft Learn
+    https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/overview
+  • Architecture strategies for designing a monitoring system
+    https://learn.microsoft.com/en-us/azure/well-architected/operational-excellence/observability
+📄 **arXiv (self hosting):**
+  • Coexistence of 5G NR and Wi Fi 6E/7 at 6 GHz: Experimental Interference Measurem
+    http://arxiv.org/abs/2607.28213v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23710
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13775
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8576
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • How JPEG works: Interactively explore JPEG's lossy compression methods
+    https://cgjennings.ca/articles/jpeg-compression/
+    (121 points on HN)
