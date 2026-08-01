@@ -22,7 +22,22 @@ status: researched, decision pending — user confirmed US-based buyer
 - Honest caveat: no current pressure (12Gi used, 21Gi available, not swapping). Headroom play, not a fix.
 
 ## Verified prices (read off retailer pages — standing rule)
-### New, single 32GB DDR4-3200 SO-DIMM (what's actually needed — 1× 32GB to pair with existing 32GB)
+### Option A: 48GB (32+16) — recommended value path
+Swapping the 4GB for a **16GB** stick → 48GB total, flex mode gives a **32GB dual-channel window**
+(14b model fully dual-channel) at half the cost, no 64GB no-POST risk.
+
+New single 16GB DDR4-3200 SO-DIMM (Newegg, verified):
+| Stick | Price |
+|---|---|
+| **Rimlance 16GB** | **$80.00** ← cheapest |
+| Silicon Power 16GB | $93.79 |
+| SK hynix 16GB | $94.00 |
+| KingSpec / Colorful 16GB | $99.99 |
+| Refurb SK hynix 16GB | $99.99 |
+| Samsung 16GB 1Rx8 | $102.00 |
+
+### Option B: 64GB (32+32) — full symmetric dual channel
+New single 32GB DDR4-3200 SO-DIMM (what replaces the 4GB):
 | Stick | Price | Source |
 |---|---|---|
 | **Rimlance 32GB** | **$158.00** ← cheapest | Newegg |
@@ -33,14 +48,15 @@ status: researched, decision pending — user confirmed US-based buyer
 | A-Tech 32GB | $242.49 | Amazon |
 | Crucial 32GB (2×16 kit) | $213.00 / $190.99 TEAMGROUP / $188.99 Timetec / $185.88 NEMIX | Amazon/Newegg |
 
-Note: 2×16 kits are cheaper but DO NOT satisfy the need (need single 32GB to replace the 4GB).
+Note: 2×16 kits are cheaper but DO NOT satisfy the need (need single stick to replace the 4GB).
 
 ### Used / refurb
-- **B&H Used dept (90-day warranty, free 2-day):** Crucial 32GB (2×16) kit **$201.95**; Crucial 64GB (2×32) kit **$438.95** — kits only, no single 32GB.
-- **eBay search 403-blocked** from here → used-eBay single-32GB prices **unverified**, not quoted (standing rule).
-- Newegg used: 0 matches for this part.
+- **B&H Used dept (90-day warranty, free 2-day):** Crucial 32GB (2×16) kit **$201.95**; Crucial 64GB (2×32) kit **$438.95** — kits only, no single sticks.
+- **eBay search 403-blocked** from here → used-eBay prices **unverified**, not quoted (standing rule).
+- Newegg used: 0 matches for these parts. Newegg refurb Samsung/SK hynix 16GB $99.99–104.99.
 
 ## Recommendation
-- Cheapest verified path: **Rimlance 32GB $158 (Newegg)** — new, full warranty, less than any used price found.
-- Used saves ~nothing vs Rimlance; skip unless a genuine eBay deal surfaces (verify on-page first).
-- Low priority vs M6 purchase. If bought, buy from a returnable source (Amazon/Newegg) to test 2×32 64GB POST; if no-POST, return.
+- **Best value: Rimlance 16GB $80 (Newegg)** → 48GB, 32GB dual-channel window, ~half the 32GB cost,
+  no 64GB no-POST risk. The bandwidth win (dual-channel for the 14b) is the main benefit anyway.
+- **Full 64GB: Rimlance 32GB $158** — symmetric dual-channel + 32B-class model headroom; 2×32 unverified on this board, buy returnable.
+- Low priority vs M6 purchase. Either way, buy from a returnable source; test POST before committing.
