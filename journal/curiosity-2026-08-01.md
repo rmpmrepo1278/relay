@@ -50,3 +50,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • Big Food vs. the People
     https://www.lighthousereports.com/investigation/big-food-vs-the-people/
     (222 points on HN)
+
+## Curiosity — 04:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (automation):**
+  • ORCA-bench: How Ready Are Language Model Agents for Oncall?
+    http://arxiv.org/abs/2607.28545v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23753
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13805
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8575
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Google fixed more Chrome bugs in June than over the past two years, thanks to AI
+    https://blog.google/security/chrome-stronger-with-every-update/
+    (529 points on HN)
