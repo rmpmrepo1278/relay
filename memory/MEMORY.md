@@ -16,6 +16,9 @@
 ## The Homelab's Backend Stores
 - [databases.md](databases.md) — index of all 17+ DBs, what each contains, and how to query them
 
+## Decisions
+- [minipc.md](minipc.md) — mini-PC augment purchase decision (recommendation: BOSGAME M6 $969)
+
 ## How to read this memory
 
 This repo is the **thin index layer** — human-readable context and cross-tool continuity.
