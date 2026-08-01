@@ -195,3 +195,22 @@ Interests: self_hosting, ai_agents, llm_inference
   • Getting 25 Gbps Thunderbolt Ethernet on My Mac Studio
     https://www.jeffgeerling.com/blog/2026/getting-25g-ethernet-mac-thunderbolt/
     (211 points on HN)
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** ai agents × self hosting
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23782
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13840
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8577
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • The tiny holdout building in the middle of Macy’s is back in view
+    https://ephemeralnewyork.wordpress.com/2026/07/27/hidden-by-billboards-for-over-100-years-the-tiny-holdout-building-in-the-middle-of-macys-is-back-in-view/
+    (166 points on HN)
