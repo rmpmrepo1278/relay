@@ -18,6 +18,7 @@
 
 ## Decisions
 - [minipc.md](minipc.md) — mini-PC augment purchase decision (recommendation: BOSGAME M6 $969)
+- [ram-upgrade.md](ram-upgrade.md) — home-hp 32GB→64GB RAM decision (recommendation: Rimlance 32GB $158 Newegg)
 
 ## How to read this memory
 

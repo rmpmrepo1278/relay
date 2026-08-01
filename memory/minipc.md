@@ -49,6 +49,7 @@ Rationale:
 - Used RTX-4060 build ($670–750) and eBay.de Xeon+3060 (€795) — snippet numbers, unverified.
 
 ## Next actions
-1. Rohit confirms purchase route (US ship vs India importer).
+1. Rohit confirmed: **US-based, buys in USA** → ignore India/import routes. Purchase BOSGAME M6
+   (or Newegg $999.99 variant) from a US retailer with a return policy.
 2. Draft updated `setup_minipc.sh`: fix subnet scan to `192.168.29.x` (home-hp), set MINIPC_IP +
    Tailscale before first run. Onboarding ready for arrival day.
