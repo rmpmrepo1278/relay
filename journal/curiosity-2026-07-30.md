@@ -100,3 +100,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐8078
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## LLM Infrastructure Cleanup & Optimization (2026-07-31)
+
+### Context
+- User requested getting local LLMs operational, specifically gpt-oss-20b (OSS 20B model) for BigMoe services
+- BigMoeOnEdge is an Android app (not a homelab service) — the name bigmoe was ambiguous
+
+### Actions Taken
+1. Loaded gpt-oss-20b-Q4_K_M.gguf (11.6GB) into Ollama — works but at 0.3 tok/s (unusable for interactive)
+2. Benchmarked all local models:
+   - llama3.2:3b: **7.9 tok/s** (fast, interactive) — KEPT
+   - qwen2.5-7b-tool: 0.3 tok/s — REMOVED
+   - gpt-oss-20b: 0.3 tok/s — REMOVED
+   - gpt-oss-20b-fast (reduced ctx): 0.8 tok/s — REMOVED
+3. Cleaned up slow models from Ollama and deleted GGUF files from /home/rohit/models/
+4. Updated OLLAMA_NUM_THREADS from 6 to 8 (matching CPU threads)
+5. Updated best_config.env to reflect llama3.2:3b as primary local model
+6. Updated model_catalog.json with remaining models
+
+### Key Finding
+- Ryzen 4700U CPU-only inference: ~8 tok/s with 3B model
+- All 7B+ models below 1 tok/s — unusable for interactive use
+- Cloud models (Groq llama-3.3-70b, OpenRouter) provide real 80-90% coverage
+- local llama3.2:3b is the fast fallback for simple tasks
+
+### Recommendations
+- Keep llama3.2:3b as local fast model
+- Use cloud providers via proxy_server.py for complex tasks
+- For significant local model improvement: add GPU (RTX 3060 12GB+)

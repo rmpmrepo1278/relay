@@ -38,13 +38,13 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
 - OpenViking (1933/8020) — map server
 
 ### AI / LLM
-- OmniRoute (20128, Docker host networking) — unified LLM gateway: smart routing, token compression, MCP/A2A, 80+ pre-configured models via built-in providers (aug/ oc/ tllm/ dgw/ etc.), Ollama integration
+- AgentHarness LLM Proxy (8080, systemd user unit) — OpenAI-compatible proxy routing to direct free-tier providers (Groq, Cerebras, OpenRouter, Mistral, DeepSeek, Google, Cohere, Cloudflare, GitHub models) + local Ollama fallback
 - Ollama (11434, host) — local inference with 5 models (llama3.2:3b, qwen2.5:7b, qwen2.5:14b, mistral, nomic-embed-text)
-- ~~LLM Proxy (8080)~~ — **DEPRECATED** (2026-07-26), replaced by OmniRoute
 - Open WebUI (8082) — LLM chat UI
 - Khoj (4321) — AI second brain with pgvector
 - Qdrant (6333) — vector database
-- ~~FreeLLMAPI (3005)~~ — **DEPRECATED** (2026-07-26), replaced by OmniRoute built-in providers
+- ~~OmniRoute (20128)~~ — **REMOVED** (2026-07-30), redundant aggregator
+- ~~FreeLLMAPI (3005)~~ — **REMOVED** (2026-07-30), redundant aggregator
 - MenteDB (6677) — cognitive memory graph
 
 ### Monitoring
