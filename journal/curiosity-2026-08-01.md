@@ -150,3 +150,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • Progressive Web Components
     https://arielsalminen.com/2026/progressive-web-components/
     (176 points on HN)
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • MultiMovies - Best Free Site for Movie Lovers
+    https://multimovies.wtf/
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (security):**
+  • Formalization of security
+    http://arxiv.org/abs/2607.28551v1
+  • Implementing Homomorphic Encryption-Based Logic Locking in System-on-Chip Design
+    http://arxiv.org/abs/2607.28542v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23771
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13829
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8576
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
