@@ -256,3 +256,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • Explorative modeling: Train on the best of K guesses
     https://alexiglad.github.io/blog/2026/explorative_modeling/
     (75 points on HN)
+
+## Curiosity — 18:13 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • San Diego CA Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/san-diego-ca/?msockid=132e8268f39e607007e095c1f2ff61e1
+  • San Diego, CA homes for sale & real estate - realtor.com
+    https://www.realtor.com/realestateandhomes-search/San-Diego_CA?msockid=132e8268f39e607007e095c1f2ff61e1
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Constitution - Wikipedia
+    https://en.m.wikipedia.org/wiki/Constitution
+🔀 **Intersection:** llm inference × ai agents
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23797
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13855
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8577
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Explorative modeling: Train on the best of K guesses
+    https://alexiglad.github.io/blog/2026/explorative_modeling/
+    (75 points on HN)
