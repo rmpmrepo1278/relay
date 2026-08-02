@@ -283,3 +283,20 @@ Interests: self_hosting, ai_agents, llm_inference
   • Explorative modeling: Train on the best of K guesses
     https://alexiglad.github.io/blog/2026/explorative_modeling/
     (75 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × self hosting
+  • LLM Inference as a Service vs. Self-Hosted | Decision Guide
+    https://deepsense.ai/blog/llm-inference-as-a-service-vs-self-hosted-which-is-right-for-your-business/
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23806
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13861
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8576
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
