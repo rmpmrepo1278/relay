@@ -46,3 +46,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • Running Kimi K3 on MI355X at Better Performance per Dollar Than B300
     https://www.wafer.ai/blog/kimi-k3-mi355x
     (136 points on HN)
+
+## Curiosity — 08:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • 一文搞懂 MCP：从入门到实战（含本地项目 MCP Server 示例）
+    https://blog.csdn.net/zgpeace/article/details/156002083
+🔀 **Intersection:** self hosting × monitoring
+  • Deploying Self-Hosted Sentry for Application Monitoring
+    https://medium.com/@peterselvaponseelan/deploying-self-hosted-sentry-for-application-monitoring-15525e6f7e69
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23866
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13920
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8575
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Artificial Intelligence: Ars Notoria and the Promise of Instant Knowledge
+    https://publicdomainreview.org/essay/ars-notoria/
+    (71 points on HN)
