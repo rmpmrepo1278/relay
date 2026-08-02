@@ -33,6 +33,21 @@ green. Everything committed + pushed (`agentharness`, home repo `chaguli/master`
    (traefik_sync/kopia_backup/kopia_volumes polluted failure reports forever) —
    added pruning in `run_due`. Also `last_run` was naive local while job entries
    were UTC-aware; now UTC-consistent.
+10. **Healthchecks checks were only half-wired**: 10 checks created but the
+    scheduler's `Job` never assigned `healthchecks_uuid`; the hc_uuids.sh
+    exports were defined but never parsed (would NameError). Added a
+    `_load_healthcheck_uuids()` loader, wired health_dashboard /
+    autonomous_fixer / morning_prep / morning_pipeline to their checks
+    (consolidated_health self-pings in-script). Final healthchecks API state:
+    consolidated-health, health-dashboard, autonomous-fixer all `status=up`
+    with live pings; remaining 7 checks will populate on their schedules.
+11. **autonomous_fixer false alarm**: UX check read stale v1 store
+    `state/commitments_active.json` (zeroed since Jul 6) and flagged "0
+    commitments" every cycle; real tracker (`data/commitments.json`) holds 9
+    active. Pointed it at the real store → dry-run now "all clear".
+12. **Healthchecks secrets**: compose used `${HC_SECRET_KEY:-changeme}` /
+    `${HC_SUPERUSER_PASSWORD:-changeme}` defaults — rotated to random values in
+    compose `.env`, recreated container, rotated the DB admin password.
 
 ## Verified green
 - scheduler single daemon (systemd), consolidated_health + 16 core jobs success
@@ -42,7 +57,14 @@ green. Everything committed + pushed (`agentharness`, home repo `chaguli/master`
 ## Notes / gotchas
 - SSH display mangles `hc_ping.sh` → `ln` etc. Use `od -c`/`cat -A` to verify
   bytes. Heredocs over ssh corrupt → write file then `scp`/`python3 file.py`.
+- Healthchecks API: `/ping/{uuid}` = success, `/ping/{uuid}/start`, `/ping/{uuid}/fail`
+  only — there is NO `/success` route (returns 404). hc_ping.sh maps success→bare.
+- Healthchecks SITE_ROOT requires `Host: healthchecks.home` header on every ping.
 - State file is authoritative over scheduler.log for job status.
-- Remaining backlog: 117 stale agentharness infra tests; healthchecks compose
-  uses `${HC_SECRET_KEY:-changeme}` defaults → move to .env; ARCHITECTURE/README
-  docs still reference old fixer behavior.
+- Remaining backlog: 117 stale agentharness infra tests; 7 healthchecks checks
+  not yet wired to jobs that don't exist (db-backup/backup-volumes/verify-backups/
+  cve-scan/docker-ghost-check — jobs removed); ARCHITECTURE/README docs still
+  reference old fixer behavior.
+- Pushed: home repo commits 574dacf (repair stack), 0b856c9 (scheduler pings +
+  prune), a9d2eee (UUID wiring). agentharness: e36396b (consolidated_health),
+  16cb1d0 (fixer store fix).
