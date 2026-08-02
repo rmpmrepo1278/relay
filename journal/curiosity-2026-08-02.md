@@ -111,3 +111,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐8575
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Multi-Agent AI Orchestration: Complete 2026 Guide
+    https://www.claritywithai.org/2026/06/multi-agent-ai-orchestration-guide-2026.html
+🔀 **Intersection:** self hosting × llm inference
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23899
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13937
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8576
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Show HN: NixOS-DGX-Spark – Nix and NixOS on the DGX Spark
+    https://github.com/graham33/nixos-dgx-spark
+    (81 points on HN)
