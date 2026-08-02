@@ -27,3 +27,22 @@ Interests: self_hosting, ai_agents, llm_inference
   • Unraveling the mysteries of habit formation
     https://www.kyoto-u.ac.jp/en/research-news/2026-07-28
     (66 points on HN)
+
+## Curiosity — 04:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** ai agents × self hosting
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23841
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13891
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8575
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
+🎲 **Serendipity:**
+  • Running Kimi K3 on MI355X at Better Performance per Dollar Than B300
+    https://www.wafer.ai/blog/kimi-k3-mi355x
+    (136 points on HN)
