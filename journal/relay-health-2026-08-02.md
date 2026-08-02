@@ -48,6 +48,13 @@ green. Everything committed + pushed (`agentharness`, home repo `chaguli/master`
 12. **Healthchecks secrets**: compose used `${HC_SECRET_KEY:-changeme}` /
     `${HC_SUPERUSER_PASSWORD:-changeme}` defaults — rotated to random values in
     compose `.env`, recreated container, rotated the DB admin password.
+13. **proactive_orchestrator consecutive_failures=5** (real gap): curious_explorer
+    crashed with JSONDecodeError every cycle. Root cause: SEEN_FILE
+    (`state/curious_seen.json`) corrupted by non-atomic writes — curious_explorer
+    is invoked BOTH by the scheduler (daily 8:30) AND by proactive_orchestrator
+    (every 4h); overlapping writes interleaved. Fixed: atomic save (tempfile +
+    os.replace) + resilient load (extract strings, quarantine as `.corrupt`).
+    Verified: curious_explorer exit 0, orchestrator consecutive_failures → 0.
 
 ## Verified green
 - scheduler single daemon (systemd), consolidated_health + 16 core jobs success
