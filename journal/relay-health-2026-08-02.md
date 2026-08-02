@@ -56,10 +56,55 @@ green. Everything committed + pushed (`agentharness`, home repo `chaguli/master`
     os.replace) + resilient load (extract strings, quarantine as `.corrupt`).
     Verified: curious_explorer exit 0, orchestrator consecutive_failures → 0.
 
+## Phase 2 — proactive decision engine + capsule verification + decision ledger
+
+Built the three capability pillars (all new in `~/.hermes/scripts/`, pushed home
+repo `1ea2eba`, agentharness `b75abc1`):
+
+- **proactive_engine.py** (new): state-change-TRIGGERED engine (closes the core
+  proactivity gap — previously every module ran on fixed schedules only). Watches
+  7 signal files (health_dashboard.json, scheduler_state.json, task_queue.json,
+  interest_profile.json, insights.json, capsules/outcomes.jsonl,
+  curious_explorer_results.json) via content hashes; on change, scores 5
+  candidate actions (troubleshoot / scheduler_repair / capsule_learn / curiosity /
+  insight_surface) with urgency + cooldown; fires via subprocess then records in
+  ledger. Baseline snapshot at `state/proactive_engine_snapshot.json`.
+  Registered in scheduler: every minute, timeout 320. First scheduled run
+  verified success (returncode 0, 0.04s — no-op while signals stable).
+- **decision_ledger.py** (new): append-only JSONL `data/decision_ledger.jsonl`;
+  record/resolve/stats/recent. Wired into all three action sinks:
+  `hermes_mind.py` (actor hermes_mind, action fix_<target>),
+  `mind_loop.py` execute_plan (send_telegram + run_command branches),
+  `autonomous_fixer.py` (actor autonomous_fixer, triggered_by detected_issue).
+  Now live: mind_loop logs every plan action every cycle.
+- **capsule_verify.py** (new): 15-min driver verifying capsule records from last
+  24h older than 10min, appends verified:true + actual_outcome (via
+  check_target_health docker probe). Registered in scheduler every 15min.
+- **capsule_tracker.py** (canonical): added verify subcommand + get_stats
+  verified-rate + check_target_health. 162 existing records (160 autonomous_fixer,
+  91% fail) — verification will surface whether fixes actually helped.
+- **feedback_loop.py** (restored): was missing from ~/.hermes/scripts/ entirely;
+  restored from archive + adapter functions appended (record_action /
+  load_feedback / check_action_outcomes) bridging into the decision ledger.
+
+## Real bugs found via the ledger (second session)
+- **mind_loop crash every cycle**: `from commitment_tracker import ... format_report`
+  — function doesn't exist (commitment_tracker has get_status/check_overdue/
+  get_upcoming only) → ImportError in cycle #1931's commitment check. Removed the
+  dead import → cycle #1932 clean.
+- **mind_loop backup verification was a guaranteed-fail no-op**: plan ran
+  `kopia snapshot list --json` as user rohit, but the kopia repo lives under
+  /root/.config/kopia (root-owned, `sudo kopia` required). Every verify_backups
+  action returned error. Fixed to `sudo kopia snapshot list --json`; verified
+  exit 0 → ledger shows outcome=success at 01:27:41. (Kopia itself healthy:
+  backup_all success daily 02:00, kopia_dirs/volumes OK.)
+
 ## Verified green
 - scheduler single daemon (systemd), consolidated_health + 16 core jobs success
   in recent window; 0 failed systemd units; disk 37%; 21Gi RAM free.
 - scheduler state prunes stale keys; healthchecks pings 200 in logs.
+- proactive_engine running on schedule (success, no-op on stable signals);
+  capsule_verify runs (0 candidates until capsules settle).
 
 ## Notes / gotchas
 - SSH display mangles `hc_ping.sh` → `ln` etc. Use `od -c`/`cat -A` to verify
@@ -68,10 +113,12 @@ green. Everything committed + pushed (`agentharness`, home repo `chaguli/master`
   only — there is NO `/success` route (returns 404). hc_ping.sh maps success→bare.
 - Healthchecks SITE_ROOT requires `Host: healthchecks.home` header on every ping.
 - State file is authoritative over scheduler.log for job status.
+- Kopia repo lives in /root/.config/kopia → any non-sudo `kopia` command as rohit
+  says "repository is not connected"; use `sudo kopia` (as backup_all.py does).
 - Remaining backlog: 117 stale agentharness infra tests; 7 healthchecks checks
   not yet wired to jobs that don't exist (db-backup/backup-volumes/verify-backups/
   cve-scan/docker-ghost-check — jobs removed); ARCHITECTURE/README docs still
-  reference old fixer behavior.
-- Pushed: home repo commits 574dacf (repair stack), 0b856c9 (scheduler pings +
-  prune), a9d2eee (UUID wiring). agentharness: e36396b (consolidated_health),
-  16cb1d0 (fixer store fix).
+  reference old fixer behavior; proactive_engine candidate-action targets
+  (troubleshoot/scheduler_repair) not yet observed firing end-to-end.
+- Pushed: home repo 574dacf, 0b856c9, a9d2eee, f417301, 1ea2eba. agentharness:
+  e36396b, 16cb1d0, b75abc1.
