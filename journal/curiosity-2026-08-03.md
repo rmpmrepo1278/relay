@@ -82,3 +82,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • unicity-aos/aos-ce ⭐8574
     AOS Community Edition: the open agent operating system.
     https://github.com/unicity-aos/aos-ce
+
+## Curiosity — 08:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Model Context Protocol (MCP) | Cursor Docs
+    https://cursor.com/docs/mcp
+  • MCP | Cursor Docs
+    https://cursor.com/docs/cli/mcp
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (self hosting):**
+  • RIGEL: Real-time Optical Anomaly Diagnosis with Stateful In-Network Inference ba
+    http://arxiv.org/abs/2607.29306v1
+  • METIS: A Declarative Slice Orchestrator for Application-Centric 5G/6G Networks
+    http://arxiv.org/abs/2607.29282v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23998
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13999
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐8769
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Octane – React's programming model, compiled
+    https://octanejs.dev
+    (84 points on HN)
