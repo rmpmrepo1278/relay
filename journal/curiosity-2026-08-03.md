@@ -111,3 +111,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • Octane – React's programming model, compiled
     https://octanejs.dev
     (84 points on HN)
+
+## Curiosity — 08:31 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • Reinforcement learning from human feedback - Wikipedia
+    https://en.m.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback
+  • RLHF Jobs in 2026: What They Are, What They Pay ($15-$200/hr) and Where to Find 
+    https://remotestack.in/blog/rlhf-jobs-remote-2026
+🔀 **Intersection:** ai agents × monitoring
+📄 **arXiv (self hosting):**
+  • Mind the Gap: Policy vs Reality in Post-Quantum TLS Deployment
+    http://arxiv.org/abs/2607.29005v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24000
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14000
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐8808
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
