@@ -39,7 +39,29 @@
 - `791e8de` on chaguli: telegram-notify hook handle() signature fix (2-positional emit). Pushed.
 - Collaborator memory journal synced after this note.
 
-## Follow-ups
-- Next scheduled boot_inbox_watcher run (monthly) should show success — confirm on next report.
-- Bridge smoke test completed for all 28 commands (post-seed); `/memory` now returns matches.
-- Temporal KG (48k facts) now reachable via /memory fallback (done 2026-08-03). Consider surfacing tkg score/domain in bridge output formatting.
+## Audit: dedup / consolidation / security / resiliency (2026-08-03)
+
+### Security fixes (committed `5f61bcf`)
+- **Bridge bound to 0.0.0.0:9199** — exposed on all interfaces with a known default auth key. Fixed: bind to 127.0.0.1 only, load BRIDGE_AUTH_KEY/TELEGRAM_BOT_TOKEN from `.env` instead of hardcoded defaults.
+- **`.env.systemd` was 664 (group-readable)** with API keys — fixed to 600.
+- **`.env.bak`** contained plaintext API keys — shredded.
+- **n8n-bridge service file**: was `Restart=on-failure` (should be `always` for a bridge), no `TimeoutStopSec`, no `WorkingDirectory`, no `EnvironmentFile`, no journal output. Fixed all.
+
+### Resiliency fixes (committed `7750615`)
+- **homelab-backup.service** and **system-health-check.service**: oneshot with no `Restart=` policy — added `Restart=on-failure` so crashes re-run.
+
+### Consolidation
+- **unified_memory_mcp.py** (new, consolidated MCP server exposing all memory stores) was unregistered — added to `config.yaml` under `mcp_servers.unified_memory`.
+- **hermes_mcp_server.py** (old, single-store MCP) still registered and running; both coexist since they serve different purposes (control plane vs data plane).
+- **hermes_memory.py** superseded by unified_memory.py — archived.
+- **temporal_kg.py** NOT archived — still actively used by insight_engine, research_indexer, soul_overlay_gen, and scheduler.
+- **graphrag.py** NOT archived — still actively used by scheduler graphrag_extract job (every 12h).
+- **homelab_* scripts** form a pipeline (discover → evaluate → deploy → optimize → report → troubleshoot), not duplicates.
+
+### Stale data cleaned
+- **databases.md**: said unified_memory.db was empty (0 records) — updated to reflect 262 entries after seeding.
+- **Archive cleanup**: removed career_briefing.py.bak, flock_wrapper.sh, logrotate_wrapper.sh, memory_sync.sh (no references anywhere).
+
+### Commits
+- `5f61bcf` on chaguli: security (bridge bind address, .env loading, service file). Pushed.
+- `7750615` on chaguli: resiliency (Restart=on-failure for oneshots, .env.systemd perms). Pushed.
