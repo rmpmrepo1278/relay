@@ -22,12 +22,18 @@
 - Built `~/.hermes/scripts/seed_memory.py`: ingests `collaborator-memory/journal/*.md` (namespace=journal) + `memory/*.md` (namespace=memory) as full-doc entries + per-section FTS-indexable entries. 269 entries seeded; re-runs clear prior seeds first (FTS triggers only fire on INSERT/DELETE, so upserts alone would stale the index). Committed `ec205b8`, pushed.
 - Verified: `/memory telegram|bridge|homelab|scheduler` all return real matches via bridge and CLI.
 
+## Memory search hardened (TKG reachable)
+- Wired the temporal KG (48k facts) into `unified_memory.search()` as a fallback via new `_search_tkg()` → entity/fact results now return as `[0.60] ... (tkg)` when FTS is empty, so `/memory <entity>` reaches the graph.
+- Fixed an FTS5 crash: queries with hyphens/dots (e.g. `homelable-frontend`) threw `no such column: frontend`. Now tokens are sanitized to alnum; FTS block wrapped in try/except; added naive LIKE fallback on the store for robustness.
+- Committed `3f94bb3`, pushed. Regression: `bridge homelab scheduler relay n8n` all return 3 results.
+
 ## Commits
 - `001febd` on chaguli (AgentChaguli, master): scheduler --once, tracker RETIRED_JOBS, hesclate, telegram-notify hook, bridge auth+subsystems. Pushed.
 - `ec205b8` on chaguli: seed_memory.py (memory store population). Pushed.
+- `3f94bb3` on chaguli: TKG fallback + FTS token sanitization in search. Pushed.
 - Collaborator memory journal synced after this note.
 
 ## Follow-ups
 - Next scheduled boot_inbox_watcher run (monthly) should show success — confirm on next report.
 - Bridge smoke test completed for all 28 commands (post-seed); `/memory` now returns matches.
-- Suggest wiring temporal KG (48k facts) into `search` as fallback so entity facts are reachable via /memory, in addition to seed_memory.md docs.
+- Temporal KG (48k facts) now reachable via /memory fallback (done 2026-08-03). Consider surfacing tkg score/domain in bridge output formatting.
