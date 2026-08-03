@@ -62,6 +62,24 @@
 - **databases.md**: said unified_memory.db was empty (0 records) — updated to reflect 262 entries after seeding.
 - **Archive cleanup**: removed career_briefing.py.bak, flock_wrapper.sh, logrotate_wrapper.sh, memory_sync.sh (no references anywhere).
 
+### Graph integration (CRG + graphify)
+
+**What was in place:**
+- code-review-graph v2.3.7 running as HTTP MCP server on port 8095 (SSE) + crg-daemon watch daemon
+- CRG CLI tools already wired into bridge (`/code-graph/*`) — accessible via Telegram as `/hgraph`, `/hdeadcode`, etc.
+- graphifyy v0.9.32 installed (AST-only, lighter than CRG) — but NOT integrated into bridge or gateway
+- CRG was NOT registered as a stdio MCP server in Hermes config.yaml — gateway could not use CRG tools directly
+- CLAUDE.md had CRG CLI instructions but no Telegram workflow
+- AGENTS.md had no graph tool references
+
+**What was added:**
+- CRG registered as stdio MCP server in config.yaml — gateway now has CRG tools available via MCP
+- 3 new bridge commands for graphify: `/graphify`, `/graphify-path`, `/graphify-explain` — accessible via Telegram as `/hgraphify`, `/hgraphify-path`, `/hgraphify-explain`
+- AGENTS.md updated with graph tools table (CRG + graphify), Telegram and CLI access
+- CLAUDE.md updated with Telegram-first graph workflow table, prefer `/graphify` for quick lookups
+
 ### Commits
 - `5f61bcf` on chaguli: security (bridge bind address, .env loading, service file). Pushed.
 - `7750615` on chaguli: resiliency (Restart=on-failure for oneshots, .env.systemd perms). Pushed.
+- `6b8dbf9` on chaguli: CRG MCP registration, graphify bridge commands, hermes-bridge plugin. Pushed.
+- `8f0cef9` on AgentHarness: AGENTS.md + CLAUDE.md graph workflow docs. Pushed.
