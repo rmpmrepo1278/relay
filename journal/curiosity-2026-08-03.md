@@ -134,3 +134,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐8808
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** ai agents × self hosting
+📄 **arXiv (automation):**
+  • Reusing Past Repairs Through Hierarchical Trajectory Abstraction for Coding Agen
+    http://arxiv.org/abs/2607.29658v1
+  • CodeShrink: Adaptive Visual Compression for Efficient Multimodal Code Understand
+    http://arxiv.org/abs/2607.29637v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24013
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14007
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐9254
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • What DMARC Protects You From, and What It Does Not
+    https://senderledger.com/articles/what-dmarc-actually-protects-you-from
+    (109 points on HN)
