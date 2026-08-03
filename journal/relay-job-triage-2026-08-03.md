@@ -27,10 +27,16 @@
 - Fixed an FTS5 crash: queries with hyphens/dots (e.g. `homelable-frontend`) threw `no such column: frontend`. Now tokens are sanitized to alnum; FTS block wrapped in try/except; added naive LIKE fallback on the store for robustness.
 - Committed `3f94bb3`, pushed. Regression: `bridge homelab scheduler relay n8n` all return 3 results.
 
+## End-to-end test (2026-08-03) — found & fixed a real bug
+- Full E2E passed: plugin h-command → bridge `/cmd` → subsystem → temporal KG fallback (hmemory homelable-frontend, hledger stats), plus outbound Telegram delivery via `/ask` → "Sent to Telegram channel" (sendMessage API 200).
+- **Bug found**: telegram-notify hook `handle(event_type, **kwargs)` crashed on every `agent:end` — gateway `HookRegistry.emit()` calls `fn(event_type, context)` with TWO positional args. Journal showed repeated `[hooks] Error in handler for 'agent:end': handle() takes 1 positional argument but 2 were given`.
+- Fixed: `handle(event_type, context=None)`. Verified via real `HookRegistry.emit("agent:end", ...)` — no error. Committed `791e8de`, pushed.
+
 ## Commits
 - `001febd` on chaguli (AgentChaguli, master): scheduler --once, tracker RETIRED_JOBS, hesclate, telegram-notify hook, bridge auth+subsystems. Pushed.
 - `ec205b8` on chaguli: seed_memory.py (memory store population). Pushed.
 - `3f94bb3` on chaguli: TKG fallback + FTS token sanitization in search. Pushed.
+- `791e8de` on chaguli: telegram-notify hook handle() signature fix (2-positional emit). Pushed.
 - Collaborator memory journal synced after this note.
 
 ## Follow-ups
