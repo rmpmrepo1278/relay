@@ -158,3 +158,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • What DMARC Protects You From, and What It Does Not
     https://senderledger.com/articles/what-dmarc-actually-protects-you-from
     (109 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Motor Carrier Permits - California DMV
+    https://www.dmv.ca.gov/portal/vehicle-industry-services/motor-carrier-services-mcs/motor-carrier-permits/
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (automation):**
+  • Educating the Agentic Engineer: Curricula, Collaboration, and Continuous Learnin
+    http://arxiv.org/abs/2607.29610v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24022
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14013
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐9533
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • DDoS against Norwegian government IT infrastructure – status
+    https://status.digdir.no/incidents/d7hvqmf2yr3l
+    (78 points on HN)
