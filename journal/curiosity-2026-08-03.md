@@ -64,3 +64,21 @@ Interests: self_hosting, ai_agents, llm_inference
   • My personal AI benchmark: “Generate an SVG of a frog with a Habsburg jaw”
     https://frogs.vaguespac.es/
     (136 points on HN)
+
+## Curiosity — 04:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** ai agents × monitoring
+📄 **arXiv (llm inference):**
+  • Freeze, Then Select: Structured Field Adapters and Stability-Validated Weak Sele
+    http://arxiv.org/abs/2607.29665v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐23982
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐13988
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • unicity-aos/aos-ce ⭐8574
+    AOS Community Edition: the open agent operating system.
+    https://github.com/unicity-aos/aos-ce
