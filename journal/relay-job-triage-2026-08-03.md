@@ -17,10 +17,17 @@
 - `/cmd` handler expects `{"text": ...}` field, NOT `cmd`; response nests under `result.text`.
 - Heredoc-over-SSH still breaks zsh; scp file + run is the only reliable pattern.
 
+## Memory populated
+- Unified memory store was empty (only 1 TEST entry) → `/memory <query>` returned nothing despite 48k facts in the temporal KG (separate store, not wired into `search`).
+- Built `~/.hermes/scripts/seed_memory.py`: ingests `collaborator-memory/journal/*.md` (namespace=journal) + `memory/*.md` (namespace=memory) as full-doc entries + per-section FTS-indexable entries. 269 entries seeded; re-runs clear prior seeds first (FTS triggers only fire on INSERT/DELETE, so upserts alone would stale the index). Committed `ec205b8`, pushed.
+- Verified: `/memory telegram|bridge|homelab|scheduler` all return real matches via bridge and CLI.
+
 ## Commits
 - `001febd` on chaguli (AgentChaguli, master): scheduler --once, tracker RETIRED_JOBS, hesclate, telegram-notify hook, bridge auth+subsystems. Pushed.
+- `ec205b8` on chaguli: seed_memory.py (memory store population). Pushed.
 - Collaborator memory journal synced after this note.
 
 ## Follow-ups
 - Next scheduled boot_inbox_watcher run (monthly) should show success — confirm on next report.
-- Bridge smoke test of remaining commands not yet curl-verified: /restart /backup /metrics /graph /deadcode /arch /search /impact /briefing /alert /scheduler /queue /digest /doctor /memory /proactive /cap /routing /ask /run.
+- Bridge smoke test completed for all 28 commands (post-seed); `/memory` now returns matches.
+- Suggest wiring temporal KG (48k facts) into `search` as fallback so entity facts are reachable via /memory, in addition to seed_memory.md docs.
