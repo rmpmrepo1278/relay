@@ -135,3 +135,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • Keyv and friends compromised in active Shai-Hulud supply chain attack
     https://www.aikido.dev/blog/keyv-and-friends-compromised-in-npm-supply-chain-attack
     (190 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • Nomad - Wikipedia
+    https://en.wikipedia.org/wiki/Nomad
+  • r/digitalnomad on Reddit: Is becoming a digital nomad still realistic in 2026? W
+    https://www.reddit.com/r/digitalnomad/comments/1sxyzwi/is_becoming_a_digital_nomad_still_realistic_in/
+🔀 **Intersection:** llm inference × self hosting
+  • Self Hosting LLMs: A Practical Guide to Sizing, Concurrency ... - Medium
+    https://medium.com/@jitendraparande/self-hosting-llms-a-practical-guide-to-sizing-concurrency-real-world-deployment-39cf5120d6ad
+📄 **arXiv (self hosting):**
+  • In-Network Market Prediction Using Machine Learning and Limit Order Books
+    http://arxiv.org/abs/2608.02424v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24124
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14111
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11113
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
