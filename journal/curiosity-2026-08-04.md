@@ -81,3 +81,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • Devtools must be open source
     https://blog.exe.dev/devtools-must-be-open-source
     (672 points on HN)
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • AI Agent Evaluation Frameworks 2026: Practical Guide
+    https://empire325marketing.com/blog/ai-agent-evaluation-frameworks-2026
+🔀 **Intersection:** self hosting × llm inference
+📄 **arXiv (llm inference):**
+  • GradCuit: Credit-Assigned Gradient Flow Enables Robust and Interpretable Test-Ti
+    http://arxiv.org/abs/2608.02585v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24104
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14073
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐10894
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Amazonian civilization had estimated 3M people in 3% of forest area
+    https://www.science.org/content/article/odd-shapes-hidden-dense-amazon-rainforest-reveal-sprawling-ancient-civilization
+    (225 points on HN)
