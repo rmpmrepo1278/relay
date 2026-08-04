@@ -28,3 +28,29 @@ home 14776n/80083e · hermes-scripts 1137n/13754e · hermes-agent 827n · career
 ## Notes
 - Cleaned up a diverged collaborator-memory: local WIP was stale (superseded by origin's richer journal), reset to origin/main rather than force-pushing conflicts.
 - Retired redundant `crg_helper.py` approach in favor of upgrading the canonical `homelab_graph.py` wrapper (nothing else imported crg_helper).
+## Audit: redundant/dead code removal (2026-08-04)
+
+### Findings
+- CRG dead-code scan returned 101 hermes-owned symbols, but **all 101 are used** via dynamic dispatch (decorator registration, plugin loaders, dict routing). CRG has a high false-positive rate for this codebase.
+- `homelab_research_pipeline.py` — zero callers (no imports, no cron, no scheduler). **Removed.**
+- `crg_helper.py` — redundant with `homelab_graph.py` (nothing imports it). **Removed.**
+- `homelab_graph.py:repo_graph_path()` — dead code within homelab_graph.py (0 callers). **Removed.**
+- Backup clutter: 9 files removed (`.bak`, `.corrupt.bak`, `.bak2`, `.bak3`, `.corrupt`).
+- `run_cmd` duplicated 6× across scripts and `_run` duplicated 5× — noted as consolidation candidates for a future refactor.
+
+### Removed files
+- `scripts/crg_helper.py`
+- `scripts/homelab_research_pipeline.py`
+- `scripts/homelab_graph.py.bak-multirepo`
+- `scripts/homelab_graph.py.bak-reposauth`
+- `scripts/n8n_bridge_server.py.bak-multirepo`
+- `scripts/n8n_bridge_server.py.bak-reposauth`
+- `config.yaml.bak-fix3-1785863045`
+- `config.yaml.bak2`
+- `config.yaml.corrupt.20260804-100435.bak`
+- `topic_routes.json.bak3`
+- `state/curious_seen.corrupt`
+- `homelab_graph.py:repo_graph_path()` function (lines 162-168)
+
+### Commit
+- `aad0b78` audit: remove redundant crg_helper, dead homelab_research_pipeline, backup clutter, repo_graph_path
