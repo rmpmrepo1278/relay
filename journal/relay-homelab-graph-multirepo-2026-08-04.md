@@ -17,9 +17,13 @@ home 14776n/80083e · hermes-scripts 1137n/13754e · hermes-agent 827n · career
 ## Verification
 `python3 homelab_graph.py health` → flags only collaborator-memory (0 nodes). Per-repo `status --repo hermes-agent` returns 827n/11308e. Module imports cleanly; 8 original functions present plus 2 new.
 
+## Added later — bridge auth fix
+`AUTH_KEY = os.environ.get("BRIDGE_AUTH_KEY")` had **no fallback default**, so it was `None` while every local caller (telegram_bridge, hermes-bridge plugin, research pipeline) relies on the shared default `"default-key-change-me"` via `BRIDGE_AUTH_KEY`. Result: all auth-gated CRG endpoints (dead-code, search, query, impact, architecture) were silently locked out with 401 "unauthorized". Restored matching default and added `/code-graph/repos` to the no-auth GET set (localhost-only, alias→path only). Verified E2E: status (per-repo), dead-code (57 hermes-agent / 189 default), search (FTS 13 matches), `/cmd /graph` + `/cmd /deadcode` routes. graphify-mcp stdio initialize returns serverInfo (0.9.32); code-review-graph MCP unaffected.
+
 ## Commits (on `~/.hermes`, chaguli)
 - `82380be` Wire homelab_graph.py to multi-repo CRG registry
 - `14d980a` surface stale/empty CRG graphs as sessions in system_doctor
+- `e346ed0` fix(bridge): restore BRIDGE_AUTH_KEY default + expose repo aliases
 
 ## Notes
 - Cleaned up a diverged collaborator-memory: local WIP was stale (superseded by origin's richer journal), reset to origin/main rather than force-pushing conflicts.
