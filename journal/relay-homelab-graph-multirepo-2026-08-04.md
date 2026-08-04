@@ -54,3 +54,18 @@ home 14776n/80083e · hermes-scripts 1137n/13754e · hermes-agent 827n · career
 
 ### Commit
 - `aad0b78` audit: remove redundant crg_helper, dead homelab_research_pipeline, backup clutter, repo_graph_path
+
+## Consolidation (2026-08-04)
+
+### run_cmd consolidation
+`run_cmd` was duplicated identically across 4 scripts (homelab_troubleshooter, homelab_deployer, homelab_optimizer, homelab_reporter) — each with its own `try/except` subprocess wrapper returning `(rc, stdout, stderr)`. Consolidated into `homelab_graph.py` as a shared utility. All 4 scripts now import `run_cmd` from `homelab_graph`. Net: -30 lines.
+
+### _run consolidation
+`_run` (subprocess wrapper) was duplicated in `assess_idea.py` and `homelab-graph` plugin. Both now import `_run` from `homelab_graph` (which already has a superset implementation with `repo=` support).
+
+### Other footprint reduction candidates (noted, not done)
+- `run()` — 9 occurrences across scripts, different signatures (timeout, cwd, return types)
+- `save_state()`/`load_state()` — 7/5 occurrences, different implementations
+- `log()` — 9 occurrences, different signatures
+- `_send_telegram` — 3 thin wrappers that all delegate to `telegram_bridge.send_telegram`
+These would require careful analysis of each implementation before consolidation.
