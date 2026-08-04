@@ -49,3 +49,35 @@ Interests: self_hosting, ai_agents, llm_inference
   • Amazonian civilization had estimated 3M people in 3% of forest area
     https://www.science.org/content/article/odd-shapes-hidden-dense-amazon-rainforest-reveal-sprawling-ancient-civilization
     (165 points on HN)
+
+## Curiosity — 08:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Seattle WA Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/seattle-wa/?msockid=0c1c666101a56539113071ca00c6649a
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Constitutional AI: Self-Improving Safety for LLMs (2026)
+    https://aisecurityandsafety.org/en/guides/constitutional-ai-guide/
+🔀 **Intersection:** ai agents × llm inference
+  • Google AI - How we're making AI helpful for everyone
+    https://ai.google/
+📄 **arXiv (llm inference):**
+  • onepot-Bench 0: towards lab-aware in silico chemistry benchmarks
+    http://arxiv.org/abs/2608.02595v1
+  • The Condition-Number Barrier in Sparse Least Squares
+    http://arxiv.org/abs/2608.02588v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24103
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14073
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐10880
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Devtools must be open source
+    https://blog.exe.dev/devtools-must-be-open-source
+    (672 points on HN)
