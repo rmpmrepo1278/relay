@@ -183,3 +183,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • DDoS against Norwegian government IT infrastructure – status
     https://status.digdir.no/incidents/d7hvqmf2yr3l
     (78 points on HN)
+
+## Curiosity — 20:17 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × llm inference
+📄 **arXiv (research):**
+  • Role-Decoupled Attention Residuals: Separating Matching and Content Retrieval Ac
+    http://arxiv.org/abs/2608.01075v1
+  • Control Under Compression: Reliability Frontiers for Tool-Using Agents
+    http://arxiv.org/abs/2608.01056v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24045
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14027
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐9950
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • The Dunning-Kruger effect may just be a data artefact (2020)
+    https://www.mcgill.ca/oss/article/critical-thinking/dunning-kruger-effect-probably-not-real
+    (130 points on HN)
