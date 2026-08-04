@@ -69,3 +69,21 @@ home 14776n/80083e · hermes-scripts 1137n/13754e · hermes-agent 827n · career
 - `log()` — 9 occurrences, different signatures
 - `_send_telegram` — 3 thin wrappers that all delegate to `telegram_bridge.send_telegram`
 These would require careful analysis of each implementation before consolidation.
+
+## Gap audit (2026-08-04) — gateway_guardian broken by audit commit
+
+### The gap
+`gateway_guardian.py` (the gateway health safety net, runs every 5 min via scheduler) was crashing on import since audit commit `77a02c9` (Aug 2) removed `scripts/syslog_emit.py` as a "non-executable module." The guardian hard-imports `from syslog_emit import ...` at module top with NO try/except, so every scheduled run returned `failed` (returncode 1) for 2 days. Scheduler state confirmed `gateway_guardian: failed` continuously.
+
+Root cause: the graph audit treated syslog_emit as dead (0 import refs detected) but missed that gateway_guardian imports it — a dynamic/indirect-dependency false negative. mind_loop.py imports the other removed modules (hermes_tracing, guardrails, quality_tracker, send_dedup) inside try/except, so it was unaffected.
+
+### The fix
+1. Restored `scripts/syslog_emit.py` from git (`b7d03e9`) — it's a real systemd-journal emitter used by 3+ scripts, shouldn't have been removed.
+2. Hardened `gateway_guardian.py` to import syslog_emit inside try/except (fallback = no-op log), matching mind_loop's defensive pattern, so future audits can't silently kill it.
+3. Verified guardian now exits 0 "all checks passed ✓".
+
+Commits `afcb20d` + `720d94f` pushed to AgentChaguli.
+
+### Other gaps noted (not yet addressed)
+- `gateway_guardian` / `consolidated_health` history showed transient failures that recovered — no action.
+- The audit's false-negative (syslog_emit) suggests CRG dead-code alone can't catch hard-import chains. Recommend a follow-up: script that greps for `import X` in live scripts vs the removed-module list on every audit commit.
