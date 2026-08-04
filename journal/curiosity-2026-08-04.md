@@ -106,3 +106,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • Amazonian civilization had estimated 3M people in 3% of forest area
     https://www.science.org/content/article/odd-shapes-hidden-dense-amazon-rainforest-reveal-sprawling-ancient-civilization
     (225 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Overview - Model Context Protocol
+    https://modelcontextprotocol.io/specification/2026-07-28/basic/transports
+  • Overview - Model Context Protocol
+    https://modelcontextprotocol.io/specification/2026-07-28/basic
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (self hosting):**
+  • Age of Information in Non-Terrestrial Networks with Energy Harvesting
+    http://arxiv.org/abs/2608.02485v1
+  • Dynamic Modeling of Target Cell Location for Mobility Robustness Analysis in Cel
+    http://arxiv.org/abs/2608.02467v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24117
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14094
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11025
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Keyv and friends compromised in active Shai-Hulud supply chain attack
+    https://www.aikido.dev/blog/keyv-and-friends-compromised-in-npm-supply-chain-attack
+    (190 points on HN)
