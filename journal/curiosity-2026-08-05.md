@@ -100,3 +100,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐11556
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × llm inference
+📄 **arXiv (self hosting):**
+  • AP Association for RHS-Enabled Cell-Free Uplink MIMO in Industrial Indoor UAV Ne
+    http://arxiv.org/abs/2608.03752v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24211
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14195
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11627
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Faster Than Ninja
+    https://build2.org/blog/faster-than-ninja.xhtml
+    (67 points on HN)
