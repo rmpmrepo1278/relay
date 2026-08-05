@@ -49,3 +49,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • DuckDB – Data power tools for your laptop, now in Clojure (2023)
     https://techascent.com/blog/just-ducking-around.html
     (114 points on HN)
+
+## Curiosity — 08:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • Post-Training in 2026: GRPO, DAPO, RLVR & Beyond
+    https://llm-stats.com/blog/research/post-training-techniques-2026
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (llm inference):**
+  • Assessment of Conditional Diffusion Model for Synthetic Histopathology Image Gen
+    http://arxiv.org/abs/2608.03990v1
+  • Information-Geometric Forward Policy Training in GFlowNets
+    http://arxiv.org/abs/2608.03967v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24194
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14177
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11549
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
