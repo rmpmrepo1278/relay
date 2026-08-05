@@ -72,3 +72,31 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐11549
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 08:31 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • At Home | Home Decor, Furniture, & Halloween Decor
+    https://www.athome.com/
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=372f7150c7aa6c522f5e66fcc69c6d88
+🌱 **Adjacent to ai agents:** constitutional ai
+  • How to Implement Constitutional AI for Safer LLMs in 2026
+    https://ai-neural.lovable.app/article/how-to-implement-constitutional-ai-for-safer-llms-in-2026-bnm6o
+🔀 **Intersection:** llm inference × self hosting
+📄 **arXiv (self hosting):**
+  • Data-Driven Online Slice Admission Control and Resource Allocation in NextG Mobi
+    http://arxiv.org/abs/2608.03954v1
+  • FedCritic-MIMO: Communication-Efficient Serverless Federated Critic Learning for
+    http://arxiv.org/abs/2608.03852v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24195
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14178
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11556
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
