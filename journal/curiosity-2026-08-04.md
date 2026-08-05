@@ -160,3 +160,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐11113
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 20:17 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Multi-Agent Systems: How They Work, When to Use Them, and Which ...
+    https://dev.to/agentsindex/multi-agent-systems-how-they-work-when-to-use-them-and-which-architecture-to-choose-flo
+🔀 **Intersection:** monitoring × self hosting
+📄 **arXiv (security):**
+  • Progressive Learning of a Diffusion-based Inpainting Model for Separating Overla
+    http://arxiv.org/abs/2608.03937v1
+  • Delay Attacks on the German Smart Metering Infrastructure: A Security Analysis o
+    http://arxiv.org/abs/2608.03751v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24143
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14129
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11231
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
