@@ -122,3 +122,34 @@ Interests: self_hosting, ai_agents, llm_inference
   • Faster Than Ninja
     https://build2.org/blog/faster-than-ninja.xhtml
     (67 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Phoenix AZ Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/phoenix-az/?msockid=24c3ce51f1d36d21344cd9fdf0036cad
+  • Phoenix AZ Single Family Homes For Sale - 3319 Homes | Zillow
+    https://www.zillow.com/phoenix-az/houses/?msockid=24c3ce51f1d36d21344cd9fdf0036cad
+🔀 **Intersection:** self hosting × monitoring
+  • Beacon — Self-Hosted Monitoring, Remote Access & Deploys
+    https://beaconinfra.dev/
+📄 **arXiv (automation):**
+  • High-level quantum structured programs as quantum registers compositions
+    http://arxiv.org/abs/2608.03873v1
+  • Resume Means Resume: A Machine-Checked Conformance Contract for Checkpoint, Inte
+    http://arxiv.org/abs/2608.03836v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24216
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14208
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11661
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Discovery of a multicomponent alloy forged by the Hiroshima atomic blast
+    https://www.science.org/doi/10.1126/sciadv.aeg8299
+    (99 points on HN)
