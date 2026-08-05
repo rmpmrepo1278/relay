@@ -22,3 +22,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐11337
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 04:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • Welcome to Keukenhof
+    https://keukenhof.nl/en/
+  • Keukenhof Gardens 2027: Tickets, Best Time to Visit & Local Tips
+    https://exploringthenetherlands.com/visiting-keukenhof-gardens/
+🔀 **Intersection:** monitoring × llm inference
+📄 **arXiv (ai agents):**
+  • Can Large Language Models Recover Semantic Optimization Opportunities That Compi
+    http://arxiv.org/abs/2608.03983v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24178
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14162
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11438
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • DuckDB – Data power tools for your laptop, now in Clojure (2023)
+    https://techascent.com/blog/just-ducking-around.html
+    (114 points on HN)
