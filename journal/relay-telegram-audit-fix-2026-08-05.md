@@ -35,6 +35,14 @@ Comprehensive audit of every Telegram notification received by Relay, then fix a
 - **Remaining findings left intact**: `gateway_guardian.py` uses `TELEGRAM_API` only as a
   reachability probe (no send) — unchanged.
 
+## Anti-fabrication enforcement
+
+A new hook `verify-agent-claims` (events: `agent:step` + `agent:end`) was added:
+- Accumulates executed tool names per `session_id` from `agent:step` events.
+- At `agent:end`, if the response claims action (backtick command or state-change verb) but zero tools executed in the turn → logs to `state/verify_agent_claims.jsonl` and posts a `⚠️ Not verified` follow-up to the Telegram channel.
+- Non-blocking, never rewrites the agent reply.
+- Catches the exact pattern that produced the `claude_md_sync.py` false claim (api_calls=1, no tool evidence).
+
 ## Notes for next run
 - Watch channel for a day; if quiet-channel desired on `system_health_check`, add
   `disable_notification` support through the bridge if needed (currently not passed).
