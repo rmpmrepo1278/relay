@@ -153,3 +153,31 @@ Interests: self_hosting, ai_agents, llm_inference
   • Discovery of a multicomponent alloy forged by the Hiroshima atomic blast
     https://www.science.org/doi/10.1126/sciadv.aeg8299
     (99 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • Package sablier · GitHub
+    https://github.com/sablierapp/sablier/pkgs/container/sablier/
+  • [SUGGESTION] Add feature to keep instance running if the ... - GitHub
+    https://github.com/sablierapp/sablier/issues/402
+🌱 **Adjacent to ai agents:** constitutional ai
+  • What Is Constitutional AI? A Simple 2026 Guide | NyvoraAI
+    https://nyvoraai.github.io/ai-news/what-is-constitutional-ai.html
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (ai agents):**
+  • Argus: A General-Purpose Agentic Runtime for Long-Horizon Reasoning
+    http://arxiv.org/abs/2608.05144v1
+  • OctoLong: Mid-Training On Cross-Repository Code Contexts Enhances Long-Context M
+    http://arxiv.org/abs/2608.05141v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24235
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14221
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐11748
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
