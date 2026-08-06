@@ -78,3 +78,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐12007
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • 2026.1: Home is where the dashboard is - Home Assistant
+    https://www.home-assistant.io/blog/2026/01/07/release-20261/
+  • Santa Clara CA Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/santa-clara-ca/?msockid=136d50b9c30f684923d74714c257695d
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (ai agents):**
+  • Teaching Nemotron Greek: Mining a Corpus, Adapting Retrieval, and Grounding Gene
+    http://arxiv.org/abs/2608.05138v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24294
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14271
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12027
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Humans missed 1 in 3 threats approving AI agent commands across 40k game runs
+    https://scalex.dev/blog/ai-agent-permissions-stats/
+    (232 points on HN)
