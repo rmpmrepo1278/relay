@@ -51,3 +51,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • Pareto Front
     https://en.wikipedia.org/wiki/Pareto_front
     (136 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Model Context Protocol - Wikipedia
+    https://en.m.wikipedia.org/wiki/Model_Context_Protocol
+🔀 **Intersection:** self hosting × monitoring
+  • Beacon — Self-Hosted Monitoring, Remote Access & Deploys
+    https://beaconinfra.dev/
+  • How I use Uptime Kuma to monitor my self-hosted services (and get ...
+    https://www.xda-developers.com/uptime-kuma-guide/
+📄 **arXiv (ai agents):**
+  • Argus: A General-Purpose Agentic Runtime for Long-Horizon Reasoning
+    http://arxiv.org/abs/2608.05144v1
+  • OctoLong: Mid-Training On Cross-Repository Code Contexts Enhances Long-Context M
+    http://arxiv.org/abs/2608.05141v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24286
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14262
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12007
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
