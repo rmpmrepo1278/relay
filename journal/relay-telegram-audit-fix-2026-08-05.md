@@ -60,3 +60,17 @@ A new hook `verify-agent-claims` (events: `agent:step` + `agent:end`) was added:
 - Watch channel for a day; if quiet-channel desired on `system_health_check`, add
   `disable_notification` support through the bridge if needed (currently not passed).
 - New senders should always use `telegram_bridge.send_telegram` (never direct bot API).
+
+## All-systems check (2026-08-06, continued)
+
+### Final status:
+- **Services**: 13 active, 0 failed, 0 activating. Docker: 35/35 containers running.
+- **Disk**: 55% used (95G avail), healthy.
+- **Mind-loop**: cycle #2122 clean.
+- **Gateway**: active. Bridge (9199) pong OK. Proxy (8080) healthy. Paperless healthy.
+
+### Found & fixed in this pass:
+1. **hermes-scheduler memory leak** — scheduler daemon had 4.5G RSS (peak 13.5G) after 3 days uptime. This caused transient job timeouts (package_tracker, cos_briefing, curious_explorer, crg_update, gdrive_keepalive) during load spikes. Restarted daemon -> dropped to 10.1M. Timeouts were transient (caused by homelab-research restart-loop load), not current failures.
+2. **homelab-research.service** — referenced missing `homelab_research_pipeline.py`, restart loop 231x. Disabled + removed unit files.
+3. **weekly_optimize job** — referenced missing `weekly_optimize.sh`, timed out. Removed from scheduler.
+4. - **crg_update/cos_briefing/gdrive_keepalive/curious_explorer/package_tracker** verified working manually (all <40s). Timeouts were load-induced, now resolved.
