@@ -43,3 +43,12 @@ silent/long failures that needed a human click.
 - Deeper job: audit dead-code scan should include systemd unit ExecStart refs.
 MDEOF
 cat /tmp/journal.md | ssh homelab-cmd 'cat > ~/.hermes/collaborator-memory/journal/relay-homelab-autohealing-fixes-2026-08-07.md && echo "journal written" && ls -la ~/.hermes/collaborator-memory/journal/ | grep autohealing'
+## Follow-up fixes (same session)
+- Committed restored pipeline + systemd_missing_guard.py to AgentChaguli master (5b724f5).
+  NOTE: gateway_guardian.py is gitignored in ~/.hermes repo — upgrade lives in working tree only.
+- kopia_backup.sh: fixed repo config (root + passwordless sudo), kopia 0.23 flags
+  (--add-ignore policy, kind:value tags), skip missing paths (homepage gone), and now
+  sends a Telegram alert + exits 1 on any snapshot failure. Committed to AgentHarness 38b9207.
+- gateway_guardian.py: added Telegram escalation for recurring Telegram-API-unreachable —
+  alerts at 3 consecutive checks (~15 min) and every 3 after; resets on recovery. Verified
+  run: all checks passed, rc 0, counter only written on outage.
