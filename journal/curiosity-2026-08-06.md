@@ -105,3 +105,22 @@ Interests: self_hosting, ai_agents, llm_inference
   • Humans missed 1 in 3 threats approving AI agent commands across 40k game runs
     https://scalex.dev/blog/ai-agent-permissions-stats/
     (232 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × ai agents
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24312
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14276
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12079
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Herdr is joining Y Combinator. The runtime stays open
+    https://herdr.dev/blog/herdr-is-joining-y-combinator/
+    (160 points on HN)
