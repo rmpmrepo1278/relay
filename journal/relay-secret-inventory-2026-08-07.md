@@ -45,3 +45,22 @@ After the main pass, scanned for further safe dedup and secret leaks:
 - Secret scan: NO literal API tokens found anywhere (sk-/ghp-/xoxb-/40hex = 0).
   All keys env-var-backed. .docker.env gitignore added (3cb2203).
 - All 21 edited hermes files compile; zero dangling call-sites of deleted fns.
+
+## Follow-up: additional cleanup-scan findings
+
+After the main pass, scanned for further safe dedup and secret leaks:
+- Duplicate-file scan across both repos => zero identical *.py twins left (the
+  mcp_base.py==__init__.py dupes already removed; no other identical files).
+- run_cmd/_run cluster (6 copies) NOT consolidated: contracts differ
+  (str vs (rc,stdout,stderr) vs (stdout,stderr,rc), different timeouts, error
+  handling). Forcing a shared helper changes behavior -> risk > value. Leave.
+- load_state/save_state (4 copies): per-module state-schemas differ. Leave.
+- send_telegram in ~11 hermes scripts are INLINE import call-sites
+  (from telegram_bridge import send_telegram), not wrappers. Already canonical.
+- mcp_base divergent 3 (mcp-gateway socket-bind, system-monitoring SSE/auth,
+  codebase-memory single-file) are INTENTIONAL per-container variants selected
+  by docker-compose.mcp.merged.yml volume mounts. Unify => container rebuild +
+  behavior risk. Leave as documented.
+- Secret scan: NO literal API tokens found anywhere (sk-/ghp-/xoxb-/40hex = 0).
+  All keys env-var-backed. .docker.env gitignore added (3cb2203).
+- All 21 edited hermes files compile; zero dangling call-sites of deleted fns.
