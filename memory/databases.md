@@ -29,6 +29,11 @@ The homelab has an extensive memory infrastructure. The collaborator memory repo
 | Who Relay is, standing instructions | `memory/relay.md`, `standing-prefix.md` | Read from this repo |
 
 ## Notes
+<<<<<<< Updated upstream
 - **unified_memory.db** (68 KB) exists but is empty (0 records) — may be used in future.
 - **MenteDB** (cognitive memory graph at port 6677) is **online** — run as `mentedb:fixed` container (NOT the broken upstream `ghcr.io/nambok/mentedb:latest`, which crashes instantly: binary needs GLIBC_2.39 but image ships GLIBC 2.36). Healthy at `http://localhost:6677/v1/health`. Data persists at `/home/rohit/services/mentedb/data`. Fix documented in `journal/relay-mentedb-fix-2026-08-06.md`.
+=======
+- **unified_memory.db (937 KB, 262 entries after seed_memory.py populate) — may be used in future.
+- **MenteDB** (cognitive memory graph at port 6677) is currently offline.
+>>>>>>> Stashed changes
 - The MCP memory server runs at `http://192.168.29.10:8091/mcp` for tool-based queries.
