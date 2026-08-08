@@ -51,3 +51,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • DeepSeek V4 Flash 0731
     https://arcprize.org/results/deepseek-v4-flash-0731
     (734 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • Optimizing LLM Training Data in 2026 | Fine-Tuning, RLHF & RAG
+    https://aqusag.com/blog/aqusag-technologies-blog-5/optimizing-llm-training-data-in-2026-fine-tuning-rlhf-red-teaming-and-beyond-136
+🔀 **Intersection:** self hosting × llm inference
+📄 **arXiv (automation):**
+  • Learning Globally Reusable Skills for Coding Agents
+    http://arxiv.org/abs/2608.06153v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24475
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14710
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12533
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • “Code was never the hard part” is an insult to all programmers
+    https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers
+    (505 points on HN)
