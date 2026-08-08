@@ -27,3 +27,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • The Nixpkgs core team has disbanded
     https://discourse.nixos.org/t/the-nixpkgs-core-team-has-disbanded/79413
     (264 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × self hosting
+📄 **arXiv (automation):**
+  • Automatic Translation of Unstructured Requirements into Linear Temporal Logic th
+    http://arxiv.org/abs/2608.06287v1
+  • Predicting Agile Success: The Critical Few Factors
+    http://arxiv.org/abs/2608.06228v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24468
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14696
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12506
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • DeepSeek V4 Flash 0731
+    https://arcprize.org/results/deepseek-v4-flash-0731
+    (734 points on HN)
