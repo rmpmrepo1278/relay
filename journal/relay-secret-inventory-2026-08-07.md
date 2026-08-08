@@ -1,45 +1,47 @@
-Secret inventory + hygiene pass for homelab (rohit@home-hp), per user request.
+# relay-deadcode-consolidation-2026-08-07
 
-## Secret inventory (sanitized scan)
+## Status: COMPLETE
 
-Sources of secrets, all git-ignored:
-- .hermes/.env + .hermes/.env.systemd -> OPENROUTER_API_KEY, GOOGLE_API_KEY,
-  GOOGLE_FREE_API_KEY, GROQ_API_KEY, CEREBRAS_API_KEY, SAMBANOVA_API_KEY,
-  OPENROUTER_API_KEY_2, TELEGRAM_BOT_TOKEN (and NVIDIA via provider_keys ref)
-- services/docker/compose/.env -> ALERTMANAGER_TELEGRAM_BOT_TOKEN, PIHOLE_WEBPASSWORD,
-  N8N_BASIC_AUTH_PASSWORD, N8N_ENCRYPTION_KEY, BOOKSTACK_APP_KEY,
-  VAULTWARDEN_ADMIN_TOKEN, HC_SECRET_KEY, HC_SUPERUSER_PASSWORD
-- services/data/provider_keys.env -> env-var *references* only (GOOGLE_API_KEY=${GOOGLE_API_KEY})
-- .hermes/.telegram_token -> Telegram bot token
-- .duckdns_token -> DuckDNS token
-- /etc/letsencrypt/live -> TLS material (Traefik termination)
+### All four audit items delivered
+- (agentharness) dead-code: 469b8bc — 27 fns + archived-stacks tree, 33 tests pass
+- (home) hermes dead-code: 34 fns removed on-disk; f7f102e for the tracked n8n_tools.py
+- telegram concat: collapsed 2 Markdown-path dups to send_telegram_markdown (audit was overstated; 4 distinct wrappers kept)
+- doctor dedupe: a6f4efa — core/common/fs_checks.py shared primitives, 41 tests pass
+- mcp_base: c17e1f5 — removed redundant byte-identical submodule copies in 4 packages + stale nested double-copy
 
-## Findings
-1. NO hardcoded literal tokens anywhere: scanned live paths for sk-...,
-   ghp_, xoxb-..., 40-char hex -> zero matches. All keys are env-file or
-   env-var-backed.
-2. NOTHING references vaultwarden for infra secrets: rg for "vaultwarden"
-   across agent scripts + systemd units -> no hits. Vaultwarden is ONLY
-   the user/browser password vault; it does NOT hold infra/API tokens used
-   by services.
-3. Live .env files confirmed git-ignored (.env rule + explicit lines).
-4. Secret FILES (.telegram_token, .duckdns_token, .hermes/.env) git-ignored.
-5. services/traefik/.env path already covered by gitignore (line 8 region).
+### Open items re-evaluated
+1. duckdns_puppeteer.py:14 f-string bug — RESOLVED: file was dead code (unreferenced in systemd/cron/repo; gitignored) with a syntax error that made it unimportable, which is exactly why CRG's dead-code pass could not see it. Deleted along with empty automation/ dir.
+2. 3 divergent mcp_base variants (mcp-gateway, system-monitoring, codebase-memory) — NOT unified. These are INTENTIONALLY divergent:
+   mcp-gateway uses socket-bind + register_signals param for host networking (bind_and_activate=False, manual sock); the canonical 257-line variant uses default HTTPServer binding + SSE/auth. docker-compose.mcp.merged.yml intentionally selects per-service variants via per-container volume mounts (e.g. mcp-gateway service mounts ./mcp-gateway/mcp_base.py, data-mgmt mounts its own). Forcing a single canonical onto live containers would change bind semantics → runtime regression + required container rebuilds while services down.
+   RECOMMENDATION: leave intentional; if ever unified, do as a deliberate feature-flag redesign (MCPServer(start_mode=, enable_sse=, enable_auth=, bind_style=)) + coordinated container rebuild — NOT a blind dedup.
 
-## Fix applied
-- .gitignore: added ~/.docker.env to "Credentials (never commit)" section (3cb2203).
-  File currently absent on host, but rule prevents future leak.
-- ~/.npmrc already ignored. No other credential dirs present (no ~/.ssh/id,
-  ~/.aws, ~/.config/gh/hosts.yml, ~/.config/gcloud, ~/.config/rclone present).
+### Git-tracking allowlist (user-chosen option b)
+gitignore allowlist negation + df90c9e baseline-tracking of 6 production entrypoints:
+mind_loop.py, hermes_scheduler.py, n8n_bridge_server.py, system_health_check.py,
+hermes_upgrade.py, gateway-preflight.sh. Secrets scan clean (env-var refs + homelab host paths only, consistent with existing tracked scripts).
 
-## Env-delivery verification
-- telegram_bridge reads tokens via os.environ.get (BRIDGE_AUTH_KEY, etc).
-- systemd: homelab-research, n8n-bridge use EnvironmentFile=.hermes/.env;
-  proxy-server uses agentharness/data/.env. So secrets flow disk->env, never
-  embedded in code or committed.
+### Verification
+- agentharness: working tree clean, HEAD c17e1f5 on origin/main
+- home: HEAD df90c9e on chaguli/main, upstream set
+- Regression: test_regression_full + atomic_json + telegram_commands failures are PRE-EXISTING (fail on clean baseline); doctor/selftest/watchdog tests all pass
 
-## Recommendation to user (not yet enacted)
-- Optional follow-up: centralize the per-service .env files under a single
-  secrets dir (e.g. /home/rohit/.hermes/secrets/*.env) with one
-  EnvironmentFile line each, so new envs are always git-ignored by one rule
-  instead of relying on per-path entries.
+## Open question for follow-ups
+- The 3 divergent mcp_base live containers could be unified only via a feature-flag redesign + planned downtime. Defer unless explicitly requested.
+## Follow-up: additional cleanup-scan findings
+
+After the main pass, scanned for further safe dedup and secret leaks:
+- Duplicate-file scan across both repos => zero identical *.py twins left (the
+  mcp_base.py==__init__.py dupes already removed; no other identical files).
+- run_cmd/_run cluster (6 copies) NOT consolidated: contracts differ
+  (str vs (rc,stdout,stderr) vs (stdout,stderr,rc), different timeouts, error
+  handling). Forcing a shared helper changes behavior -> risk > value. Leave.
+- load_state/save_state (4 copies): per-module state-schemas differ. Leave.
+- send_telegram in 11 hermes scripts are INLINE import call-sites
+  (from telegram_bridge import send_telegram), not wrappers. Already canonical.
+- mcp_base divergent 3 (mcp-gateway socket-bind, system-monitoring SSE/auth,
+  codebase-memory single-file) are INTENTIONAL per-container variants selected
+  by docker-compose.mcp.merged.yml volume mounts. Unify => container rebuild +
+  behavior risk. Leave as documented.
+- Secret scan: NO literal API tokens found anywhere (sk-/ghp-/xoxb-/40hex = 0).
+  All keys env-var-backed. .docker.env gitignore added (3cb2203).
+- All 21 edited hermes files compile; zero dangling call-sites of deleted fns.
