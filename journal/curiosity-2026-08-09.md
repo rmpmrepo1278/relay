@@ -91,3 +91,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • Unexpected events and prosocial behavior: the Batman effect (2025)
     https://www.nature.com/articles/s44184-025-00171-5
     (76 points on HN)
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** talos linux
+  • How to Set Up Your First Talos Linux Kubernetes Cluster
+    https://oneuptime.com/blog/post/2026-03-03-set-up-first-talos-linux-kubernetes-cluster/view
+🔀 **Intersection:** ai agents × llm inference
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24526
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14779
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12737
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • John C. Lilly on solid state intelligence and the elimination of man (1978)
+    https://kibotronics.net/unlisted/lilly-machines/
+    (79 points on HN)
