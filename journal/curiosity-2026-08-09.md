@@ -113,3 +113,21 @@ Interests: self_hosting, ai_agents, llm_inference
   • John C. Lilly on solid state intelligence and the elimination of man (1978)
     https://kibotronics.net/unlisted/lilly-machines/
     (79 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Multi-Agent Systems: How They Work, When to Use Them, and Which ...
+    https://dev.to/agentsindex/multi-agent-systems-how-they-work-when-to-use-them-and-which-architecture-to-choose-flo
+🔀 **Intersection:** monitoring × self hosting
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24530
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14783
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12763
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
