@@ -67,3 +67,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • Building a local positioning system to track runners using Ultra-Wideband
     https://zeus.ugent.be/blog/25-26/12urenloop-uwb/
     (98 points on HN)
+
+## Curiosity — 08:31 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • Artimus Construction Trades NoMad Hotel For $203M - The Real Deal
+    https://therealdeal.com/new-york/2026/06/09/artimus-construction-trades-nomad-hotel-for-203m/
+  • New York Top Real Estate Deals: Monday, July 13
+    https://therealdeal.com/new-york/2026/07/14/new-york-top-real-estate-deals-monday-july-13/
+🔀 **Intersection:** llm inference × self hosting
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24517
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14771
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12703
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Unexpected events and prosocial behavior: the Batman effect (2025)
+    https://www.nature.com/articles/s44184-025-00171-5
+    (76 points on HN)
