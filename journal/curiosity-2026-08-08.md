@@ -76,3 +76,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • “Code was never the hard part” is an insult to all programmers
     https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers
     (505 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • Reinforcement Learning from Human Feedback - arXiv.org
+    https://arxiv.org/pdf/2504.12501v6
+  • Training Overview | RLHF and Post-Training Book by Nathan Lambert
+    https://rlhfbook.com/c/03-training-overview
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (infrastructure):**
+  • Routing LLM Inference to the Cleanest Grid in Real Time
+    http://arxiv.org/abs/2608.06188v1
+  • PLB: Priority-Aware Load Balancing for Replicated Databases under Constrained Re
+    http://arxiv.org/abs/2608.06140v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24485
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14734
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12569
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
