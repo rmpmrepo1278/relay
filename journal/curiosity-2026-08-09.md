@@ -131,3 +131,23 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐12763
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (ai agents):**
+  • CreativeInstruct: Scalably Teaching LLMs to Balance Quality, Creativity, and Div
+    http://arxiv.org/abs/2608.07460v1
+  • CoinRAG: Contextualized Information Nugget KV Cache Reuse for Long-Context RAG
+    http://arxiv.org/abs/2608.07458v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24543
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14796
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12793
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
