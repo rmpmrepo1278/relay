@@ -15,11 +15,11 @@ host ran Ollama as a bare systemd service (`ollama.service`) holding `*:11434`.
 Completed the containerization:
 1. **Stopped + disabled host ollama** (`sudo systemctl disable --now ollama`).
    Host clients (`LOCAL_LLM_URL=http://localhost:11434` in agentharness
-   `.env.local`, litellm `ollama-local`) are preserved because the container binds
+   `.env.local`, the local `ollama-local` route) are preserved because the container binds
    `127.0.0.1:11434` and docker-proxy forwards to it.
 2. **Mounted existing 11G model store** from host into container:
    `/usr/share/ollama/.ollama/models:/root/.ollama/models`. All 4 models carried
-   over: llama3.1:8b, mistral:7b, llama3.2:3b, nomic-embed-text (litellm's
+   over: llama3.1:8b, mistral:7b, llama3.2:3b, nomic-embed-text (so
    `llama3.2:3b` now actually exists).
 3. **Fixed the broken `ollama` container** (had `{}` networks, no ports, no models
    — predated the fixed compose file). Recreated via
