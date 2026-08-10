@@ -27,6 +27,7 @@ The homelab has an extensive memory infrastructure. The collaborator memory repo
 | Entities (people, companies, topics) | `entities.db` (legacy 0-byte stub, data now in unified_memory.db) | Query `hermes_entities` MCP tool instead |
 | Curiosity findings (per-day log) | `journal/curiosity-YYYY-MM-DD.md` | Read from this repo's `journal/` directory |
 | Session journals | `journal/YYYY-MM-DD.md` | Read from this repo's `journal/` directory |
+| LLM performance benchmarks (tok/s, tool-call latency, load times, per host+software) | `memory/benchmarks/llm-benchmarks.json` (this repo) | `jq '.benchmarks[] | {id, host, entries}' memory/benchmarks/llm-benchmarks.json` · add a run: `python3 bin/bench_llm.py <model>` (see `memory/benchmarks/README.md`) |
 | Who Relay is, standing instructions | `memory/relay.md`, `standing-prefix.md` | Read from this repo |
 
 ## Store consolidation status
