@@ -235,6 +235,74 @@
         ],
         "tool_call_latency_s": 9.0
       }
+    },
+    {
+      "id": "20260810-115829-gemma4-12b",
+      "date": "2026-08-10",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 8192,
+        "num_predict": 120,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "tool-latency recheck"
+      },
+      "entries": [
+        {
+          "model": "gemma4:12b",
+          "run": 1,
+          "tok_per_s": 2.82,
+          "eval_count": 120,
+          "eval_duration_ms": 42553.1,
+          "prompt_eval_tok_per_s": 23.9,
+          "prompt_eval_count": 35,
+          "load_duration_ms": 665.3,
+          "wall_s": 44.7
+        }
+      ],
+      "tool_call": {}
+    },
+    {
+      "id": "20260810-115927-gemma4-12b",
+      "date": "2026-08-10",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 8192,
+        "num_predict": 120,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "tool-latency recheck 2"
+      },
+      "entries": [
+        {
+          "model": "gemma4:12b",
+          "run": 1,
+          "tok_per_s": 2.66,
+          "eval_count": 120,
+          "eval_duration_ms": 45051.4,
+          "prompt_eval_tok_per_s": 47.2,
+          "prompt_eval_count": 35,
+          "load_duration_ms": 667.5,
+          "wall_s": 46.5
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": true,
+        "tool_call_names": [
+          "get_weather"
+        ],
+        "tool_call_latency_s": 7.5
+      }
     }
   ],
   "runners": {
