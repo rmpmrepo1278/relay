@@ -45,7 +45,7 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
 - Qdrant (6333) — vector database
 - ~~OmniRoute (20128)~~ — **REMOVED** (2026-07-30), redundant aggregator
 - ~~FreeLLMAPI (3005)~~ — **REMOVED** (2026-07-30), redundant aggregator
-- MenteDB (6677) — cognitive memory graph
+- ~~MenteDB (6677)~~ — **REMOVED** (2026-08-10) per user request, redundant with consolidated `unified_memory.db`
 
 ### Monitoring
 - Prometheus + Grafana (3002) + Loki (3100) + Alertmanager (9093) + cAdvisor (8085) + Node Exporter (9101)
