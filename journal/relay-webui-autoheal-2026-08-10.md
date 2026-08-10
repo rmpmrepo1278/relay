@@ -46,7 +46,7 @@ tags: [openwebui, openviking, ollama, autoheal, reactor, consolidation]
 
 ## Models inventory (Q3)
 - Available in ollama: llama3.1:8b (Q4_K_M), mistral:7b, llama3.2:3b, nomic-embed-text (embedding).
-- Wired: litellm `ollama-local` -> `ollama/llama3.2:3b` at localhost:11434/v1
+- Wired: `ollama-local` -> `ollama/llama3.2:3b` at localhost:11434/v1
   (used in owl-alpha / local-smart / openrouter fallback chains); agentharness
   proxy `local` provider -> LOCAL_LLM_URL=localhost:11434 (disaster-recovery fallback,
   cloud providers are primary). OpenWebUI: user-selectable.

@@ -38,7 +38,7 @@ tags: [ollama, vulkan, igpu, local-llm, qwen, ornith, benchmark]
 - **Default local model: qwen2.5:7b** — best mix of tool-calling reliability + speed (4.9 tok/s, 15s tool call) among the 7-9B class; qwen2.5 is the recognized ≤8B tool-calling leader.
 - llama3.2:3b: keep for fast/simple interactions (10.2 tok/s).
 - ornith:9b: legit agentic-quality option (SWE-bench 69.4% @9B) but SLOWEST on this box (4.0 tok/s, 37s tool call); the MakeUseOf article ran it on an RTX 4060, not an iGPU box. Use only for batch agent jobs. Vision variant `robit/ornith-vision:9b` is a community build - skip.
-- NOT yet wired into litellm/agentharness - still points at llama3.2:3b / llama3.1:8b fallbacks.
+- NOT yet wired into agentharness - still points at llama3.2:3b / llama3.1:8b fallbacks.
 
 ## Gotchas
 - `OLLAMA_IGPU_ENABLE=1` is required or ollama silently drops the iGPU ("dropping integrated GPU").

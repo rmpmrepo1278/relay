@@ -18,10 +18,11 @@ verify_wiring.py chat local                   → 200, 6.5s, "pong", provider lo
 
 ## Notes / follow-ups
 - The model free-generated a plausible tool name (`weather_tool` + `location`) rather than following the provided `get_weather`/`city` schema exactly — gemma4:12b schema-following quirk, loop itself works.
-- litellm process NOT running on homelab → the pending `litellm_config.yaml` fallback re-point to `ollama-agent` is **skipped as moot**; routing is handled directly in `proxy_server.py` (local-first: LOCAL_TOOL_MODEL / LOCAL_CHAT_MODEL).
+- `litellm_config.yaml` removed (litellm unused — confirmed no process, not in venv); routing is handled directly in `proxy_server.py` (local-first: LOCAL_TOOL_MODEL / LOCAL_CHAT_MODEL).
 - **Security**: `OPENROUTER_API_KEY_2/3` visible in plaintext in `agentharness/data/.env.local` (+ `data/.env.bak-20260801`) — redaction missed earlier. Not in git, but worth rotating/warning.
 - Earlier one-off: first local tool call after proxy start returned empty + OpenRouter fallback 404'd; subsequent calls return tool calls reliably (warm-model state). No action taken; watch if it recurs cold.
 
 ## Files touched
 - NEW `~/.config/systemd/user/agentharness-proxy.service` (homelab)
 - `agentharness/core/providers/proxy_server.py` (homelab) — `_tool_args()` helper; `_tool_args` call at tool_use construction
+- DELETED `agentharness/litellm_config.yaml`; `.gitignore` entry removed (homelab)
