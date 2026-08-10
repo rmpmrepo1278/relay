@@ -37,7 +37,7 @@ As of 2026-08-10, all 8 legacy memory stores have been consolidated (read-only m
 ## Removed infrastructure (2026-08-10)
 
 - **Qdrant** (vector DB, port 6333/6334) — removed. Was used by OpenWebUI; Synapse uses `SYNAPSE_EMBED_PROVIDER=local` (hash embeddings) and does not depend on Qdrant.
-- **MenteDB** (cognitive memory graph, port 6677) — removed per user request. The `mentedb:fixed` container and its bind-mount data at `/home/rohit/services/mentedb/data` are deleted. No active service depends on it.
+- **MenteDB** (cognitive memory graph, port 6677) — removed per user request (2026-08-10). Container, `mentedb:fixed` image, and `/home/rohit/services/mentedb` dir (incl. root-owned `data/`) all deleted; service block removed from `services/docker/compose/apps.yml` and from `service-registry.yml`. The zombie n8n workflow "MenteDB Health Check" (id `VBjlmcMFzOwmmyIR`, deleted from `compose_n8n_data` volume DB) was the alert source — it pinged the wrong path `/health` (real endpoint `/v1/health`), causing false "MenteDB is DOWN" alerts. No active service depends on it.
 
 ## Notes
 - **unified_memory.db (85.6 MB)** is the consolidated brain. Populated by `hermes_consolidate.py` (run nightly at 2AM by `backup_all.sh` before kopia + off-site brain sync).
