@@ -133,3 +133,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • Letter to Governor Abbott on responsible AI infrastructure in Texas
     https://openai.com/index/responsible-ai-infrastructure-texas/
     (57 points on HN)
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (security):**
+  • "Operator, can you hear me?" A Faithful Line into the UNISOC Baseband
+    http://arxiv.org/abs/2608.07143v1
+  • SoK: Cryptographic Key Recovery for Cryptoasset Custody and Financial Technologi
+    http://arxiv.org/abs/2608.07104v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24607
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14842
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12953
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Show HN: Needle2: 14MB agentic LLM for phones, wearables, smart home and robots
+    https://cactuscompute.com/needle
+    (93 points on HN)
