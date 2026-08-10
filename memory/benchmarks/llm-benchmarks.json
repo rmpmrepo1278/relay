@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "description": "Canonical local-LLM benchmark store for home-hp. Each entry self-describes hardware + software so runs are comparable across hardware upgrades and new inference techniques. Append via bin/bench_llm.py.",
+  "host_fingerprints": {
+    "home-hp": {
+      "cpu": "AMD Ryzen 7 4700U (8c/8t, Zen 2, 15W mobile APU)",
+      "gpu": "AMD Vega 7 iGPU (Renoir / RADV Vulkan)",
+      "ram_gb": 34,
+      "ram_free_gb_approx": 24,
+      "note": "No discrete GPU. Shared DDR4. 60+ docker containers on host. Vulkan via /dev/dri, OLLAMA_IGPU_ENABLE=1.",
+      "first_bench": "2026-08-10"
+    }
+  },
+  "benchmarks": [
+    {
+      "id": "2026-08-10-cpu-baseline",
+      "date": "2026-08-10",
+      "host": "home-hp",
+      "hardware_note": "CPU-only, before Vulkan iGPU was enabled",
+      "software": { "runner": "CPU", "quant": "Q4_K_M", "arch": "dense" },
+      "entries": [
+        { "model": "llama3.2:3b", "tok_per_s": 3.2, "tool_call_latency_s": null, "num_ctx": 4096 },
+        { "model": "llama3.1:8b", "tok_per_s": 1.3, "tool_call_latency_s": null, "num_ctx": 4096 }
+      ],
+      "notes": "Baseline reference: ~3.2-3.7x speedup later measured from Vulkan enable."
+    },
+    {
+      "id": "2026-08-10-vulkan-round1",
+      "date": "2026-08-10",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.32.6",
+        "runner": "Vulkan",
+        "device": "iGPU 100%",
+        "quant": "Q4_K_M",
+        "num_ctx": 4096,
+        "num_predict": 120,
+        "temperature": 0,
+        "keep_alive": 0,
+        "note": "quiet box"
+      },
+      "entries": [
+        { "model": "llama3.2:3b", "arch": "dense", "params_total_b": 3.2, "tok_per_s": 10.2, "tool_call_latency_s": 7, "tool_call_correct": true },
+        { "model": "mistral:7b", "arch": "dense", "params_total_b": 7.2, "tok_per_s": 5.0, "tool_call_latency_s": 20, "tool_call_correct": true },
+        { "model": "llama3.1:8b", "arch": "dense", "params_total_b": 8.0, "tok_per_s": 4.8, "tool_call_latency_s": 16, "tool_call_correct": true },
+        { "model": "qwen2.5:7b", "arch": "dense", "params_total_b": 7.6, "tok_per_s": 4.9, "tool_call_latency_s": 15, "tool_call_correct": true },
+        { "model": "ornith:9b", "arch": "dense", "params_total_b": 9.0, "tok_per_s": 4.0, "tool_call_latency_s": 37, "tool_call_correct": true }
+      ],
+      "notes": "Tool test: get_weather {city:Paris} via native ollama tools. All 5 correct. Full detail in journal/relay-vulkan-model-bench-2026-08-10.md."
+    },
+    {
+      "id": "2026-08-10-qwen3-moe-mis-fire",
+      "date": "2026-08-10",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.32.6",
+        "runner": "Vulkan",
+        "device": "iGPU 100%",
+        "quant": "Q4_K_M",
+        "arch": "moe",
+        "params_total_b": 14.0,
+        "params_active_b": 3.0,
+        "num_ctx": 4096,
+        "num_predict": 120,
+        "temperature": 0,
+        "keep_alive": 0
+      },
+      "entries": [
+        { "model": "qwen3:14b", "thinking": "on", "tok_per_s": 2.4, "tool_call_latency_s": 61, "tool_call_correct": true },
+        { "model": "qwen3:14b", "thinking": "off", "tok_per_s": 2.4, "tool_call_latency_s": 54, "tool_call_correct": true },
+        { "model": "qwen3:14b", "thinking": "on@60pred", "tok_per_s": 2.4, "wall_s": 35 },
+        { "model": "qwen3:14b", "thinking": "off@60pred", "tok_per_s": 2.4, "wall_s": 26 }
+      ],
+      "notes": "FINDING: MoE (3B active) does NOT speed up on this iGPU — 2.4 tok/s, HALF of qwen2.5:7b. Vulkan MoE decode path (expert routing/grouped GEMM) is the bottleneck; sparse-param advantage needs real-GPU bandwidth. Model DELETED 2026-08-10 (kept for record).",
+      "conclusion": "MoE is a dead end on home-hp. Dense models win."
+    },
+    {
+      "id": "2026-08-10-qwen3-8b",
+      "date": "2026-08-10",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.32.6",
+        "runner": "Vulkan",
+        "device": "iGPU 100%",
+        "quant": "Q4_K_M",
+        "arch": "dense",
+        "params_total_b": 8.0,
+        "num_ctx": 4096,
+        "num_predict": 120,
+        "temperature": 0,
+        "keep_alive": 0
+      },
+      "entries": [
+        { "model": "qwen3:8b", "thinking": "on", "tok_per_s": 4.4, "tool_call_latency_s": 40, "tool_call_correct": true, "tool_num_ctx": 8192 },
+        { "model": "qwen3:8b", "thinking": "off", "tok_per_s": 4.3, "tool_call_correct": true, "tool_num_ctx": 8192 },
+        { "model": "qwen2.5:7b", "thinking": "none", "tok_per_s": 4.9, "tool_call_latency_s": 11, "tool_call_correct": true, "tool_num_ctx": 8192 }
+      ],
+      "notes": "qwen3:8b tok/s ≈ qwen2.5:7b but tool-call latency worse (40s vs 11s). qwen2.5:7b remains the default."
+    }
+  ],
+  "runners": {
+    "bench_tool": "bin/bench_llm.py",
+    "example": "python3 ~/.hermes/collaborator-memory/bin/bench_llm.py gemma4:12b --ctx 8192"
+  }
+}

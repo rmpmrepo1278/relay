@@ -15,6 +15,7 @@
 
 ## The Homelab's Backend Stores
 - [databases.md](databases.md) — index of all 17+ DBs, what each contains, and how to query them
+- [benchmarks/](benchmarks/) — canonical LLM benchmark store (tok/s, tool-call latency, load times), versioned; add runs via `bin/bench_llm.py`
 
 ## Decisions
 - [minipc.md](minipc.md) — mini-PC augment purchase decision (recommendation: BOSGAME M6 $969)
