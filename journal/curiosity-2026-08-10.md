@@ -84,3 +84,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • Defending my own brain against enshittification
     https://mrmarket.lol/how-i-feel-calmin-control-of-my-life-in-the-time-of-enshittification/
     (63 points on HN)
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Belitsoft Reports The Rise of Multi-Agent Systems: Why 2026 Is the …
+    https://www.technology.org/2026/04/10/belitsoft-reports-the-rise-of-multi-agent-systems-why-2026-is-the-year-ai-learns-to-work-as-a-team/
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (self hosting):**
+  • Rate-Fidelity Control for Wide-Area Quantum Links
+    http://arxiv.org/abs/2608.07163v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24579
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14824
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12909
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Defending my own brain against enshittification
+    https://mrmarket.lol/how-i-feel-calmin-control-of-my-life-in-the-time-of-enshittification/
+    (68 points on HN)
