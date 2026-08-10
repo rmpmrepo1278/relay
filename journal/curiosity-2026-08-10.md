@@ -109,3 +109,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • Defending my own brain against enshittification
     https://mrmarket.lol/how-i-feel-calmin-control-of-my-life-in-the-time-of-enshittification/
     (68 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (automation):**
+  • Taxonomy-Driven Analysis of Open-Source AI Risk Mitigation Tools
+    http://arxiv.org/abs/2608.07446v1
+  • Circuit-Based Program Verification: Sequential Circuits as an Intermediate Repre
+    http://arxiv.org/abs/2608.07397v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24594
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14832
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12933
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Letter to Governor Abbott on responsible AI infrastructure in Texas
+    https://openai.com/index/responsible-ai-infrastructure-texas/
+    (57 points on HN)
