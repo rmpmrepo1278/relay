@@ -74,3 +74,35 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐13053
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** k3s
+  • Kubernetes Tutorial: Deploy a Cluster in 12 Steps [2026]
+    https://tech-insider.org/how-to-set-up-kubernetes-2026/
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Constitutional AI - AI Wiki
+    https://aiwiki.ai/wiki/constitutional_ai
+  • What Is Claude's Constitution? | Anthropic AI Ethics Document …
+    https://www.clauder-navi.com/en/claude-2026-constitution
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (self hosting):**
+  • A Bird's-Eye View on Security Considerations in RFCs
+    http://arxiv.org/abs/2608.09865v1
+  • Removing Infrastructure Barriers in Human-Robot Collaboration Through Wireless R
+    http://arxiv.org/abs/2608.09658v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24667
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14886
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13058
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • The “mechanical miracle” that ruined Mark Twain’s life
+    https://resobscura.substack.com/p/the-mechanical-miracle-that-ruined
+    (179 points on HN)
