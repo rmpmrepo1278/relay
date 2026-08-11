@@ -157,3 +157,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • Show HN: Needle2: 14MB agentic LLM for phones, wearables, smart home and robots
     https://cactuscompute.com/needle
     (93 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × self hosting
+📄 **arXiv (ai agents):**
+  • KGCaRe: Explainable Complex Conditional Question Answering using Automatic Knowl
+    http://arxiv.org/abs/2608.09779v1
+  • AirFlow: Context Preserving and Multi-Rate State Modeling for Air Quality Foreca
+    http://arxiv.org/abs/2608.09775v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24619
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14848
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐12978
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Stop Killing Games: It's time to sue Sony, join us
+    https://www.massaschadeconsument.nl/collectieve-acties/playstation/
+    (204 points on HN)
