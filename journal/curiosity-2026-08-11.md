@@ -106,3 +106,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • The “mechanical miracle” that ruined Mark Twain’s life
     https://resobscura.substack.com/p/the-mechanical-miracle-that-ruined
     (179 points on HN)
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (monitoring):**
+  • Abstractions for Network Intelligence: A Reference Architecture for AI at the Wi
+    http://arxiv.org/abs/2608.09640v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24682
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14892
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13084
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Show HN: Needle2: 14MB agentic LLM for phones, wearables, smart home and robots
+    https://cactuscompute.com/needle
+    (488 points on HN)
