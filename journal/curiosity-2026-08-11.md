@@ -31,3 +31,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • Stowaway – Take the window seat on any plane or satellite overhead
     https://stowaway.live/
     (227 points on HN)
+
+## Curiosity — 04:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Help & Support | Oura Member Care
+    https://support.ouraring.com/hc/en-us
+  • User Guides | Oura Member Care
+    https://support.ouraring.com/hc/en-us/articles/4412081024147-User-Guides
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (ai agents):**
+  • From Values to Benchmarks: Evaluating Large Language Models for Governmental Use
+    http://arxiv.org/abs/2608.09925v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24654
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14873
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13028
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
