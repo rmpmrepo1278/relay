@@ -128,3 +128,35 @@ Interests: self_hosting, ai_agents, llm_inference
   • Show HN: Needle2: 14MB agentic LLM for phones, wearables, smart home and robots
     https://cactuscompute.com/needle
     (488 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** k3s
+  • Mastering K3s: A Lightweight Kubernetes Journey for Modern Applications
+    https://hiplancopyprint.co.uk/2026/05/k3s-tutorial.html
+🌱 **Adjacent to ai agents:** agent evaluation
+  • AGENT Synonyms: 121 Similar Words - Merriam-Webster
+    https://www.merriam-webster.com/thesaurus/agent
+  • AGENCY Definition & Meaning - Merriam-Webster
+    https://www.merriam-webster.com/dictionary/agency
+🔀 **Intersection:** ai agents × self hosting
+📄 **arXiv (automation):**
+  • Detecting Behavioral Changes in Python Refactoring Implementations with Foundati
+    http://arxiv.org/abs/2608.09919v1
+  • Comprehending Python Repetition Structures: An Eye-Tracking Study with Novice De
+    http://arxiv.org/abs/2608.09875v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24692
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14895
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13097
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • OpenAI’s head of ethics leaves less than a year after joining
+    https://www.ft.com/content/e49dfb75-f841-4466-a577-f7aaff8779a0
+    (229 points on HN)
