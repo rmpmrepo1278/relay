@@ -160,3 +160,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • OpenAI’s head of ethics leaves less than a year after joining
     https://www.ft.com/content/e49dfb75-f841-4466-a577-f7aaff8779a0
     (229 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Bergdorf Goodman | The Iconic Luxury Department Store
+    https://www.bergdorfgoodman.com/?msockid=1c472d9eb4676bfc2b8a3a2db52b6a30
+  • Luxury Fragrances | Bergdorf Goodman
+    https://www.bergdorfgoodman.com/c/beauty-fragrances-cat243408?msockid=1c472d9eb4676bfc2b8a3a2db52b6a30
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (ai agents):**
+  • Surgical WAM: A World-Action Model for Data-Efficient Surgical Robot Learning
+    http://arxiv.org/abs/2608.11204v1
+  • ConVAWG: A Retrieval-Grounded Framework for Controlled Synthetic Dialogue Genera
+    http://arxiv.org/abs/2608.11200v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24707
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14902
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13128
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • CSS properties you should know for better text designs
+    https://master.dev/blog/typographic-css-tricks/
+    (82 points on HN)
