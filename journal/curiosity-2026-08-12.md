@@ -78,3 +78,24 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐13208
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • r/digitalnomad on Reddit: Is becoming a digital nomad still realistic in 2026? W
+    https://www.reddit.com/r/digitalnomad/comments/1sxyzwi/is_becoming_a_digital_nomad_still_realistic_in/
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (self hosting):**
+  • Multi-UAV Tracking Evaluation Using 5G Uplink Signals on an O-RAN ISAC Simulatio
+    http://arxiv.org/abs/2608.10784v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24758
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14933
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13208
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
