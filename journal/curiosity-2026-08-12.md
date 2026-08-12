@@ -51,3 +51,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • Facebook is paying controversial creators to produce rage-bait content
     https://www.abc.net.au/news/2026-08-06/ragebait-how-facebook-is-paying-controversial-creators/106940696
     (113 points on HN)
+
+## Curiosity — 08:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** constitutional ai
+  • CONSTITUTIONAL Definition & Meaning - Merriam-Webster
+    https://www.merriam-webster.com/dictionary/constitutional
+🔀 **Intersection:** llm inference × self hosting
+  • Hugging Face CEO says we're in an 'LLM bubble,' not an AI ...
+    https://techcrunch.com/2025/11/18/hugging-face-ceo-says-were-in-an-llm-bubble-not-an-ai-bubble/
+  • AWS doubles down on custom LLMs with features meant to ...
+    https://techcrunch.com/2025/12/03/aws-doubles-down-on-custom-llms-with-features-meant-to-simplify-model-creation/
+📄 **arXiv (self hosting):**
+  • A Systematic Sample Size Analysis of ML-Based Path Loss Prediction for LPWAN
+    http://arxiv.org/abs/2608.11083v1
+  • Laser-Diode LiFi With Diffused-Beam Optics: System-Level Modeling and a Cross-Va
+    http://arxiv.org/abs/2608.10950v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24758
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14933
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13208
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
