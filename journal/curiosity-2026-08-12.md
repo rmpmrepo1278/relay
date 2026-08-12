@@ -99,3 +99,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐13208
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Constitutional AI: An Expanded Overview of Anthropic’s
+    https://zenodo.org/records/15331063/files/Constitutional%20AI%20Overview.pdf
+🔀 **Intersection:** self hosting × llm inference
+📄 **arXiv (automation):**
+  • Agentic Configuration Management (ACM): A Reference Configuration Model for Gove
+    http://arxiv.org/abs/2608.11166v1
+  • Why Does CLAUDE.md Keep Growing? Catastrophic Remembering in Agentic Coding
+    http://arxiv.org/abs/2608.11095v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24774
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14942
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13223
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
