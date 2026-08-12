@@ -122,3 +122,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • yc-software/qm ⭐13223
     Multiplayer agent harness for work
     https://github.com/yc-software/qm
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Microsoft Agent 365 overview | Microsoft Learn
+    https://learn.microsoft.com/en-us/microsoft-agent-365/overview
+  • Microsoft Agent 365 documentation | Microsoft Learn
+    https://learn.microsoft.com/en-us/microsoft-agent-365/
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (automation):**
+  • Understanding the Architecture of Coding Agents: An Exploratory Study Using a Re
+    http://arxiv.org/abs/2608.10934v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24787
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14945
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13236
+    Multiplayer agent harness for work
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Why tiny JPEGs look different in Chrome
+    https://guillaumetech.github.io/posts/jpg-scaling-chrome/
+    (232 points on HN)
