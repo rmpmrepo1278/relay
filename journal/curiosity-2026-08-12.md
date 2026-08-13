@@ -149,3 +149,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • Why tiny JPEGs look different in Chrome
     https://guillaumetech.github.io/posts/jpg-scaling-chrome/
     (232 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × ai agents
+  • SELF Magazine: Women's Workouts, Health Advice & Beauty Tips | SELF
+    https://www.self.com/
+📄 **arXiv (ai agents):**
+  • DreamFly: Causal Memory and Receding-Horizon Diffusion Planning for Aerial Visio
+    http://arxiv.org/abs/2608.12308v1
+  • AI4AI at Test-Time: Strong-to-Weak Capability Transfer via Harnesses
+    http://arxiv.org/abs/2608.12307v1
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐24860
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14959
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+  • yc-software/qm ⭐13251
+    Multiplayer agent harness for work. https://qm.ycombinator.com
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • Someone is running mass vulnerability scans, spoofing AI bots like ClaudeBot
+    https://knownagents.com/insights
+    (240 points on HN)
