@@ -53,3 +53,23 @@ Interests: self_hosting, ai_agents, llm_inference
   • Flutter 3.47
     https://flutter.dev/blog/whats-new-in-flutter-3-47
     (123 points on HN)
+
+## Curiosity — 08:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × self hosting
+📄 **arXiv (self hosting):**
+  • On the Allocation of Transmit Power for Coordinated Spatial Reuse in IEEE 802.11
+    http://arxiv.org/abs/2608.11971v1
+  • User-Assisted Collaborative Distributed Inference for Efficient QoS-Aware Autosc
+    http://arxiv.org/abs/2608.11840v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐27298
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25004
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14996
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
