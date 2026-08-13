@@ -99,3 +99,31 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐14996
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=360341e68ea56194156d56528f386017
+🌱 **Adjacent to ai agents:** multi agent systems
+  • multi- - Microsoft Style Guide | Microsoft Learn
+    https://learn.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/m/multi
+  • How to Multitask in Windows - Microsoft Support
+    https://support.microsoft.com/en-us/windows/how-to-multitask-in-windows-b4fa0333-98f8-ef43-e25c-06d4fb1d6960
+🔀 **Intersection:** ai agents × monitoring
+📄 **arXiv (automation):**
+  • The Role Specialization Model (RSM): Coordinating LLM-Based Tools in Agentic Sof
+    http://arxiv.org/abs/2608.12311v1
+  • VICBench: A Multi-Language Benchmark for Code Vulnerability Detection
+    http://arxiv.org/abs/2608.12246v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐37105
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25033
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15008
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
