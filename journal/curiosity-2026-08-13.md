@@ -73,3 +73,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐14996
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 08:31 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Seattle WA Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/seattle-wa/?msockid=0de250be519f659c0591470a506464ad
+  • Real Estate & Homes For Sale - 691 Homes For Sale | Zillow
+    https://www.zillow.com/homes/for_sale/?msockid=0de250be519f659c0591470a506464ad
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Model Context Protocol (MCP) - GeeksforGeeks
+    https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (self hosting):**
+  • FM-LLM: A frequency-enhanced mixture-of-experts framework for adapting LLMs to t
+    http://arxiv.org/abs/2608.11623v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐28830
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25005
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐14996
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
