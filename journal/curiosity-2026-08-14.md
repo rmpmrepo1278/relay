@@ -58,3 +58,31 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐15078
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • Incus - e-Anatomy - IMAIOS
+    https://www.imaios.com/en/e-anatomy/anatomical-structures/incus-1536898836
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Support Virtual Agent FAQ | Xbox Support
+    https://support.xbox.com/en-US/help/games-apps/xbox-ai/virtual-agent-faq
+🔀 **Intersection:** llm inference × self hosting
+📄 **arXiv (llm inference):**
+  • LittleLearner: Language Models Under Pedagogically Controlled Knowledge Exposure
+    http://arxiv.org/abs/2608.13545v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐95048
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25193
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15088
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • Ultraviolet Bird Photography
+    https://uvbirds.com/
+    (91 points on HN)
