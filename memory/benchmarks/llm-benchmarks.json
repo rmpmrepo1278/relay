@@ -5,10 +5,13 @@
     "home-hp": {
       "cpu": "AMD Ryzen 7 4700U (8c/8t, Zen 2, 15W mobile APU)",
       "gpu": "AMD Vega 7 iGPU (Renoir / RADV Vulkan)",
-      "ram_gb": 34,
-      "ram_free_gb_approx": 24,
-      "note": "No discrete GPU. Shared DDR4. 60+ docker containers on host. Vulkan via /dev/dri, OLLAMA_IGPU_ENABLE=1.",
-      "first_bench": "2026-08-10"
+      "ram_gb": 64,
+      "ram_free_gb_approx": 52,
+      "note": "No discrete GPU. Shared DDR4. 60+ docker containers on host. Vulkan via /dev/dri, OLLAMA_IGPU_ENABLE=1. RAM upgraded 2x16GB->2x32GB (34GB->64GB) dual-channel DDR4-3200.",
+      "first_bench": "2026-08-10",
+      "ram_config": "2x 32GB SODIMM DDR4-3200 CL22, dual-channel (P0 CHANNEL A+B)",
+      "upgrade_date": "2026-08-13",
+      "last_bench": "2026-08-13"
     }
   },
   "benchmarks": [
@@ -303,6 +306,394 @@
         ],
         "tool_call_latency_s": 7.5
       }
+    },
+    {
+      "id": "20260813-154738-llama3.2-3b",
+      "date": "2026-08-13",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan+iGPU",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 4096,
+        "num_predict": 120,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "post-32GB-upgrade dual-channel"
+      },
+      "entries": [
+        {
+          "model": "llama3.2:3b",
+          "run": 1,
+          "tok_per_s": 17.52,
+          "eval_count": 120,
+          "eval_duration_ms": 6849.3,
+          "prompt_eval_tok_per_s": 105.3,
+          "prompt_eval_count": 45,
+          "load_duration_ms": 4065.3,
+          "wall_s": 11.3
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": true,
+        "tool_call_names": [
+          "get_weather"
+        ],
+        "tool_call_latency_s": 2.5
+      }
+    },
+    {
+      "id": "20260813-154813-mistral-7b",
+      "date": "2026-08-13",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan+iGPU",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 4096,
+        "num_predict": 256,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "post-32GB-upgrade dual-channel DDR4-3200"
+      },
+      "entries": [
+        {
+          "model": "mistral:7b",
+          "run": 1,
+          "tok_per_s": 8.5,
+          "eval_count": 256,
+          "eval_duration_ms": 30101.6,
+          "prompt_eval_tok_per_s": 38.3,
+          "prompt_eval_count": 24,
+          "load_duration_ms": 5722.5,
+          "wall_s": 36.5
+        },
+        {
+          "model": "mistral:7b",
+          "run": 2,
+          "tok_per_s": 8.21,
+          "eval_count": 256,
+          "eval_duration_ms": 31187.4,
+          "prompt_eval_tok_per_s": 206.1,
+          "prompt_eval_count": 24,
+          "load_duration_ms": 45.5,
+          "wall_s": 31.4
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": true,
+        "tool_call_names": [
+          "get_weather"
+        ],
+        "tool_call_latency_s": 8.7
+      }
+    },
+    {
+      "id": "20260813-154942-llama3.2-3b",
+      "date": "2026-08-13",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan+iGPU",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 8192,
+        "num_predict": 256,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "post-32GB-upgrade dual-channel DDR4-3200"
+      },
+      "entries": [
+        {
+          "model": "llama3.2:3b",
+          "run": 1,
+          "tok_per_s": 16.83,
+          "eval_count": 256,
+          "eval_duration_ms": 15211.7,
+          "prompt_eval_tok_per_s": 155.6,
+          "prompt_eval_count": 45,
+          "load_duration_ms": 313.8,
+          "wall_s": 15.8
+        },
+        {
+          "model": "llama3.2:3b",
+          "run": 2,
+          "tok_per_s": 15.1,
+          "eval_count": 256,
+          "eval_duration_ms": 16950.8,
+          "prompt_eval_tok_per_s": 87.9,
+          "prompt_eval_count": 45,
+          "load_duration_ms": 44545.4,
+          "wall_s": 62.0
+        },
+        {
+          "model": "llama3.2:3b",
+          "run": 3,
+          "tok_per_s": 15.08,
+          "eval_count": 256,
+          "eval_duration_ms": 16979.1,
+          "prompt_eval_tok_per_s": 88.3,
+          "prompt_eval_count": 45,
+          "load_duration_ms": 44493.5,
+          "wall_s": 62.0
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": true,
+        "tool_call_names": [
+          "get_weather"
+        ],
+        "tool_call_latency_s": 14.5
+      }
+    },
+    {
+      "id": "20260813-155227-llama3.1-8b",
+      "date": "2026-08-13",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan+iGPU",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 4096,
+        "num_predict": 256,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "post-32GB-upgrade dual-channel DDR4-3200"
+      },
+      "entries": [
+        {
+          "model": "llama3.1:8b",
+          "run": 1,
+          "tok_per_s": 6.78,
+          "eval_count": 256,
+          "eval_duration_ms": 37777.2,
+          "prompt_eval_tok_per_s": 36.3,
+          "prompt_eval_count": 30,
+          "load_duration_ms": 52127.1,
+          "wall_s": 90.8
+        },
+        {
+          "model": "llama3.1:8b",
+          "run": 2,
+          "tok_per_s": 6.51,
+          "eval_count": 256,
+          "eval_duration_ms": 39315.8,
+          "prompt_eval_tok_per_s": 37.1,
+          "prompt_eval_count": 30,
+          "load_duration_ms": 48017.8,
+          "wall_s": 88.1
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": true,
+        "tool_call_names": [
+          "get_weather"
+        ],
+        "tool_call_latency_s": 22.4
+      }
+    },
+    {
+      "id": "20260813-155555-gemma4-12b",
+      "date": "2026-08-13",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan+iGPU",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 4096,
+        "num_predict": 256,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "post-32GB-upgrade dual-channel DDR4-3200"
+      },
+      "entries": [
+        {
+          "model": "gemma4:12b",
+          "run": 1,
+          "tok_per_s": 4.13,
+          "eval_count": 256,
+          "eval_duration_ms": 61964.7,
+          "prompt_eval_tok_per_s": 20.3,
+          "prompt_eval_count": 35,
+          "load_duration_ms": 12618.7,
+          "wall_s": 76.3
+        },
+        {
+          "model": "gemma4:12b",
+          "run": 2,
+          "tok_per_s": 4.1,
+          "eval_count": 256,
+          "eval_duration_ms": 62375.9,
+          "prompt_eval_tok_per_s": 18.2,
+          "prompt_eval_count": 35,
+          "load_duration_ms": 65519.9,
+          "wall_s": 130.1
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": true,
+        "tool_call_names": [
+          "get_weather"
+        ],
+        "tool_call_latency_s": 76.1
+      }
+    },
+    {
+      "id": "20260813-160121-ornith-9b",
+      "date": "2026-08-13",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan+iGPU",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 4096,
+        "num_predict": 256,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "post-32GB-upgrade dual-channel DDR4-3200"
+      },
+      "entries": [
+        {
+          "model": "ornith:9b",
+          "run": 1,
+          "tok_per_s": 6.05,
+          "eval_count": 256,
+          "eval_duration_ms": 42337.1,
+          "prompt_eval_tok_per_s": 32.6,
+          "prompt_eval_count": 88,
+          "load_duration_ms": 425.0,
+          "wall_s": 45.9
+        },
+        {
+          "model": "ornith:9b",
+          "run": 2,
+          "tok_per_s": 5.88,
+          "eval_count": 256,
+          "eval_duration_ms": 43557.3,
+          "prompt_eval_tok_per_s": 130.1,
+          "prompt_eval_count": 88,
+          "load_duration_ms": 434.7,
+          "wall_s": 45.1
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": true,
+        "tool_call_names": [
+          "get_weather"
+        ],
+        "tool_call_latency_s": 5.5
+      }
+    },
+    {
+      "id": "20260813-161803-qwen3-spec",
+      "date": "2026-08-13",
+      "host": "home-hp",
+      "software": {
+        "ollama_version": "0.22.0",
+        "runner": "Vulkan+iGPU+spec-decode",
+        "device": "iGPU",
+        "quant": "Q4_K_M",
+        "num_ctx": 4096,
+        "num_predict": 256,
+        "temperature": 0,
+        "keep_alive": 0,
+        "thinking": "off",
+        "note": "speculative decoding: llama3.2:3b draft on qwen3:8b"
+      },
+      "entries": [
+        {
+          "model": "qwen3-spec",
+          "run": 1,
+          "tok_per_s": 7.41,
+          "eval_count": 256,
+          "eval_duration_ms": 34527.2,
+          "prompt_eval_tok_per_s": 45.3,
+          "prompt_eval_count": 30,
+          "load_duration_ms": 7542.2,
+          "wall_s": 42.7
+        },
+        {
+          "model": "qwen3-spec",
+          "run": 2,
+          "tok_per_s": 7.5,
+          "eval_count": 256,
+          "eval_duration_ms": 34133.9,
+          "prompt_eval_tok_per_s": 205.0,
+          "prompt_eval_count": 30,
+          "load_duration_ms": 267.5,
+          "wall_s": 34.6
+        },
+        {
+          "model": "qwen3-spec",
+          "run": 3,
+          "tok_per_s": 7.35,
+          "eval_count": 256,
+          "eval_duration_ms": 34810.3,
+          "prompt_eval_tok_per_s": 201.0,
+          "prompt_eval_count": 30,
+          "load_duration_ms": 259.4,
+          "wall_s": 35.2
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": true,
+        "tool_call_names": [
+          "get_weather"
+        ],
+        "tool_call_latency_s": 5.7
+      }
+    },
+    {
+      "id": "20260813-173127-qwen3-32b",
+      "date": "2026-08-13",
+      "host": "home-hp",
+      "hardware_note": "64GB dual-channel DDR4-3200 (upgraded from 4+32GB asym)",
+      "software": {
+        "ollama_version": "0.32.6",
+        "runner": "Vulkan+iGPU",
+        "device": "Vega 7 iGPU (Renoir)",
+        "quant": "Q4_K_M",
+        "num_ctx": 4096,
+        "num_predict": 256,
+        "temperature": 0,
+        "note": "MoE 32B (2/32 experts active), 20.2GB on disk"
+      },
+      "entries": [
+        {
+          "model": "qwen3:32b",
+          "tok_per_s": 1.67,
+          "prompt_eval_tok_per_s": 7.0,
+          "load_duration_ms": 44600,
+          "eval_count": 64,
+          "eval_duration_ms": 38430
+        },
+        {
+          "model": "qwen3:32b",
+          "tok_per_s": 1.67,
+          "prompt_eval_tok_per_s": 7.0,
+          "load_duration_ms": 0,
+          "eval_count": 256,
+          "eval_duration_ms": 153900,
+          "note": "warm (model cached, estimated from 64-token sample)"
+        }
+      ],
+      "tool_call": {
+        "tool_call_correct": null,
+        "tool_call_latency_s": null,
+        "note": "Skipped \u2014 generation too slow (1.67 tok/s) for practical tool-call test"
+      },
+      "notes": "qwen3:32b MoE is 4x SLOWER than qwen3:8b (1.67 vs 6.5 tok/s) on CPU. Despite MoE (2/32 experts), the 20GB model creates memory bandwidth pressure + MoE routing overhead exceeds parallelism gains on 8-core CPU without dedicated accelerator. Not recommended for interactive use on this hardware."
     }
   ],
   "runners": {
