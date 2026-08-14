@@ -55,8 +55,6 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
 - Gateway (8090): homelab-ops, homelab-exec, docker, git, file, network, doctor, browser-use, paperless, rss, backup, hermes-memory, global-chat, codebase-memory, opencontext
 
 ### Agent Infrastructure
-- Hermes WebUI (8787)
-- Mission Control (3020)
 - Agent Status API (3010)
 - Authentik SSO (9001) — OIDC for Paperless, Immich, Open WebUI
 
