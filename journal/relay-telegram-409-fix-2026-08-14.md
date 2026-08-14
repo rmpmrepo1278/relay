@@ -35,12 +35,15 @@ tags: [telegram, gateway, hermes, polling, 409, n8n-bridge, dedup, briefings]
   is empty (no goal activity + no wellness check-in + no system data). Committed to
   AgentRocki repo as 4490e3fcd.
 
-## 3. Allowlist (user Q: "why closed list?")
-- `TELEGRAM_ALLOWED_USERS=8607397452` in `~/.hermes/.env` + `.env.systemd` + master.env.
-  Fail-closed by design: only allowlisted user IDs get LLM replies; gateway defaults to
-  deny otherwise. `8607397452` IS Rohit's ID (his `[Rohit Mishra]` messages got LLM replies
-  in state.db). The "can't send" issue was the polling conflict (messages not being received),
-  not the allowlist. No config change needed.
+## 3. Allowlist (user Q: "why closed list?") — OPENED
+- Originally `TELEGRAM_ALLOWED_USERS=8607397452` in `~/.hermes/.env` + `.env.systemd` +
+  master.env. Fail-closed by design: only allowlisted user IDs get LLM replies; gateway
+  defaults to deny otherwise. `8607397452` IS Rohit's ID.
+- USER REQUEST: open-ended. Set `TELEGRAM_ALLOWED_USERS=*` in all three env files
+  (gateway treats `*` as allow-everyone in `_is_user_authorized`). Files are gitignored
+  (secrets) — NOT committed. Gateway restarted 13:57, telegram connected, 0 conflicts.
+  SECURITY NOTE: any Telegram user can now DM the bot and get LLM replies / tool access
+  via the agent pipeline. Revert to `8607397452` (or a CSV of IDs) if this is too open.
 
 ## 4. Career India-jobs — no code bug
 - The placeholder `script.sh` trail was a false lead; only a SKILL.md exists. India job
