@@ -152,3 +152,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐15011
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × self hosting
+  • Self Hosting LLMs: A Practical Guide to Sizing, Concurrency ... - Medium
+    https://medium.com/@jitendraparande/self-hosting-llms-a-practical-guide-to-sizing-concurrency-real-world-deployment-39cf5120d6ad
+📄 **arXiv (ai agents):**
+  • AutoDesign: Meta-Harness Optimization for Long-Horizon Agentic Design
+    http://arxiv.org/abs/2608.13560v1
+  • OmniScientist: An Omni-Modal Omni-Discipline AI Scientist
+    http://arxiv.org/abs/2608.13558v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐63124
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25075
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15034
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
