@@ -32,3 +32,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • NP-overrated
     https://gruhn.me/blog/2026-08-13/
     (195 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • GitHub - lxc/incus: Powerful system container and virtual machine ...
+    https://github.com/lxc/incus
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agents hub - Start here for agentic computing at Microsoft
+    https://learn.microsoft.com/en-us/agents/
+🔀 **Intersection:** llm inference × self hosting
+📄 **arXiv (llm inference):**
+  • Defensive Boosting for Online Probabilistic Forecasting
+    http://arxiv.org/abs/2608.13554v1
+  • Exponential Convex Calibration Dimension for the Multi-Label Jaccard Measure
+    http://arxiv.org/abs/2608.13549v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐94152
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25186
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15078
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
