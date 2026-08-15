@@ -45,6 +45,22 @@ tags: [telegram, gateway, hermes, polling, 409, n8n-bridge, dedup, briefings]
   SECURITY NOTE: any Telegram user can now DM the bot and get LLM replies / tool access
   via the agent pipeline. Revert to `8607397452` (or a CSV of IDs) if this is too open.
 
+## 5. "Service Auto-Heal: failed" opencode-web spam — FIXED
+- Symptom: repeated `❌ Service Auto-Heal ... opencode-web.service ... status=203/EXEC`
+  messages every 5 min from the n8n "Service Auto-Heal" workflow.
+- ROOT CAUSE: `~/.config/systemd/user/opencode-web.service` had
+  `ExecStart=/usr/local/bin/opencode` but the binary lives at
+  `/home/rohit/.opencode/bin/opencode` (v1.18.18) — 203/EXEC on every start, so the
+  service could never launch and the n8n workflow re-notified every run.
+- FIX: sed'd ExecStart to the correct path, `daemon-reload` + `reset-failed` + start.
+  Service now `active (running)`, port 10010 listening, `/all-services-status` reports
+  active/running, 0 failed services total.
+- HARDENING: n8n "Service Auto-Heal" workflow's "Find Failed" node now writes a state
+  file (`/home/node/.n8n/autoheal-notify-state.json`) with a 30-min cooldown so a
+  persistent failure notifies at most once per 30 min instead of every 5 min.
+  Applied directly to live DB (`docker cp` out, sqlite edit, stop/start n8n).
+- Service unit file is gitignored — no commit. Backup removed after successful fix.
+
 ## 4. Career India-jobs — no code bug
 - The placeholder `script.sh` trail was a false lead; only a SKILL.md exists. India job
   postings in pasted chats were agent-fabricated output (no tool executed), not real
