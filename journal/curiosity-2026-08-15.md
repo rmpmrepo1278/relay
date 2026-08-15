@@ -50,3 +50,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐15133
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** ai agents × monitoring
+  • AI Intersection Monitoring Could Yield Safer Streets - IEEE Spectrum
+    https://spectrum.ieee.org/ai-intersection-monitoring
+📄 **arXiv (self hosting):**
+  • Radio-Optical Confluence in Intelligent Edge Networks
+    http://arxiv.org/abs/2608.13098v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐114855
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25309
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15138
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • 2D Gaussian Splatting for Bézier Spline Line Art Vectorization
+    https://studios.disneyresearch.com/2026/07/16/2d-gaussian-splatting-for-bezier-spline-line-art-vectorization/
+    (54 points on HN)
