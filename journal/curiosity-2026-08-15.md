@@ -74,3 +74,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • 2D Gaussian Splatting for Bézier Spline Line Art Vectorization
     https://studios.disneyresearch.com/2026/07/16/2d-gaussian-splatting-for-bezier-spline-line-art-vectorization/
     (54 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • RLHF: Explained and Use Cases 2026
+    https://macgence.com/blog/reinforcement-learning-from-human-feedback-rlhf/
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (automation):**
+  • QuoteBench: How Matched Scores Can Hide Command-Path Failures
+    http://arxiv.org/abs/2608.13547v1
+  • Vero: Can AI Agents Build Formally Verified Software Repositories?
+    http://arxiv.org/abs/2608.13522v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐117385
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25316
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15146
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
