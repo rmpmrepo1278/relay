@@ -57,3 +57,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • The weekend is 100 years old
     https://www.theguardian.com/money/2026/aug/16/the-weekend-is-100-years-old-skiveday-fridays-and-hybrid-working-ruined-it
     (106 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × self hosting
+📄 **arXiv (infrastructure):**
+  • Triangle-Free Coloring in LOCAL via Resilient Lovász Local Lemma
+    http://arxiv.org/abs/2608.13357v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐130949
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25385
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15183
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • Nvidia dramatically reduces amount of OpenAI infra financing it may guarantee
+    https://www.reuters.com/business/nvidia-scales-back-250-billion-openai-data-center-guarantee-wsj-reports-2026-08-14/
+    (51 points on HN)
