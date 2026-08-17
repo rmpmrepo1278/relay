@@ -50,3 +50,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐15219
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 08:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agent evaluation overview | Microsoft Learn
+    https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/evaluation-overview
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (self hosting):**
+  • Scaling 5G-TSN Bridges: Operating Regimes, Scheduling, and Time Synchronisation 
+    http://arxiv.org/abs/2608.14386v1
+  • Robust Constraint-Aware Bayesian Tuning of BBRv2 for QUIC under Tactile Internet
+    http://arxiv.org/abs/2608.14318v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐147379
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25492
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15234
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • Mexico Crackdown on Coastal Development Underway
+    https://yucatanmagazine.com/mexico-crackdown-on-coastal-development/
+    (55 points on HN)
