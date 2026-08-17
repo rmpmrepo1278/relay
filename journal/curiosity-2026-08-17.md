@@ -77,3 +77,33 @@ Interests: self_hosting, ai_agents, llm_inference
   • Mexico Crackdown on Coastal Development Underway
     https://yucatanmagazine.com/mexico-crackdown-on-coastal-development/
     (55 points on HN)
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • How to get started with Home Assistant in 2026 | Joe Karlsson
+    https://www.joekarlsson.com/blog/how-to-get-started-with-home-assistant-in-2026/
+  • Home Assistant Getting Started Guide (2026) — Local Smart Home Setup
+    https://wiredhaus.com/home-assistant-getting-started-guide-2026/
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Multi DO - YouTube
+    https://www.youtube.com/channel/UCo90vVUjxpyL-zwAksnBKTA
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (self hosting):**
+  • CipherSight: Robust Website Fingerprinting via Record-Resource Semantic Supervis
+    http://arxiv.org/abs/2608.13905v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐147528
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25496
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15234
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • GitHub down again? no PR access
+    https://news.ycombinator.com/item?id=49330632
+    (189 points on HN)
