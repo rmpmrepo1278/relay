@@ -79,3 +79,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • Nvidia dramatically reduces amount of OpenAI infra financing it may guarantee
     https://www.reuters.com/business/nvidia-scales-back-250-billion-openai-data-center-guarantee-wsj-reports-2026-08-14/
     (51 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Home Assistant
+    https://www.home-assistant.io/
+  • Vernon, CA | Home
+    https://www.cityofvernonca.gov/
+🔀 **Intersection:** ai agents × monitoring
+📄 **arXiv (ai agents):**
+  • Decoding the Past: An Uncertainty-Aware Deep Learning Framework for Sex Attribut
+    http://arxiv.org/abs/2608.14539v1
+  • Marionette: Predicting World States, Rendering Geometry, Painting Appearance
+    http://arxiv.org/abs/2608.14530v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐136421
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25412
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15195
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • The federal keyword lists that canceled billions in research funding
+    https://www.highereddive.com/news/inside-the-federal-keyword-lists-that-canceled-billions-in-research-funding/826203/
+    (123 points on HN)
