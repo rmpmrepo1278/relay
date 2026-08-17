@@ -27,3 +27,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • Plastic mechanical computer from 1963: The Digi-Comp 1 [video]
     https://www.youtube.com/watch?v=-y8bGBE71yw
     (64 points on HN)
+
+## Curiosity — 04:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** k3s
+  • K3s - Lightweight Kubernetes | K3s
+    https://docs.k3s.io/
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (llm inference):**
+  • Split the Labor: Separating Evidence Interpretation from Decision Aggregation
+    http://arxiv.org/abs/2608.14509v1
+  • RecipeNet: A Hierarchical Transformer for Recipe Data
+    http://arxiv.org/abs/2608.14505v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐144918
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25471
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15219
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
