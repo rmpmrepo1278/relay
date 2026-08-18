@@ -99,3 +99,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐15298
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 14:42 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × self hosting
+📄 **arXiv (self hosting):**
+  • OVS Meets PQ-TLS: Exploring Post-Quantum TLS for SDN's Southbound API
+    http://arxiv.org/abs/2608.16582v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐160065
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25627
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15298
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • We've flown a radiation-blocking vest to the Moon and back, and it worked
+    https://arstechnica.com/science/2026/08/weve-flown-a-radiation-blocking-vest-to-the-moon-and-back-and-it-worked/
+    (67 points on HN)
