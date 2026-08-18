@@ -121,3 +121,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • We've flown a radiation-blocking vest to the Moon and back, and it worked
     https://arstechnica.com/science/2026/08/weve-flown-a-radiation-blocking-vest-to-the-moon-and-back-and-it-worked/
     (67 points on HN)
+
+## Curiosity — 15:04 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • r/digitalnomad on Reddit: Is becoming a digital nomad still realistic in 2026? W
+    https://www.reddit.com/r/digitalnomad/comments/1sxyzwi/is_becoming_a_digital_nomad_still_realistic_in/
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (automation):**
+  • When Agents Coordinate: Measuring Coordination in Multi-Agent AI Coding
+    http://arxiv.org/abs/2608.16801v1
+  • TDD-Agent: Test-Driven Reasoning for Code Generation
+    http://arxiv.org/abs/2608.16742v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐160106
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25627
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15298
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • We've flown a radiation-blocking vest to the Moon and back, and it worked
+    https://arstechnica.com/science/2026/08/weve-flown-a-radiation-blocking-vest-to-the-moon-and-back-and-it-worked/
+    (69 points on HN)
