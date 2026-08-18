@@ -148,3 +148,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • We've flown a radiation-blocking vest to the Moon and back, and it worked
     https://arstechnica.com/science/2026/08/weve-flown-a-radiation-blocking-vest-to-the-moon-and-back-and-it-worked/
     (69 points on HN)
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • Reinforcement learning from human feedback - Wikipedia
+    https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback
+  • RLHF Book: Reinforcement Learning from Human Feedback and LLM …
+    https://rlhfbook.com/
+🔀 **Intersection:** ai agents × self hosting
+📄 **arXiv (automation):**
+  • ModBench: A Pipeline for Building Modelica Benchmark Datasets Mined from Library
+    http://arxiv.org/abs/2608.16638v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐160209
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25628
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15299
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • Using the railway network as a flatbed scanner
+    https://philo.gay/linecam/
+    (375 points on HN)
