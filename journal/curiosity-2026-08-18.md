@@ -56,3 +56,23 @@ Interests: self_hosting, ai_agents, llm_inference
   • Splitting a Git Commit
     https://blog.gnoack.org/post/git-history-split
     (108 points on HN)
+
+## Curiosity — 14:29 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × llm inference
+📄 **arXiv (llm inference):**
+  • Q-based Variational Inverse Reinforcement Learning
+    http://arxiv.org/abs/2608.16888v1
+  • Spectral Gaps of Hit-and-Run and Coordinate Hit-and-Run
+    http://arxiv.org/abs/2608.16878v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐160047
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25626
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15297
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
