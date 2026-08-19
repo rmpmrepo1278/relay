@@ -113,3 +113,33 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐15348
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nixos
+  • NixOS 2026: The Declarative Linux Revolution | wg/all
+    https://wgall.com/blog/nixos-declarative-linux-2026.html
+🌱 **Adjacent to ai agents:** agent evaluation
+  • LLM Agent Evaluation Metrics in 2026: Tool Calling, Task Completion, Reasoning, 
+    https://www.confident-ai.com/blog/llm-agent-evaluation-complete-guide
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (automation):**
+  • The Polyglot's Dilemma: Conformance Testing a Dozen Specs in as Many Languages
+    http://arxiv.org/abs/2608.18039v1
+  • What Does It Mean and Why Should I Bother? Motivating Students to Write Better C
+    http://arxiv.org/abs/2608.17993v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐166630
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25694
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15350
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • Supersonic Trebuchet [video]
+    https://www.youtube.com/watch?v=Co57SfcT-h0
+    (228 points on HN)
