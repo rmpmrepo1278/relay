@@ -87,3 +87,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • A 25-year-old video patent just expired, ending a legal headache for Linux
     https://www.xda-developers.com/25-year-old-brazilian-video-patent-expired-legal-headache-linux/
     (270 points on HN)
+
+## Curiosity — 08:31 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Home Assistant Getting Started Guide (2026) — Local Smart Home …
+    https://wiredhaus.com/home-assistant-getting-started-guide-2026/
+🌱 **Adjacent to ai agents:** multi agent systems
+  • MultiMovies - Best Free Site for Movie Lovers
+    https://multimovies.wtf/
+  • Multi-Match - Maryland (MD) - Results & Winning Numbers
+    https://www.lotteryusa.com/maryland/multi-match/
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (self hosting):**
+  • Completion-Path Credits: Multi-Resource Control for Scale-Up Fabrics
+    http://arxiv.org/abs/2608.17523v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐165928
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25686
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15348
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
