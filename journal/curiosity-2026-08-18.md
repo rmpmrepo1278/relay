@@ -202,3 +202,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • Cursor launches Origin, GitHub alternative
     https://cursor.com/changelog/origin-code-hosting
     (495 points on HN)
+
+## Curiosity — 23:47 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Microsoft Agent Framework Overview | Microsoft Learn
+    https://learn.microsoft.com/en-us/agent-framework/overview/
+  • Get started with Agent Mode in Word, Excel, and PowerPoint
+    https://support.microsoft.com/en-us/topic/get-started-with-agent-mode-in-word-excel-and-powerpoint-4d322d7f-5e89-4f66-9fa4-57d328b156ff
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (ai agents):**
+  • Delegation Asymmetry in Agentic Recommender Systems: Measuring Two-Sided Recepti
+    http://arxiv.org/abs/2608.18058v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐162893
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25656
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15322
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
