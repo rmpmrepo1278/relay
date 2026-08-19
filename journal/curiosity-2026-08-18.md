@@ -225,3 +225,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐15322
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 23:49 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** ai agents × monitoring
+📄 **arXiv (llm inference):**
+  • TokEval: A Tokenizer Evaluation Suite
+    http://arxiv.org/abs/2608.18062v1
+  • The concentration game: Bayesian updating, regret, and information
+    http://arxiv.org/abs/2608.18061v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐162904
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25657
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐15323
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
+🎲 **Serendipity:**
+  • Cerebras CS-4
+    https://www.cerebras.ai/cs4
+    (202 points on HN)
