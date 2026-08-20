@@ -82,3 +82,35 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐15840
     Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nixos
+  • Second Grade Reading Worksheets - K5 Learning
+    https://www.k5learning.com/reading-comprehension-worksheets/second-grade-2
+  • 2nd Grade Printable PDF ELA - Reading Comprehension Worksheets
+    https://www.superteacherworksheets.com/free-printable-worksheets/2nd-grade/ela-reading-comprehension/
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Constitution - Wikipedia
+    https://en.wikipedia.org/wiki/Constitution
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (automation):**
+  • Pre-Compiled Pipeline Shards for Distributed LLM Inference on Intel AI PC Fleets
+    http://arxiv.org/abs/2608.19147v1
+  • Grouping the Stochastic Machine: Precision, Not Capability, as the Frontier Metr
+    http://arxiv.org/abs/2608.19140v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐173333
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25777
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐15950
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Every Model Cheats
+    https://dreadnode.io/research/every-model-cheats-prompt-level-mitigation-of-cheating-on-offensive-cyber-tasks/
+    (56 points on HN)
