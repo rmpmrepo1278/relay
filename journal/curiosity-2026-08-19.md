@@ -168,3 +168,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • fx :Tiny, open, native coding agent.
     https://fx.sh
     (152 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • Linux Containers - Incus - Introduction
+    https://linuxcontainers.org/incus/
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (ai agents):**
+  • SPADE: Self-Play in Adaptive Synthetic Executable Environments
+    http://arxiv.org/abs/2608.19197v1
+  • ADEPT: Accelerating Dexterity via Pre-Training and Post-Training using Reinforce
+    http://arxiv.org/abs/2608.19182v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐168520
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25718
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐15377
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Xorshift Generators
+    https://www.alanzucconi.com/2026/08/15/xorshift-generators/
+    (52 points on HN)
