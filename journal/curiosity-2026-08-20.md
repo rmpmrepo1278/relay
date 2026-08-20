@@ -61,3 +61,24 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐15834
     Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agent Evaluation Frameworks 2026: 6 Compared - futureagi.com
+    https://futureagi.com/blog/agent-evaluation-frameworks-2026/
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (self hosting):**
+  • VQC-ZTI: Variational Quantum Control for Zero Trust Protection of the Tactile In
+    http://arxiv.org/abs/2608.18572v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐172467
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25765
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐15840
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
