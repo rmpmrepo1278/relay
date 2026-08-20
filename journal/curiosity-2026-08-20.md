@@ -114,3 +114,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • Every Model Cheats
     https://dreadnode.io/research/every-model-cheats-prompt-level-mitigation-of-cheating-on-offensive-cyber-tasks/
     (56 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × self hosting
+  • Large language model - Wikipedia
+    https://en.wikipedia.org/wiki/Large_language_model
+📄 **arXiv (infrastructure):**
+  • A Fast Deterministic Algorithm for $(Δ+1)$-edge coloring in CONGEST
+    http://arxiv.org/abs/2608.19184v1
+  • Upper and Lower Bounds on the Space Complexity of Multi-word Single-Writer Regis
+    http://arxiv.org/abs/2608.19167v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐174200
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25785
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐16027
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Watching TikTok and Instagram deactivates the cognitive control network: Study
+    https://www.rathbiotaclan.com/tiktok-videos-deactivate-key-cognitive-brain-regions/
+    (281 points on HN)
