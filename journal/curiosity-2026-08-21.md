@@ -23,3 +23,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐16208
     Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • What is reinforcement learning from human feedback (RLHF)? - IBM
+    https://www.ibm.com/think/topics/rlhf
+🔀 **Intersection:** llm inference × monitoring
+  • Large Language Model (LLM) - GeeksforGeeks
+    https://www.geeksforgeeks.org/artificial-intelligence/large-language-model-llm/
+📄 **arXiv (ai agents):**
+  • Inducing Task Models from Computer-Use Traces
+    http://arxiv.org/abs/2608.20319v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐180726
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25847
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐16553
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Felony charges for citizen deleting phone data at US Border
+    https://www.nytimes.com/2026/08/21/us/politics/samuel-tunick-deleted-phone-felony.html
+    (104 points on HN)
