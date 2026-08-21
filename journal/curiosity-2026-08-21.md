@@ -76,3 +76,33 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐16615
     Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • Incus – Location, Functions, Anatomy, & Diagram
+    https://www.theskeletalsystem.net/skull-bones/incus.html
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Understand agent details in Microsoft 365 admin center
+    https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-details?view=o365-worldwide
+  • Microsoft Agent 365 - Service Descriptions | Microsoft Learn
+    https://learn.microsoft.com/en-us/office365/servicedescriptions/microsoft-agent-365/microsoft-agent-365
+🔀 **Intersection:** monitoring × llm inference
+  • BytePlus
+    https://docs.byteplus.com/docs/faas/GetDependencyInstallTaskLogDownloadURI
+  • Overview of serverless GPU--Function Service-Byteplus
+    https://docs.byteplus.com/docs/faas/Overview_of_serverless_GPU
+📄 **arXiv (llm inference):**
+  • A comparison between ceiling-mounted FMCW, IR-UWB and Wi-Fi radar for in-bedroom
+    http://arxiv.org/abs/2608.20322v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐181139
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25850
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐16615
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
