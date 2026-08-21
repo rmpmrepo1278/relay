@@ -50,3 +50,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • Felony charges for citizen deleting phone data at US Border
     https://www.nytimes.com/2026/08/21/us/politics/samuel-tunick-deleted-phone-felony.html
     (104 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Home Assistant: Complete Getting-Started Guide (2026)
+    https://www.promptquorum.com/smart-home/home-assistant-getting-started
+🌱 **Adjacent to ai agents:** multi agent systems
+  • MyChart Help Center - MultiCare
+    https://www.multicare.org/patient-resources/mychart/
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (llm inference):**
+  • Information on trajectories: martingales and random times
+    http://arxiv.org/abs/2608.20337v1
+  • $TCP_α$: Margin-Controlled Confidence estimation for reliable Music Information 
+    http://arxiv.org/abs/2608.20326v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐181139
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25850
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐16615
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
