@@ -77,3 +77,37 @@ Interests: self_hosting, ai_agents, llm_inference
   • Rust Glancer: Rust LSP using 100x less RAM
     https://rust-glancer.github.io/blog/hello-world/
     (356 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nixos
+  • Getting Started on NixOS | The Nix Guide
+    https://thenix.guide/nixos/getting-started
+  • How to Install NixOS From Scratch (2026 Edition) | Flakes + Home ...
+    https://www.youtube.com/watch?v=2QjzI5dXwDY
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Hugging Face MCP Server · Hugging Face
+    https://huggingface.co/docs/hub/agents-mcp
+  • Spaces as MCP servers - Hugging Face
+    https://huggingface.co/docs/hub/main/spaces-mcp-servers
+🔀 **Intersection:** monitoring × llm inference
+  • MONITORING | English meaning - Cambridge Dictionary
+    https://dictionary.cambridge.org/dictionary/english/monitoring
+📄 **arXiv (self hosting):**
+  • Proper Sea Surface Roughness Enhances the Performance of Near-Shore Maritime Net
+    http://arxiv.org/abs/2608.19730v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐184666
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25892
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐16983
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Anthropic appears to be A/B testing reduced effort levels in Claude Code
+    https://twitter.com/argofowl/status/2091150597374537729
+    (65 points on HN)
