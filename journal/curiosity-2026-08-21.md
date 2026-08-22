@@ -135,3 +135,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • AI boosted homework scores, then exam scores dropped: study
     https://www.economist.com/graphic-detail/2026/08/18/does-ai-stop-children-from-learning
     (248 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** k3s
+  • GitHub - k3s-io/k3s: Lightweight Kubernetes · GitHub
+    https://github.com/k3s-io/k3s
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (self hosting):**
+  • Proper Sea Surface Roughness Enhances the Performance of Near-Shore Maritime Net
+    http://arxiv.org/abs/2608.19730v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐181766
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25854
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐16649
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • The coolest anti-surveillance tools at Defcon [video]
+    https://www.youtube.com/watch?v=-2uAsJ5EPAw
+    (166 points on HN)
