@@ -106,3 +106,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐16615
     Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • 人人都在说的 Agent，到底是个什么东西？ - 知乎
+    https://zhuanlan.zhihu.com/p/1999160608529072176
+  • AI Agent (智能体) 教程 | 菜鸟教程
+    https://www.runoob.com/ai-agent/ai-agent-tutorial.html
+🔀 **Intersection:** llm inference × self hosting
+📄 **arXiv (self hosting):**
+  • Design and Empirical Evaluation of a Network-Centric, On-Premises Architecture f
+    http://arxiv.org/abs/2608.20283v1
+  • Using Zone-Disjoint Multi-Path Routing Algorithm for Video Transmission over Ah-
+    http://arxiv.org/abs/2608.20148v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐181761
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25854
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐16649
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • AI boosted homework scores, then exam scores dropped: study
+    https://www.economist.com/graphic-detail/2026/08/18/does-ai-stop-children-from-learning
+    (248 points on HN)
