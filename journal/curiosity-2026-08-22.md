@@ -55,3 +55,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • AI boosted homework scores, then exam scores dropped: study
     https://www.economist.com/graphic-detail/2026/08/18/does-ai-stop-children-from-learning
     (289 points on HN)
+
+## Curiosity — 10:01 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Portland OR Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/portland-or/?msockid=00a8cad4162566f902d2dd6917ad6743
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Meta Business Agent Platform overview - Meta for Developers
+    https://developers.facebook.com/documentation/meta-business-agent/overview/
+  • Meta Business Agent Platform overview - Meta for Developers
+    https://developers.facebook.com/documentation/meta-business-agent/overview.md/
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (infrastructure):**
+  • Catching the Rug: Early Prediction of Fraudulent Memecoins on Solana via Machine
+    http://arxiv.org/abs/2608.20271v1
+  • TrustRAG: Blockchain-Enhanced RAG via Committee-Based Credibility Scoring
+    http://arxiv.org/abs/2608.20097v1
+🎲 **Serendipity:**
+  • Rust Glancer: Rust LSP using 100x less RAM
+    https://rust-glancer.github.io/blog/hello-world/
+    (356 points on HN)
