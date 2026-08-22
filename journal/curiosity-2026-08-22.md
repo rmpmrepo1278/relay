@@ -137,3 +137,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐16983
     Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Constitutional AI Explained 2026 — ByteLedger
+    https://byteledger.vizleo.com/blog/constitutional-ai-explained-2026
+🔀 **Intersection:** monitoring × llm inference
+  • Performance Testing and Monitoring LLM Inference: A ... - LinkedIn
+    https://www.linkedin.com/pulse/performance-testing-monitoring-llm-inference-guide-2025-dobarskyi-xjxbe
+📄 **arXiv (security):**
+  • QUASAR: A Quantum-Classical Neural Network for SAR Satellite Physical-Layer Auth
+    http://arxiv.org/abs/2608.20240v1
+  • Chameleon: Robust Defense Against Tor Website Fingerprinting via Many-to-Many Tr
+    http://arxiv.org/abs/2608.20160v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐184975
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25897
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐17040
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • A Kantian Critique of "Sorry" by Justin Bieber
+    https://decodingvibes.com/blog/a-kantian-critique-of-sorry-by-justin-bieber/
+    (189 points on HN)
