@@ -1,0 +1,29 @@
+# Curiosity Log — 2026-08-23
+
+
+## Curiosity — 00:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • Incus 6.21 has been released - News - Linux Containers Forum
+    https://discuss.linuxcontainers.org/t/incus-6-21-has-been-released/26005
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Codex Use Cases - developers.openai.com
+    https://developers.openai.com/codex/use-cases?search=%26feed_dis%3Dalways%26en_widget_reg%3Dfalse%26startpage%3D1%26PC%3DEdgeStart%26invalidaterender%3D&task_type=design&category=front-end
+  • Roadmap - Model Context Protocol
+    https://modelcontextprotocol.io/development/roadmap
+🔀 **Intersection:** llm inference × monitoring
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐185952
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25909
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐17154
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Figmimic – A bookmarklet to copy any webpage into Figma as editable layers
+    https://marcua.net/minitools/figmimic/
+    (86 points on HN)
