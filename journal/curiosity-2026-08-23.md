@@ -89,3 +89,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • Sydney Marathon medal mistakenly depicts Munich stadium
     https://www.bbc.com/news/articles/cvg92y1wzn8o
     (95 points on HN)
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** talos linux
+  • Microsoft - Official Home Page
+    https://www.microsoft.com/en-us/?msockid=1030d2573e0a62350971c5e93f846332
+  • Sign in to your account
+    https://myaccount.microsoft.com/
+🌱 **Adjacent to ai agents:** multi agent systems
+  • MULTI- Definition & Meaning - Merriam-Webster
+    https://www.merriam-webster.com/dictionary/multi-
+  • MULTI- | definition in the Cambridge English Dictionary
+    https://dictionary.cambridge.org/us/dictionary/english/multi
+🔀 **Intersection:** ai agents × self hosting
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐187647
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25936
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐17374
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • To become a better writer, read as much as you can
+    https://nappertime.com/the-golden-rule-of-becoming-a-better-writer/
+    (387 points on HN)
