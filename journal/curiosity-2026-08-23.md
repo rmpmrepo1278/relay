@@ -67,3 +67,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • Why your local LLM feels dumber than it is
     https://forum.level1techs.com/t/why-your-local-llm-feels-dumber-than-it-is/253917
     (417 points on HN)
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Claude’s Constitution - Anthropic
+    https://www.anthropic.com/news/claudes-constitution
+🔀 **Intersection:** self hosting × llm inference
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐187232
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25924
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐17312
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Sydney Marathon medal mistakenly depicts Munich stadium
+    https://www.bbc.com/news/articles/cvg92y1wzn8o
+    (95 points on HN)
