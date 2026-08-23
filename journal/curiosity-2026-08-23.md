@@ -27,3 +27,21 @@ Interests: self_hosting, ai_agents, llm_inference
   • Figmimic – A bookmarklet to copy any webpage into Figma as editable layers
     https://marcua.net/minitools/figmimic/
     (86 points on HN)
+
+## Curiosity — 04:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Sacramento CA Real Estate & Homes For Sale - Zillow
+    https://www.zillow.com/sacramento-ca/?msockid=07b79566e93f66702f4382d8e8fe671b
+🔀 **Intersection:** self hosting × monitoring
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐186558
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25912
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐17225
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
