@@ -191,3 +191,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • One night in Uzbekistan: Why was this one data point so influential?
     https://statmodeling.stat.columbia.edu/2026/08/20/we-couldnt-reproduce-their-findings-and-realized-that-it-was-all-driven-by-weird-data-from-uzbekistan/
     (81 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • About agent evaluation - Microsoft Copilot Studio
+    https://learn.microsoft.com/en-us/microsoft-copilot-studio/analytics-agent-evaluation-intro
+🔀 **Intersection:** ai agents × monitoring
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐185385
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25902
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐17076
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • A week of using Codex more than Claude
+    https://allaboutcoding.ghinda.com/a-week-of-using-codex-more-than-claude/
+    (139 points on HN)
