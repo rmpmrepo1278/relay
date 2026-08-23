@@ -45,3 +45,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐17225
     Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 08:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • Welcome to OpenRLHF's documentation! — OpenRLHF 0.10.2 documentation
+    https://openrlhf.readthedocs.io/
+🔀 **Intersection:** self hosting × monitoring
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐187192
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25924
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐17309
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Why your local LLM feels dumber than it is
+    https://forum.level1techs.com/t/why-your-local-llm-feels-dumber-than-it-is/253917
+    (417 points on HN)
