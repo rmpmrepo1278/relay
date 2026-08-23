@@ -166,3 +166,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • A Kantian Critique of "Sorry" by Justin Bieber
     https://decodingvibes.com/blog/a-kantian-critique-of-sorry-by-justin-bieber/
     (189 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Constitutional AI: How Anthropic Trains Models Using Written Principles
+    https://tdwi.org/blogs/ai-101/2026/05/constitutional-ai.aspx
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (security):**
+  • Trustworthy mobile edge caching: a blockchain approach to mitigate malicious nod
+    http://arxiv.org/abs/2608.20145v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐185381
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐25902
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐17076
+    Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrit
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • One night in Uzbekistan: Why was this one data point so influential?
+    https://statmodeling.stat.columbia.edu/2026/08/20/we-couldnt-reproduce-their-findings-and-realized-that-it-was-all-driven-by-weird-data-from-uzbekistan/
+    (81 points on HN)
