@@ -28,3 +28,16 @@ For detailed data (chat history, facts, narratives, capsule outcomes, preference
 query the canonical backend stores listed in [databases.md](databases.md).
 
 Loaded at session start during initialization. Sync first, then read this index.
+
+
+## Career-Ops Automation
+`projects/career-ops/` — batch career-run automation. Google Sheets `Jobs` tab is
+the queue; n8n polls every 15m → bridge `/run` at `172.18.0.1:9199` (docker-bridge
+only, LAN-locked) → `career_launch.sh` → `auto_pipeline.py` (deterministic ATS
+keyword coverage via `_compute_ats_keyword_match`) → results written back to the
+sheet row + posted to Telegram topic 7338, recorded in
+`career_batch_results.tsv`. Phone trigger: paste a job URL or `/job <url>` in
+topic 7338 → `career_ops_pipeline` Hermes plugin SSH-executes `auto_pipeline.py`
+on the host. (Two triggers, separate dedup — avoid submitting the same URL both
+ways.) Bridge service: `n8n-bridge.service` (ExecStart=/usr/bin/python3,
+N8N_BRIDGE_HOST=172.18.0.1).
