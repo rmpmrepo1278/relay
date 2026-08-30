@@ -109,3 +109,35 @@ N8N_BRIDGE_HOST=172.18.0.1).
   tunnel) — Funnel replaces that path for 3 services; other duckdns hosts remain
   internal-only for now. Traefik ACME (duckdns challenge) still configured but certs
   not yet issued (no external request) — fine while Funnel fronts TLS.
+
+### 2026-08-30 (very late): moved to TAILNET-ONLY access (Funnel removed)
+
+- **Security decision**: user wants ALL services reachable only from their own
+  tailnet devices (Mac, iPhone, Pixel) from anywhere — NOTHING public. Removed
+  the public Tailscale Funnel entirely (was exposing searxng/bookstack/healthchecks
+  at https://home-hp.tail8f4175.ts.net:8443/..., which are now all dead: 000 from
+  outside). searxng was the real hole (no login). Posture: everything binds the
+  **tailnet IP 100.122.58.40:<port>** (plus loopback) so Mac/iPhone reach it from
+  any network via WireGuard mesh; NOT bound to 0.0.0.0 so it's not public.
+- **Architecture**: NO port-forwarding (user declined); tailnet IS the access layer.
+  Webhook-style public exposure (DuckDNS 73.239.85.189, its port-forward, and
+  Traefik ACME duckdns certs) are NOT used. Traefik still runs for LAN-internal
+  hostname routing + dashboard, but the `funnel` entrypoint (`:8888`) and
+  `dynamic/funnel-routes.yml` were REMOVED (Traefik now only listens 80/443).
+- **Tailnet port map (host pub -> container internal), all dual-bound 127.0.0.1 +
+  100.122.58.40**:
+  searxng :8118; healthchecks :8004->8000; bookstack :6875->80; paperless :8000;
+  homepage :3003->3000; vaultwarden :8443->80; linkwarden :3011->3000;
+  immich :2283; authentik-server :9001->9000. (ollama still loopback-only, standalone
+  `docker run` not in compose; pihole binds 0.0.0.0 for DNS on LAN.)
+- **Per-app URL envs pointed at tailnet URLs**: bookstack APP_URL, healthchecks
+  SITE_ROOT, paperless PAPERLESS_URL, linkwarden NEXTAUTH_URL = http://100.122.58.40:<port>;
+  vaultwarden DOMAIN = http://100.122.58.40:8443. immich IMMICH_SERVER_URL =
+  http://100.122.58.40:2283.
+- **iPhone access**: give each app its server URL as `http://100.122.58.40:<port>`
+  (Immich: `http://100.122.58.40:2283`). Works over home WiFi and cellular.
+- Verified from Mac (over DERP, outside home): searxng 200, healthchecks 302,
+  bookstack 302, paperless 302, homepage 200, vaultwarden 200, linkwarden 200,
+  immich 200; all 3 old Funnel URLs => 000 (down).
+- Backups made: apps.yml.bak-tailnet-all-20260830, traefik.yml.bak-funnel-removal-*,
+  docker-compose.yml.bak-funnel-removal-*.
