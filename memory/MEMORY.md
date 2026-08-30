@@ -141,3 +141,15 @@ N8N_BRIDGE_HOST=172.18.0.1).
   immich 200; all 3 old Funnel URLs => 000 (down).
 - Backups made: apps.yml.bak-tailnet-all-20260830, traefik.yml.bak-funnel-removal-*,
   docker-compose.yml.bak-funnel-removal-*.
+
+### 2026-08-30 (tailnet session contd): authentik SSO pointed at tailnet URL
+- Added `AUTHENTIK_URL: http://100.122.58.40:9001` to the authentik-server env
+  block ONLY (NOT authentik-worker, whose identical env block caused an anchor
+  duplicate; disambiguated by anchoring on `command: server` + tailnet ports).
+- Verified: AUTHENTIK_URL present at runtime, server healthy, / -> 302 to
+  http://100.122.58.40:9001/flows/-/default/authentication/ (200 follow). Login
+  flow now resolves to tailnet so phone SSO works. authentik still binds
+  127.0.0.1:9001 + 100.122.58.40:9001 (not public).
+- Default fallback AUTHENTIK_SECRET_KEY is still 'changeme-replace-in-env' unless
+  set in .env — should set a real secret if authentik is used for prod SSO.
+- Backups: apps.yml.bak-authentik-url-20260830.
