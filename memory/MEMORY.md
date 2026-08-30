@@ -41,3 +41,35 @@ topic 7338 → `career_ops_pipeline` Hermes plugin SSH-executes `auto_pipeline.p
 on the host. (Two triggers, separate dedup — avoid submitting the same URL both
 ways.) Bridge service: `n8n-bridge.service` (ExecStart=/usr/bin/python3,
 N8N_BRIDGE_HOST=172.18.0.1).
+
+### 2026-08-30: bridge auth + Jarvis memory persistence
+
+- **Bearer gate (defense-in-depth):** `/run`, `/cmd`, `/docker-*`, `/service-*`,
+  `/run-cron` are now **bearer-mandatory** even from trusted/private IPs
+  (`SENSITIVE_PATHS` in `n8n_bridge_server.py`). n8n workflow `/run` nodes send
+  `Authorization: Bearer {{ $vars.BRIDGE_AUTH_KEY }}` (n8n project var; NOT hard-coded
+  in the committed JSON). **n8n won't run until you create the n8n project variable
+  `BRIDGE_AUTH_KEY` = `d6cbba9e9e3f09dcfb545c7ae0521ba5191407a7bb0bfcc401eeba1753001549`**
+  (matches the unit env). Telegram `/run` routes in-process (`_call` → `HANDLERS`),
+  unaffected. Verified: no-bearer `/run`=401, with-bearer=200.
+- **Jarvis → Hermes memory persistence:** new bridge `/memory-write` (trust-gated,
+  bind to docker bridge; runs `unified_memory.py store` as root via `sudo -n` with
+  `HOME=/home/rohit`), and `openjarvis/tools.py` `_persist_reply()` POSTs each
+  Jarvis reply to it. GateWay restart needed: `docker restart hermes` (s6-supervised).
+  `hermes tools list` confirms `✓ openjarvis 🔌`. Jarvis runs `jarvis serve`
+  @127.0.0.1:1377.
+- **⚠️ OWNERSHIP MODEL (critical):** the hermes container (`stage2-hook.sh`) chowns
+  the entire host `/home/rohit/.hermes` tree to uid **10000 mode 700** on every boot,
+  which blocks the rohit-run bridge. Mitigations applied:
+  - `plugins/`, `platforms/`, `.local/state/hermes`, `kanban*`, `kanban/` → uid 10000
+    (gateway-owned). `data/unified_memory.db` + `data/career_batch_results.tsv` stay
+    `rohit` (rohit-writable; memory-write uses `sudo -n` root so DB ownership is moot).
+  - `n8n-bridge.service` now has `ExecStartPre=/usr/bin/sudo -n chmod 705
+    /home/rohit/.hermes` (re-grants rohit traverse after container chowns) and
+    `EnvironmentFile=/home/rohit/.relay/bridge.env` (copy of `.hermes/.env` — the
+    container chowns `.env` to 10000:600 so the bridge reads the relocated copy).
+  - If kanban fails after a container restart: re-chown `kanban.db*` files to 10000
+    and remove stale 0-byte `-wal`/`-shm`.
+  - **Do NOT restart the hermes container casually**: each boot re-chowns `.hermes`
+    to 10000:700; the bridge's ExecStartPre self-heals on its next start, but other
+    rohit-accessed files may need re-chowning.
