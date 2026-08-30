@@ -73,3 +73,39 @@ N8N_BRIDGE_HOST=172.18.0.1).
   - **Do NOT restart the hermes container casually**: each boot re-chowns `.hermes`
     to 10000:700; the bridge's ExecStartPre self-heals on its next start, but other
     rohit-accessed files may need re-chowning.
+
+### 2026-08-30 (late): n8n removed; Traefik repaired; Tailscale Funnel external access
+
+- **n8n fully REMOVED** — it was unused (0 active workflows, 0 webhooks, 1 no-op test
+  exec; the 3 "Chaguli" workflows lived in a STALE dir `/home/rohit/services/data/n8n/`
+  NOT the live container volume `compose_n8n_data`). Removed from `apps.yml`
+  (service block + `n8n_data` volume), container+volume+image deleted, Traefik
+  `dynamic/n8n.yml` moved to `.removed-20260830`, 3 N8N_* lines removed from `.env`.
+  The n8n-initiated career batch automation was never used (Telegram `/job` plugin
+  remains the active career-ops path). Backups: `apps.yml.bak-remove-n8n-20260830`.
+- **Traefik repairing** — it was DOWN (no container) and its file-provider dynamic
+  routers pointed at STALE IPs from the previous proxy (e.g. immich=172.23.0.14,
+  bookstack=172.23.0.3, portainer=172.23.0.12 → none existed). Traefik now runs
+  (v2.11, `traefik/docker-compose.yml`, stack project `traefik`, network `traefik`).
+  Rebuilt routing by **service name**: attached bookstack/healthchecks/immich_server/
+  linkwarden/paperless/searxng to the `traefik` network (added to `apps.yml`
+  `networks:`; NOTE these must each list `traefik`) and rewrote the dynamic routers
+  to `http://<container>:<internal_port>` (bookstack:80, healthchecks:8000,
+  immich_server:2283, linkwarden:3000, paperless:8000, searxng:8118). home-hp
+  LAN/loopback reachability verified (bookstack 302, homepage/immich 200). *Pihole*
+  stays on LAN-IP backend (rohit stack, host-net; already reachable).
+- **Tailscale Funnel (public HTTPS)** — exposed via Traefik, URL
+  **`https://home-hp.tail8f4175.ts.net:8443/{searxng,bookstack,healthchecks}`**.
+  Path-routed (stripPrefix for searxng/bookstack; healthchecks keeps its prefix via
+  SITE_ROOT). Traefik `funnel` entrypoint `:8888` (loopback publish) +
+  `dynamic/funnel-routes.yml`. Apps base-URLs updated: healthchecks `SITE_ROOT`,
+  bookstack `APP_URL`, searxng `settings.yml base_url` (all
+  `https://home-hp.tail8f4175.ts.net:8443/...`). Started via
+  `sudo tailscale funnel --bg --https=8443 http://127.0.0.1:8888` (operator not set;
+  MUST use sudo). Config persists in tailscaled state. Funnel+HTTPS caps already
+  enabled in tailnet (ports 443,8443,10000). Verified from this Mac over public
+  URL (valid cert, bookstack 302, searxng 200, healthchecks 200).
+- DuckDNS public IP (73.239.85.189) is NOT reachable from outside (no port-forward/
+  tunnel) — Funnel replaces that path for 3 services; other duckdns hosts remain
+  internal-only for now. Traefik ACME (duckdns challenge) still configured but certs
+  not yet issued (no external request) — fine while Funnel fronts TLS.
