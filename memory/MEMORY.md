@@ -153,3 +153,15 @@ N8N_BRIDGE_HOST=172.18.0.1).
 - Default fallback AUTHENTIK_SECRET_KEY is still 'changeme-replace-in-env' unless
   set in .env — should set a real secret if authentik is used for prod SSO.
 - Backups: apps.yml.bak-authentik-url-20260830.
+
+### 2026-08-30 (tailnet session contd): authentik secret + DB password secured
+- Generated strong secrets and set in compose/.env: AUTHENTIK_SECRET_KEY
+  (64-char urlsafe) + AUTHENTIK_DB_PASSWORD (43-char). .env stays 0600.
+- Also ran ALTER USER authentik PASSWORD on the LIVE postgres DB (postgres only
+  honors POSTGRES_PASSWORD on first init, so env change alone was not enough),
+  then force-recreated authentik-server + authentik-worker with the new creds.
+- Verified: both healthy, login flow reachable on tailnet 100.122.58.40:9001
+  (302->200), works from Mac/outside.
+- NOTE: changing AUTHENTIK_SECRET_KEY invalidates existing authentik sessions;
+  users must re-login. Expected/correct for security hardening.
+- Backups: .env.bak-authentik-secret-20260830, apps.yml.bak-authentik-url-20260830.
