@@ -1,27 +1,10 @@
 {
   "agent": "jarvis",
-  "generated_at": "2026-08-31T01:32:12.116140+00:00",
+  "generated_at": "2026-08-31T01:49:03.893584+00:00",
   "based_on": "jobs_2026-08-30.json",
-  "total_jobs": 7,
-  "new_jobs": 6,
-  "top_skills": [
-    "mentoring, architecture, system-design",
-    "python/go, apis, databases",
-    "ci/cd, gitops"
-  ],
-  "keyword_trends": [
-    {
-      "keyword": "senior",
-      "hits": 4
-    },
-    {
-      "keyword": "backend",
-      "hits": 1
-    },
-    {
-      "keyword": "devops",
-      "hits": 1
-    }
-  ],
+  "total_jobs": 12,
+  "new_jobs": 12,
+  "top_skills": [],
+  "keyword_trends": [],
   "recommendation": "Focus applications on the highest-scored, keyword-matched roles; prepare tailored resumes for the detected skill clusters above."
 }

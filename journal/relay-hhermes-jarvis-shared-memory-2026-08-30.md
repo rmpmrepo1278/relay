@@ -62,3 +62,22 @@ using ONE common memory source:
 - False positive noted: "Counsel, Product & Regulatory" (legal) scored 73 due to
   keyword overlap; acceptable for a digest, could be tightened with title-word
   negation if noisy.
+
+## 2026-08-30 (correction): discovery source = LinkedIn guest TPM feed
+- User corrected profile: NOT an engineer. Real fit = Director / Sr Director
+  TECHNICAL PROGRAM MANAGEMENT, Program/Portfolio/Delivery management leader
+  (20+ yrs; T-Mobile + Microsoft; PMP/CSM/SAFe; built from cv.md).
+- discovery_source.py (free Remotive+WWR feeds) contains 0 TPM roles -> useless.
+  Kept as fallback only.
+- NEW linkedin_jobs.py: uses LinkedIn PUBLIC unauthenticated guest job-search
+  endpoint (no cookies/key): /jobs-guest/jobs/api/seeMoreJobPostings/search.
+  Queries: TPM, Program Manager Director, TPM Director, Program Mgmt Portfolio.
+  Parses job cards (title/company/loc/url/date), scores vs TPM-director profile.
+  Verified: 15 cand -> 10 good-fit in dry run (Salesforce Eng Program Director,
+  Capital One Director TPM, Walmart Director TPM, Thermo Fisher Dir PM, etc.).
+- auto_pipeline.py source now = LinkedIn primary, free-feed fallback.
+  Real run: 12 good-fit TPM/Director jobs POSTed to agentchaguli (sent=True).
+- NOTE: LinkedIn guest endpoint is public/short-lived-friendly; cookie-based
+  vouyager session (May 5 cookies) is DEAD (302 loop). Do NOT rely on it.
+- git is now a maintenance consideration: "sources.json" not used; selftest
+  loader hardcodes source fallback chain.
