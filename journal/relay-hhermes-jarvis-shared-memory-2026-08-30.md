@@ -197,3 +197,31 @@ Telegram alert from hermes_scheduler auto_followup/6h db_integrity_check job. Ro
 - Result: 38/38 OK, corrupted=0 (was 34/38). Scheduler still running (1567584). Next scheduled
   6h run will be clean; picks up patched file automatically (re-invoked per cycle).
 - Independent confirm: container (root) reads state/kanban/response_store/temporal_kg -> all 'ok'.
+
+## 2026-08-31 (part 5) — Fix: Career-Ops JD-fetch "too short" (AMD/Workday) + DB-integrity false positives
+### JD extraction bug fix (career-ops auto_pipeline.py, commit cc817e8)
+- Root cause: AMD (Workday-style) embeds the ENTIRE job description as JSON-LD
+  (application/ld+json, @type=JobPosting) inside a <script> tag. fetch_jd stripped
+  all <script> tags before reading -> real JD vanished -> only nav/fraud-alert text
+  left (~1440 chars, 0 indicators) -> fell to og:description (345 chars) -> run_pipeline.py
+  rejected "pasted JD text is too short (>100 chars)".
+- Fix (generalizable, NOT company-specific): _extract_jd_from_jsonld() harvests the
+  JobPosting.description from embedded JSON-LD first, renders its HTML to text.
+  Also: preserve <p>/<br>/<li>/<strong> as newlines before tag-strip (was collapsing
+  paragraph markup to spaces -> indicator_count=0); decode HTML entities (html.unescape
+  aliased _unescape since local var `html` shadows the module). Relaxed JD gate to
+  indicator_count>=1 (AMD uses "the role"/"ACADEMIC CREDENTIALS" not the 2-indicator set).
+- Also fixed UnboundLocalError in RESULT_JSON block (pdf_path/cover_path now default None;
+  resume/cover paths derive from pushed_files).
+- VERIFIED: AMD -> 4901-char JD, "THE ROLE"/"KEY RESPONSIBILITIES"/"ACADEMIC" present, score 2/5 (PM fit).
+  LinkedIn-sourced Salesforce/BitGo jobs -> 8000-char JD extracted (was failing before). Greenhouse
+  JS-rendered pages still use Playwright fallback (not installed on host) but return >100-char meta.
+### DB-integrity false-positive fix (db_integrity_check.py)
+- Root cause: NOT corruption. 3 hermes-owned DBs (state.db, kanban.db, response_store.db) owned
+  uid 10000 mode 0600; rohit (uid 1000) integrity checker couldn't open them -> "unable to open"
+  misreported as CORRUPT. state.db is live (recent wal). Container (root) reads all -> integrity 'ok'.
+- Fix 1: chmod 0640 + chgrp 1000 on hermes DBs + live wal/shm; setgid on ~/.hermes so new wal
+  inherits group 1000 -> rohir-run checker reads them. (rohir has sudo.)
+- Fix 2: checker treats host-sqlite tokenizer gap (cjk_unicode61, used by fts5_cjk on state.db)
+  and WAL 'attempt to write a readonly database' as non-corruption (temp-copy verifies ok).
+- Result: 38/38 OK, corrupted=0 (was 34/38). Scheduled 6h job picks up patched file automatically.
