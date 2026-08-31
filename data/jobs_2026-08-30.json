@@ -1,0 +1,21 @@
+{
+  "generated_by": "auto_pipeline.py",
+  "agent": "hermes",
+  "generated_at": "2026-08-31T01:23:48.925654+00:00",
+  "source_count": 1,
+  "new_count": 1,
+  "total_count": 1,
+  "jobs": [
+    {
+      "title": "Sr. Platform Engineer (self-test)",
+      "company": "Example Corp",
+      "location": "Remote",
+      "url": "https://example.com/jobs/selftest-1788139428",
+      "raw": "self-test source: no real job API configured",
+      "hash": "100d68c6d4ef9780",
+      "source": "selftest",
+      "score": 65,
+      "fetched": "2026-08-31T01:23:48.925610+00:00"
+    }
+  ]
+}
