@@ -48,3 +48,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐19649
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × self hosting
+📄 **arXiv (llm inference):**
+  • QGPINNs: A Physics-Informed Neural Network Framework for Nonlocal Differential E
+    http://arxiv.org/abs/2608.28589v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐206422
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26292
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐19671
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • No country for mediocre mathematicians
+    https://garvvee.substack.com/p/no-country-for-mediocre-mathematicians
+    (117 points on HN)
