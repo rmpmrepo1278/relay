@@ -181,3 +181,19 @@ Test state restored (app75 updated_at=now, notes=NULL, real follow-up re-armed s
 - Safe automation: (a) email-drop to EXPLICIT recipient (recruiting_contacts.json), (b) automated 14d follow-up email to same recipient.
 - Jobs w/o explicit recipient: recorded + follow-up scheduled but email won't send without an address.
 - ATS direct-fill registry path: needs per-company real career-portal URL (web-search) + logged-in browser on user Mac via Playwright/CDP. Company list pending from user; recruiting_contacts.json seeded empty.
+
+## 2026-08-31 (part 4) — Resolved: "DB integrity check 4 databases failed" (NOT corruption)
+Telegram alert from hermes_scheduler auto_followup/6h db_integrity_check job. Root cause investigation:
+- False positive. NONE corrupt. 3 DBs (state.db, kanban.db, response_store.db) owned by uid 10000
+  (hermes container) mode 0600; checker runs as host user rohit uid 1000 -> "unable to open database file"
+  = permission, not corruption. state.db is the 38MB+ live session DB (active wal updated 10:03).
+- Fix 1 (perms): granted group-read (gid 1000) + mode 0640 on hermes-owned DBs + wal/shm;
+  setgid on ~/.hermes so new files inherit. Container (root) and rohit now both read them.
+- Fix 2 (checker robustness, db_integrity_check.py): host sqlite3 lacks fts5_cjk tokenizer
+  (cjk_unicode61) that state.db uses -> treated as ok (container reads it, integrity ok).
+  ALSO: WAL-mode DBs opened mode=ro raise "attempt to write a readonly database" during
+  integrity_check checkpoint -> now falls back to temp-copy integrity_check (canonical fix).
+  Added `import tempfile`. Patched in scripts/ AND scripts.pre-upgrade/.
+- Result: 38/38 OK, corrupted=0 (was 34/38). Scheduler still running (1567584). Next scheduled
+  6h run will be clean; picks up patched file automatically (re-invoked per cycle).
+- Independent confirm: container (root) reads state/kanban/response_store/temporal_kg -> all 'ok'.
