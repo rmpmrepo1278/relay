@@ -1,15 +1,25 @@
 {
   "agent": "jarvis",
-  "generated_at": "2026-08-31T01:23:32.386637+00:00",
+  "generated_at": "2026-08-31T01:32:12.116140+00:00",
   "based_on": "jobs_2026-08-30.json",
-  "total_jobs": 1,
-  "new_jobs": 1,
+  "total_jobs": 7,
+  "new_jobs": 6,
   "top_skills": [
-    "distributed-systems, terraform, kubernetes"
+    "mentoring, architecture, system-design",
+    "python/go, apis, databases",
+    "ci/cd, gitops"
   ],
   "keyword_trends": [
     {
-      "keyword": "platform",
+      "keyword": "senior",
+      "hits": 4
+    },
+    {
+      "keyword": "backend",
+      "hits": 1
+    },
+    {
+      "keyword": "devops",
       "hits": 1
     }
   ],

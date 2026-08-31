@@ -46,3 +46,19 @@ using ONE common memory source:
 - selftest source currently only; plug a real source in sources.json to make the
   digest meaningful (e.g., custom JSON feed or an API).
 - data/ committed to relay.git; will accumulate one jobs_+jars_ pair per day.
+
+## 2026-08-30 (follow-up): real job-discovery source wired
+- discovery_source.py: fetches Remotive (limit=100, ~19 real jobs) + WeWorkRemotely
+  RSS (back-end + devops/sysadmin feeds, ~19 more). Filters against Rohit profile
+  (platform/backend/sre + python/docker/k8s/AI-infra; excludes frontend/junior/sales).
+  0-100 fit score; threshold 55 = good fit. Merged discovery: 38 candidates -> 10
+  good-fit (Senior Backend Python, Senior DevOps, Platform.sh IT Systems Engineer,
+  Senior Software AI Engineer, etc.).
+- auto_pipeline.py default source now delegates to discovery_source.py (no more
+  fake self-test). Dedupe across days via job hash (title|company|url).
+- Run: real digest of 7 jobs (6 new) POSTed to agentchaguli (sent=True):
+  jobs_2026-08-30.json (7 jobs, 38KB) + jars_2026-08-30.json (jarvis skills/trends)
+  written to shared data dir. systemd timer daily 06:30 now yields real content.
+- False positive noted: "Counsel, Product & Regulatory" (legal) scored 73 due to
+  keyword overlap; acceptable for a digest, could be tightened with title-word
+  negation if noisy.
