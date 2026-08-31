@@ -165,3 +165,19 @@ Test state restored (app75 updated_at=now, notes=NULL, real follow-up re-armed s
   recruiting_contacts.json entries. Until populated, applies RECORD + schedule follow-up but don't
   send (by design, avoids spam from real Gmail). Populate map with real recruiter/talent addresses to activate emailing.
 - Voice gate flags 2 issues on follow-up draft (still sent).
+## 2026-08-31 (part 3) — Live state & hard constraints (final)
+- apply.conf: AUTO_APPLY_REAL=1, APPLY_MIN_SCORE=52.
+- Systemd: agentchaguli-pipeline TIMER (daily 06:30, Persistent) + hermes-scheduler.service running.
+- scheduler auto_followup now runs --days 14 --send (emails follow-ups via container Gmail).
+- email_drop.py records (status=applied, 14d followup, stores recipient in notes) + best-effort email-drop to explicit recipient only.
+
+### VERIFIED via real production path (Salesforce Eng Program Director, 64, app_id=75)
+- RESULT_JSON -> email_drop.py -> applications.db (status=applied + follow_ups 9/14 + recipient in notes) -> EMAIL_SENT landed 21:40.
+- auto_followup --send -> EMAIL_SENT follow-up landed 21:44 + sent_at set. Both confirmed IN Gmail (rohitmishra1278@gmail.com). Test state restored.
+
+### HARD CONSTRAINT
+- LinkedIn guest feed exposes NO external ATS URL / NO recruiter email / NO careers link (company pages guest-locked too) => cannot discover apply-URLs/emails from feed.
+- LinkedIn Easy Apply auto-click is ToS-banned.
+- Safe automation: (a) email-drop to EXPLICIT recipient (recruiting_contacts.json), (b) automated 14d follow-up email to same recipient.
+- Jobs w/o explicit recipient: recorded + follow-up scheduled but email won't send without an address.
+- ATS direct-fill registry path: needs per-company real career-portal URL (web-search) + logged-in browser on user Mac via Playwright/CDP. Company list pending from user; recruiting_contacts.json seeded empty.
