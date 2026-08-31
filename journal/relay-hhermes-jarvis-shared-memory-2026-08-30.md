@@ -81,3 +81,34 @@ using ONE common memory source:
   vouyager session (May 5 cookies) is DEAD (302 loop). Do NOT rely on it.
 - git is now a maintenance consideration: "sources.json" not used; selftest
   loader hardcodes source fallback chain.
+
+## 2026-08-31 (fixes + auto-apply wiring)
+### Hermes session-DB fix (2 bugs, one root cause)
+- ROOT CAUSE: Hermes gateway runs as uid 10000 (hermes) via s6-setuidgid. The
+  /opt/data/lib dir (host /home/rohit/.hermes/lib) was owned uid 1000 (rohit)
+  mode 700 -> hermes could not traverse it -> PermissionError on
+  libfts5_cjk.so -> session store fell back to JSONL -> scary logs + restarts.
+- FIX: chown 10000:10000 + chmod 0755 on /home/rohit/.hermes/lib; then built
+  the never-built CJK FTS extension in-container: cd /opt/hermes/native/fts5_cjk
+  && bash build.sh /opt/data/lib  -> libfts5_cjk.so (mode 644, hermes-readable).
+- VERIFIED: gateway restart shows NO permission warning; extension loads as
+  hermes (CREATE VIRTUAL TABLE ... tokenize=cjk_unicode61 works); gateway stable.
+- Do NOT rely on LinkedIn cookies (May cookies = 302 loop / dead). The public
+  guest /jobs-guest/jobs/api/seeMoreJobPostings/search endpoint works keyless.
+
+### Auto-apply wired (AgentChaguli -> career-ops)
+- run_apply.sh: host shim, takes base64(job_json) arg (no quote issues). Gate:
+  /home/rohit/.hermes/scripts/apply.conf AUTO_APPLY_REAL (0=dry-run default) +
+  APPLY_MIN_SCORE (52). Runs /home/rohit/projects/career-ops/auto_pipeline.py
+  --company --title --min-score 4.0.
+- auto_pipeline.py (discovery) now calls _run_auto_apply(new_jobs) after the
+  digest, for score>=52. Pipeline runs ON HOST as rohit (systemd user timer
+  06:30; NOT in container) -> direct shim call, no SSH needed.
+- DEDUP BUG FIX (critical): LinkedIn job urls carry volatile ?position/refId/
+  trackingId that change EVERY fetch -> _hash_job(url) differed daily -> would
+  re-apply same jobs. Fixed: strip query params from url in _hash_job AND in
+  linkedin_jobs._norm_job (store clean url). Verified stable hashes across
+  fetches + re-run dedup (new drops to 4-9 not 12).
+- Verified end-to-end: discovery 12 TPM/Director jobs -> dedup -> digest to
+  agentchaguli [telegram sent=True] -> auto-apply dry-run (reports 153.., cover
+  letters, linkedin msgs; NO GDrive push while AUTO_APPLY_REAL=0).
