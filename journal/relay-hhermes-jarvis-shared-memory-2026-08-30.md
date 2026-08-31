@@ -112,3 +112,56 @@ using ONE common memory source:
 - Verified end-to-end: discovery 12 TPM/Director jobs -> dedup -> digest to
   agentchaguli [telegram sent=True] -> auto-apply dry-run (reports 153.., cover
   letters, linkedin msgs; NO GDrive push while AUTO_APPLY_REAL=0).
+
+## 2026-08-31 (part 2) — Real submission + tracking + automated follow-up (email-drop)
+Decision (user): keep automated; FULL depth = submit + track + follow-up. Submission
+mechanism chosen by user: EMAIL-DROP to recruiter (not Playwright — not installed,
+fragile vs ATS/CAPTCHA).
+
+### Email infra (was present but unused)
+- email_intelligence.py send_email() uses Gmail API OAuth (scopes include gmail.send).
+  Lives in Hermes CONTAINER venv (/opt/hermes/.venv). Tokens at ~/.hermes/gmail/{credentials,token}.json
+  (mounted /opt/data/gmail). Key gotcha: module computes GMAIL_DIR from Path.home()/.hermes/gmail
+  -> in container HOME=/root resolves wrong. FIX: create symlink /opt/data/.hermes -> /opt/data,
+  and invoke with env HOME=/opt/data. Verified GMAIL_OK rohitmishra1278@gmail.com.
+- host->container: rohit is in docker group, so host runs: docker cp payload to
+  hermes:/tmp/email_payload.b64; docker exec hermes env HOME=/opt/data python send_email.py /tmp/email_payload.b64
+- NEW container script /opt/data/scripts/send_email.py: takes base64 JSON payload
+  {to,subject,body,attachments:[{name,content(b64-pdf)}]} -> sends multipart with PDFs.
+
+### Host-side wiring (discovery pipeline runs on host as rohit, systemd timer)
+- career-ops/auto_pipeline.py: added RESULT_JSON line (company,title,url,score,company_slug,
+  report_path,resume_path,cover_path) for machine parsing.
+- NEW /home/rohit/.hermes/scripts/email_drop.py: (1) ALWAYS records application via
+  tracker.track_application(status="applied") + schedules 14d follow-up; (2) BEST-EFFORT
+  email-drop ONLY when an EXPLICIT recruiter addr resolves; embeds resume+cover PDFs, sends via docker exec.
+- run_apply.sh: captures full pipeline output, greps RESULT_JSON, calls email_drop.py.
+- NEW /home/rohit/.hermes/scripts/recruiting_contacts.json: {"companies": {}}
+  {company: addr} explicit map. fallback_guess=false => NEVER guess-send hr@company.com from a real Gmail.
+  Add entries to enable sending per company.
+- apply.conf AUTO_APPLY_REAL=1 (real GDrive push) + APPLY_MIN_SCORE=52.
+
+### Follow-up automation (drafts now EMAIL)
+- tracker.get_applications_needing_followup: rows status in (applied,interview), >=14d old,
+  no follow_ups.sent_at. We set status=applied at apply time => now fed.
+- career-ops/scripts/auto_followup.py: patched. On --send: reads recruiter from notes="recruiter=..."
+  (stored by email_drop.py), EMAILS the follow-up via container sender instead of draft-only;
+  marks follow_ups.sent_at. Also fixed None interview_stage crash. Real scheduled follow-ups
+  stored when apply emails (notes=recruiter=<addr>).
+- hermes_scheduler.py auto_followup job: now runs auto_followup.py --days 14 --send (Mon 10:30).
+  Restarted hermes-scheduler.service to load new def.
+
+### VERIFIED end-to-end (to own Gmail as safe test recipient)
+1. REAL apply via shim: record app_id=75 status=applied + 14d followup; GDrive 4 files pushed;
+   EMAIL_SENT "Application — Engineering Program Director".
+2. DB: applications row 75 (Salesforce/Engineering Program Director/64/applied/report+cover paths);
+   follow_ups row scheduled 2026-09-14.
+3. Follow-up simulated (backdated 15d) : EMAILED "Follow-up — ... Salesforce"; follow_ups.sent_at set.
+4. Gmail confirmed BOTH emails landed 21:40 + 21:44 (from rohitmishra1278@gmail.com).
+Test state restored (app75 updated_at=now, notes=NULL, real follow-up re-armed sent_at=NULL).
+
+### IMPORTANT operational notes
+- LinkedIn guest feed gives company+url but NO recruiter email -> email-drop is GATED on explicit
+  recruiting_contacts.json entries. Until populated, applies RECORD + schedule follow-up but don't
+  send (by design, avoids spam from real Gmail). Populate map with real recruiter/talent addresses to activate emailing.
+- Voice gate flags 2 issues on follow-up draft (still sent).
