@@ -25,3 +25,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐19544
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Mastercard Developers
+    https://developer.mastercard.com/open-finance-us/documentation/connect/integrating/
+  • Mastercard Developers
+    https://developer.mastercard.com/open-finance-us/documentation/errors/error-codes/198/
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (ai agents):**
+  • Blog: Survey of Optimizers
+    http://arxiv.org/abs/2608.28557v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐206311
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26291
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐19649
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
