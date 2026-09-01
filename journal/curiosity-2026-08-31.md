@@ -70,3 +70,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • No country for mediocre mathematicians
     https://garvvee.substack.com/p/no-country-for-mediocre-mathematicians
     (117 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Model Context Protocol (MCP) - GeeksforGeeks
+    https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (ai agents):**
+  • Fine-Grained Multi Image Object Hallucination Benchmark
+    http://arxiv.org/abs/2608.30653v1
+  • PyKEEN-NSX: A Modular Framework for Static, Dynamic and Schema-Aware Negative Sa
+    http://arxiv.org/abs/2608.30652v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐206709
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26305
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐19701
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
