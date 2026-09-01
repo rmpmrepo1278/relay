@@ -103,3 +103,36 @@ GDRIVE TOKEN STATE (both Mac + homelab gdrive: remote):
   - Shared rclone anonymous client is being retired 2026 → personal client_id REQUIRED. Flagged for suite.
   - rompecabezas: Mac's rclone conf still lacks a stored token (config create was run; authorize printed a blob
     but the local ~/.config/rclone/rclone.conf token is empty) → will need `rclone config reconnect gdrive:` on MAC.
+
+---
+## UPDATE 2026-09-01 ~13:40 UTC — ROOT CAUSE FOUND & FIXED (GDrive account mismatch)
+
+THE REAL BUG: the export pipeline was authenticated to the WRONG Google account.
+  - homelab rclone `gdrive:` was bound to rohitmishra1@gmail.com (NOT rohitmishra1278).
+  - All job-hunt GDrive pushes (August 2026, the resume/cover PDFs, runs 176/180/181/182)
+    landed in rohitmishra1's Drive, which the user does NOT browse.
+  - That's why "August 2026" was never visible in My Drive/Job Hunt on rohitmishra1278.
+
+CONFIRM METHOD: called GET drive/v3/about?fields=user with each rclone token.
+  BEFORE: gdrive: -> rohitmishra1@gmail.com ; Job Hunt owner = rohitmishra1@gmail.com
+  AFTER  (20:46z): gdrive: -> rohitmishra1278@gmail.com  (verified via API)
+
+HOW FIXED:
+  - User created/confirmed Desktop OAuth client (Google Auth Platform), gave full secret.
+  - Ran `rclone config reconnect gdrive:` on the MAC while logged into rohitmishra1278
+    in the consent browser -> produced a 1278 token.
+  - I wrote that token into the HOMELAB /home/rohit/.config/rclone/rclone.conf [gdrive] block
+    (client_id 1043252202614-ldm...app..., client_secret GOCSPX-...).
+  - Verified homelab gdrive: -> rohitmishra1278@gmail.com.
+  - Re-ran AMD pipeline -> run 183 -> Job Hunt/September 2026/Careers - TITLE... ON 1278.
+    Robitmishra1278 Job Hunt now: June2026, May2026, September2026 (new).
+
+REGISTRATION/GATE: regression_test.py check #7 `gdrive-owned` now asserts the owned root
+  contains "Job Hunt". With 1278 it PASSES: root = [Google Photos, Job Hunt, Personal,
+  Saved from Chrome, Travel]. ALL PASSED 7/7, SUITE_EXIT=0.
+
+PENDING / DEFERRED (user chose NOT to do this now):
+  - Old August 2026 data still lives in rohitmishra1 (tokens expired -> 401, can't read).
+    User opted: leave rohitmishra1 alone; just ensure NEW runs land on 1278. Done.
+  - The '(owned)' copies and 'Job Hunt (auto)' folders I created earlier were DELETED
+    (user requested rollback). Cleaned up; verified gone.
