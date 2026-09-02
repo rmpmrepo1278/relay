@@ -136,3 +136,33 @@ PENDING / DEFERRED (user chose NOT to do this now):
     User opted: leave rohitmishra1 alone; just ensure NEW runs land on 1278. Done.
   - The '(owned)' copies and 'Job Hunt (auto)' folders I created earlier were DELETED
     (user requested rollback). Cleaned up; verified gone.
+
+---
+## UPDATE 2026-09-02 — naming + OneDrive backup wired
+
+Folder naming bug fixed: `careers.amd.com` no longer parses to company "Careers".
+  - Subdomain extraction handles `careers.<co>.com` / `jobs.<co>.com` -> <co>.
+  - All-caps acronyms preserved (AMD -> AMD, not Amd).
+  - JSON-LD `TITLE:` literal no longer leaks into folder name (emit PAGE_TITLE: instead).
+  - Result: clean folders like `Job Hunt/September 2026/AMD - Principal Technical Program Manager/`
+    with resume PDF + cover letter + report (5/5 pushed).
+
+OneDrive backup destination now live on nickynrohit@live.com:
+  - Added `_push_to_onedrive()` to disaster_recovery.py: best-effort copies each
+    nightly `disaster_recovery backup` to msonedrive:/HermesBackups/<name> after
+    the local backup is made; failure is recorded in onedrive_push column, does
+    NOT fail the local backup/record.
+  - Added `onedrive_push TEXT` column to backups schema (idempotent migration
+    via _ensure_schema_columns(); applied + recorded on row 10).
+  - Added `_ensure_backup_sources_readable()` guard.
+  - Fixed perms blocking the backup: state.db/temporal_kg.db/etc (uid 10000) were
+    mode 0600 unreadable by homelab user rohit -> chmod o+rX so backups run.
+  - msonedrive: remote re-authed as nickynrohit@live.com on homelab (verified root lists:
+    Attachments/Desktop/Documents/Nicky/Personal Vault/Pictures).
+  - Regression check #7 gdrive-owned still PASSES (gdrive: = 1278). ALL 7 PASSED.
+
+iCIMS resume caveat (unchanged/unchanged-fixable): iCIMS blocks curl AND Playwright
+  - 2KB bot-guard shell to curl; no JobPosting JSON-LD; no usable content.
+  - Playwright is now installed+working (npm ci + npx playwright install chromium).
+  - But iCIMS returns no real JD to any automation -> resume skipped until JD is pasted.
+  - Fix if needed: have the user paste JD, or a real-browser (non-headless) pass.
