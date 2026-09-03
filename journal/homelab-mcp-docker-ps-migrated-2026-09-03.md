@@ -65,6 +65,25 @@ end-to-end (returns 27 containers, GET and POST both work).
   `list_all_hosts`, `get_stats`, `get_container_details`, `get_container_logs`,
   `reload_inventory`. Fit for `/docker-unhealthy` (→ `get_stats`) later.
 
+## Durability fix (follow-up, same session)
+The first /docker-ps migration lived only in the container's WRITABLE layer at the
+image-baked `/opt/hermes/.hermes/scripts/` path — any `docker compose up` recreate
+would silently revert it (image ships unpatched copy). Fixed durably:
+
+- **PATCHED THE HOST copy** `/home/rohit/.hermes/scripts/n8n_bridge_server.py`
+  (= `/opt/data/scripts/` inside container) with the same migration. Backup kept at
+  `n8n_bridge_server.py.bak.hostmcp`.
+- **REPOINTED n8n-bridge compose command** from `/opt/hermes/.hermes/scripts/n8n_bridge_server.py`
+  to `/opt/data/scripts/n8n_bridge_server.py` (persistent host mount). Verified via
+  `force-recreate` that the patch SURVIVES container recreate (process cmd now points
+  at /opt/data/scripts, grep mcp_call_tool = 2).
+- New CANONICAL_HASH = `a6f16777c1aa3db72ca62b73a5b6c1d6aae773c857ef1a3b449714f890221ff8`.
+
+Verification: GET + 10x POST-style calls all return `status=ok, count=27`; homelab-mcp
+shows 6 tools; socat /_ping OK; guard passes. Note: POST /docker-ps is pre-existing
+`unauthorized` (auth-bearer) — `/docker-ps` GET is in `_NO_AUTH_GET` and is the
+production path n8n uses. Not a migration regression.
+
 ## Next
 - Optionally migrate `/docker-unhealthy` (line 1003) to `get_stats`.
 - `/docker-images`, `/docker-exec`, `/docker-logs` have no homelab-mcp equivalent —
