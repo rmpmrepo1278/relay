@@ -144,3 +144,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • IBM Bob
     https://bob.ibm.com/
     (207 points on HN)
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** automation × self hosting
+📄 **arXiv (self hosting):**
+  • From Prior-Guided Heuristics to Deployable Agents: Accelerating Demonstration-Dr
+    http://arxiv.org/abs/2609.03590v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐212214
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26471
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐20588
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • "Next-token predictor" is the wrong mental model for LLMs
+    https://gmcgoldr.github.io/2026/09/04/llm-next-token-predictors.html
+    (55 points on HN)
