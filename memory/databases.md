@@ -29,3 +29,19 @@ As of 2026-08-20, all legacy memory stores have been consolidated:
 ## Removed infrastructure (2026-08-20)
 
 - Qdrant, MenteDB, legacy memory stores
+
+## Agent Parliament & experience-module state (as of 2026-09-04)
+
+See `../docs/agent-parliament.md` for the full flow. Summary:
+
+| You want... | Go to... | How to query |
+|-------------|----------|-------------|
+| Failures (speaker input) | `unified_memory.db` → `outcomes` (id, source, timestamp, target, details) | `sqlite3 ~/.hermes/data/unified_memory.db "SELECT * FROM outcomes ..."`
+| Parliament decisions | `unified_memory.db` → `decision_register` (id, proposal_id, action_key, scale, gate, status, created_at, decided_at) | same DB |
+| Opening slate / member votes | `state/decision_votes.json` (proposal → member scored votes, quorum) | json |
+| Human 6th-vote ledger | `state/human_votes.json` (`{action_key:{vote,when}}`) | json |
+| Telegram ballots | `state/human_ballots.json` (`{hex8:{action_key,paged_at,pages}}`) | json |
+| Listener offset / confirm-dedup | `state/tg_listener_offset.json`, `state/tg_confirmations.json` | json |
+| Runnable commitments | `state/commitment_queue.json` + `data/commitments.json` `active[]` | json |
+| Human approval inbox | `~/agentharness/data/alerts_inbox.jsonl` (JSON **array**; severity/message/source/timestamp/delivered/requires_approval/actions/delivered_at) | json |
+| Experience module stores (daily builds) | `data/learning.db`, `data/insights.db`, `data/adversarial.db`, `data/signals.db` | sqlite3 |

@@ -17,6 +17,10 @@
 - [databases.md](databases.md) — index of all 17+ DBs, what each contains, and how to query them
 - [benchmarks/](benchmarks/) — canonical LLM benchmark store (tok/s, tool-call latency, load times), versioned; add runs via `bin/bench_llm.py`
 
+## The Homelab's Autonomous Systems
+- [agent-parliament.md](../docs/agent-parliament.md) — Agent Parliament + 4 experience modules + human 6th-vote/ballot loop (canonical, keep in sync)
+- career coach (in progress) — see `docs/career-coach.md` once live; interacts via Telegram plus OpenCode, targets Director-level readiness
+
 ## Decisions
 - [minipc.md](minipc.md) — mini-PC augment purchase decision (recommendation: BOSGAME M6 $969)
 - [ram-upgrade.md](ram-upgrade.md) — home-hp 32GB→64GB RAM decision (recommendation: Rimlance 32GB $158 Newegg)
