@@ -86,3 +86,36 @@ Interests: self_hosting, ai_agents, llm_inference
   • How an MIT research project became the Julia programming language
     https://news.mit.edu/2026/how-mit-research-project-became-global-programming-language-0831
     (164 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Your Smart Home, Powered by Gemini | Google Home
+    https://home.google.com/welcome/
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=2f13eb9b8b7368fa2314fc518ae1694a
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Home - MultiLit
+    https://multilit.com/
+🔀 **Intersection:** automation × self hosting
+  • What is Automation? Definition, Types, Example & Future
+    https://www.geeksforgeeks.org/software-engineering/what-is-automation/
+📄 **arXiv (self hosting):**
+  • Is Collision-Free Backoff Worth It in Wi-Fi?
+    http://arxiv.org/abs/2609.03817v1
+  • Employing the Structural Power to Achieve Supply-Demand Balanced Payment Channel
+    http://arxiv.org/abs/2609.03600v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐212142
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26468
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐20563
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+les ad trackers on troops' phones
+    https://www.theguardian.com/us-news/2026/sep/04/military-disables-phone-ad-trackers
+    (136 points on HN)
