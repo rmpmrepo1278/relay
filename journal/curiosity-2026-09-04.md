@@ -55,3 +55,34 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐20389
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=16a99f1bad1868151ca388d1acc0699f
+  • At Home | Home Decor, Furniture, & Halloween Decor
+    https://www.athome.com/
+🌱 **Adjacent to ai agents:** constitutional ai
+  • Constitutional law - Wikipedia
+    https://en.wikipedia.org/wiki/Constitutional_law
+🔀 **Intersection:** self hosting × automation
+📄 **arXiv (llm inference):**
+  • Legibility is Not Interpretability: Comparing Judged and Actual Importance in Ch
+    http://arxiv.org/abs/2609.04194v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐212012
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26464
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐20522
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+
+🎲 **Serendipity:**
+  • How an MIT research project became the Julia programming language
+    https://news.mit.edu/2026/how-mit-research-project-became-global-programming-language-0831
+    (164 points on HN)
