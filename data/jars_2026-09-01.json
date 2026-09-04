@@ -1,0 +1,10 @@
+{
+  "agent": "jarvis",
+  "generated_at": "2026-09-01T13:32:17.564663+00:00",
+  "based_on": "jobs_2026-09-01.json",
+  "total_jobs": 0,
+  "new_jobs": 0,
+  "top_skills": [],
+  "keyword_trends": [],
+  "recommendation": "Focus applications on the highest-scored, keyword-matched roles; prepare tailored resumes for the detected skill clusters above."
+}
