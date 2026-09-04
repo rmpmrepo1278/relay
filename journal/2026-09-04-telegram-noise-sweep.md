@@ -53,4 +53,10 @@
 - Auto-fix model config (stealth/ox-alpha) — decide a recognized model or set ANTHROPIC_MODEL so delegations
   actually execute (currently silenced, not functional).
 - Work-session "Gateway: inactive" labeling mismatch (cosmetic).
-- Consider noise-reduction for council propose/tally messages once balloting is fully automated.
+- Consider noise-reduction for council propose/tally messages once balloting is fully automated.## Follow-up: auto-fix model decision (same day)
+- User asked to set the model for the auto-fixer. Investigation:
+  - `stealth/ox-alpha` is Hermes' internal Zen-relay model (models.py:136 `"free"`, 1M ctx) — NOT an OpenRouter id; claude-code on the host can only reach it if proxied through the Hermes gateway (not wired).
+  - OpenRouter account status: **zero credits** (402 "Insufficient credits" on paid models), usage=32.86 lifetime, NOT free tier. OpenRouter now **rate-limits ALL :free models for this account** (429 "free-models-per-day-high-balance" — even z-ai/glm-5.2:free and poolside/laguna-s-2.1:free which hermes pins as free). So no $0 host-side delegation path exists today.
+- Set `~/.claude/settings.json`: `model = "anthropic/claude-haiku-4.5"`, `env.ANTHROPIC_MODEL` + `env.ANTHROPIC_SMALL_FAST_MODEL` = same (env bypasses claude-code's registry check; `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT=1` already present). Backup at `settings.json.bak-1788566143`.
+- Re-armed `~/.claude/state/auto_fix_model.json` (silenced_until +12h, reason funding-pending) so delegates stay Telegram-quiet until funded; delegate itself reports max once per 12h.
+- Unblock: add a few credits at openrouter.ai/settings/credits → next auto-fix uses haiku-4.5 for real. Routing delegates through the Hermes Zen relay (proxy) is the free alternative; not implemented.
