@@ -59,20 +59,31 @@ to these. Model can be tuned once the target role/industry is confirmed.
 
 ## Repo layout (v1 scaffold)
 ```
-scripts/career_coach.py            # CLI: story bank + mock + coach + weekly ops (host, scheduler-driven)
-scripts/career_coach_data.py       # state/instrumentation (keep *_coach.py free of flask)
-state/career_coach/                # stories_index, interview_log, linkedin, weekly state
-data/career/coach/                 # stories.jsonl, narrative drafts
-plugins/career_ops_pipeline/       # Telegram command router: /story /mock /coach /linkedin /career
-skills/career-ops/career-ops-bundle/  # docs/skill bundle for the coach
+scripts/career_coach.py             # CLI: story bank + mock + coach + linkedin + weekly + deep-dive + Telegram send
+scripts/career_coach_data.py        # store, competency model, scoring, banks, prompts
+state/career_coach/                 # interview_log.jsonl, linkedin.jsonl, weekly.json, profile.json
+data/career/coach/                  # stories.jsonl, narratives.md
+plugins/career_coach/               # deterministic Telegram command router (DORMANT — loads on gateway reload)
+skills/career-ops/career-ops-bundle/career-coach.md  # primary routing: Hermes skill for /story /mock /coach /linkedin /career
 ```
 Design mapping to Rohit's ask: stories+deep dive → tracks 1-2; mock interviews + coaching on content,
 style, clarity → tracks 3-4; LinkedIn connections → track 5; "steps needed to land the role" → track 6.
 
-## Next steps (build order)
-1. story_bank capture+quality gate (v1, role-agnostic) — IN PROGRESS
-2. mock_interview Q&A loop + scoring
-3. Telegram command router (`/story`, `/mock`, `/coach`)
-4. scheduler cadence jobs
-5. deep-dive + linkedin tracks (OpenCode-assisted)
-6. weekly_review + metrics dashboard
+## v1 ship status (2026-09-04) — ALL 6 TRACKS LIVE host-side
+- `career_coach.py selftest` → 11/11 PASS on host. Rehearsed live: guided capture (`add --json-file`),
+  list/show/refine, mock question+score, coach on weak text (hedges/vague/metrics detected), linkedin
+  (headline/about/outreach/content idea), weekly (stats + coverage gaps), deep-dive (narratives.md).
+- **Scheduler jobs added** (`hermes_scheduler.py define_jobs`, restart single daemon):
+  - `career_coach_daily` — daily 09:05 → `daily-prompt` (rotates capture/refine/coach/linkedin; sends to Telegram itself via .env creds)
+  - `career_coach_weekly` — Sunday 09:30 → `weekly-send` (aggregate report + coverage gaps to Telegram)
+- **Routing**: primary = Hermes **skill** (deterministic CLI calls, works immediately, no container restart);
+  deterministic `plugins/career_coach` hook ships DORMANT (activates on next gateway reload; do NOT `docker restart hermes` casually — boot chowns `~/.hermes` to uid 10000).
+- **Adoption warm-up**: run `career_coach.py daily-prompt` once to send today's prompt, bank the first real story
+  via Telegram (`/story`), then `/mock` to start the practice cadence.
+
+## Next steps (deeper, follow-ups)
+1. Real story capture via Telegram (`/story`) → first 6 stories, then auto-refine cadence
+2. Mock-interview aggregate stats tracking → voice/pace practice (audio files optional)
+3. LinkedIn connection outreach tracking + remind cadence (log exists; UI in Telegram via skill)
+4. Target-role intake: one-off `/career target` to pin the exact Director PgM JD + custom question bank
+5. Weekly-recap delivery inside Telegram (job wired, awaiting data volume)
