@@ -27,3 +27,31 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐20389
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 00:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • Anmelden bei Hotmail | Microsoft Support
+    https://support.microsoft.com/de-de/accounts-billing/manage/how-to-sign-in-to-hotmail
+  • Change the refresh rate on your monitor in Windows | Microsoft Support
+    https://support.microsoft.com/en-us/windows/hardware/display-graphics/change-the-refresh-rate-on-your-monitor-in-windows
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agent - Wikipedia
+    https://en.m.wikipedia.org/wiki/Agent
+  • Agent (film) - Wikipedia
+    https://en.m.wikipedia.org/wiki/Agent_(film)
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (ai agents):**
+  • ESPO: Error-Structured Prompt Optimization via Diagnose, Diversify, and Stabiliz
+    http://arxiv.org/abs/2609.04197v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐211473
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26447
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐20389
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
