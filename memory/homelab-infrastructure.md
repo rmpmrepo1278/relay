@@ -63,9 +63,10 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   `localhost:8083/v1`. Both send `model: agentharness-proxy`. `MODEL_REMAP` is now a **fallback chain**
   (cloud → local, auto-failover on non-2xx or 2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`,
   `claude-sonnet-4-20250514`, `anthropic/claude-haiku-4.5` →
-  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,ollama/qwen3:8b`
-  (chain refreshed 2026-09-05 with **verified-live** model ids only; reasoning `:free` models that emit
-  empty content auto-fall through). `/v1/models` injects keys + chain targets (371 entries).
+  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,ollama/qwen3:8b`
+  (chain refreshed 2026-09-05 with **verified-live** model ids only; groq leg is hop-direct via Mac proxy;
+  reasoning `:free` models that emit empty content auto-fall through). /v1/models injects keys + chain
+  targets (371 entries).
   **Delegate flipped to free path (2026-09-05)**: `~/.claude/settings.json` `ANTHROPIC_BASE_URL` now
   `http://127.0.0.1:8083` (was paid openrouter.ai; backup `settings.json.bak-paid-openrouter`); model
   `anthropic/claude-haiku-4.5` (remapped). claude-code-valid SSE verified (message_start → deltas →
@@ -79,11 +80,14 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   - NVIDIA ✓ LIVE with current ids: `nvidia/minimaxai/minimax-m3` (~1s, in chain), `nvidia/moonshotai/kimi-k3`
     (~28s). Old id `nvidia/meta/llama-3.3-70b-instruct` = retired (410).
   - GEMINI — key alive, 429 (rate/quota — "prepayment balance"; needs AI Studio fresh key or top-up).
-  - GROQ — **key + models VALIDATED live** (`groq/qwen/qwen3.6-27b`, `groq/qwen/qwen3.8-27b`,
-    `groq/openai/gpt-oss-120b` → 200 from Mac IP; `groq/groq/compound` = no such model). Homelab egress
-    (WAN IP 73.239.85.189) is Cloudflare-1010-banned by api.groq.com → OMR re-trips the groq breaker on
-    every call (empty streams; last_error = CF block page). Needs proxy/different egress (OMR has
-    `proxy_registry`/`proxy_assignments` tables — both empty). NOT a dead key.
+  - GROQ — **NOW LIVE (2026-09-05)**: hop has a direct Groq leg (`groq/qwen/qwen3.8-27b`, also
+    `groq/qwen/qwen3.6-27b`, `groq/openai/gpt-oss-120b` — these are the CURRENT ids) that bypasses OMR:
+    Groq Cloudflare bans the homelab WAN IP (1010 "browser signature"); instead hop egresses via an HTTP
+    CONNECT proxy on the paired Mac (Tailscale `100.86.100.87:8089`, launchd agent
+    `com.relay.mac-egress-proxy`, key read from `.omniroute/.env`, host whitelist = api.groq.com + google
+    generativelanguage + openrouter + openai). Verified through hop: 0.2s, content OK, SSE streams clean.
+    Key was never dead (my earlier "dead key" note was WRONG — the 403s were wrong ids + the CF IP ban).
+    Old ids `groq/llama-3.3-70b-versatile`, `groq/qwen3.6-27b`, `groq/groq/compound` = no-such-model.
   - CEREBRAS — 402 `payment_required`/quota (billing tab) — account, not key.
   - SAMBANOVA — 402 `PAYMENT_METHOD_REQUIRED` — account, not key.
   - Two spare OpenRouter keys in `.env.local` (`OPENROUTER_API_KEY_2`, `_3`) — valid, $0 usage, no limits
