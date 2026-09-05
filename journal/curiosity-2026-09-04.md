@@ -192,3 +192,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐20612
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** constitutional ai
+  • CONSTITUTIONAL Definition & Meaning - Merriam-Webster
+    https://www.merriam-webster.com/dictionary/constitutional
+  • Constitutional law - Wikipedia
+    https://en.wikipedia.org/wiki/Constitutional_law
+🔀 **Intersection:** self hosting × llm inference
+📄 **arXiv (security):**
+  • SENTINEL-RL: Offloading Topological Reasoning from LLM Agents in the Security Op
+    http://arxiv.org/abs/2609.04159v1
+  • A Non-Formulable Theorem: A Fundamental Limit of Finite Syntactic Systems and It
+    http://arxiv.org/abs/2609.04086v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐212345
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26476
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐20612
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • RSA-260 Factorized
+    https://twitter.com/penlume/status/2095372672356212876
+    (77 points on HN)
