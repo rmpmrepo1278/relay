@@ -58,7 +58,15 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   first time it's actually applied). API surface = agentproxy's (chat/completions + /v1/messages + /v1/models +
   /health + /v1/token-juice stats), deterministic response shaping (aggregates SSE→JSON for non-stream clients,
   relays SSE for stream), auto `no-think/` alias for ollama (TJ_NO_THINK=true). Code: `/home/rohit/tokenjuice-hop/`;
-  upstream OMR :20128. Consumers should be re-pointed :8080 (agentproxy) → :8083 (hop).
+  upstream OMR :20128. **Consumers re-pointed to it (2026-09-05)**: Hermes `config.yaml` base_url
+  `localhost:8080/v1/` → `localhost:8083/v1/`; Jarvis `config.toml` api_base `100.122.58.40:8080/v1` →
+  `localhost:8083/v1`. Both send `model: agentharness-proxy` → hop `MODEL_REMAP=agentharness-proxy=ollama/qwen3:8b`
+  (+ `/v1/models` injects the alias, 371 entries). agentproxy (`agentharness-proxy.service`) kept running as
+  **cold standby** on :8080 (200 OK).
+- Ollama = **compose container** in `/home/rohit/services/docker/compose/apps.yml`, NOT the (inactive, now
+  disabled) systemd `ollama.service`. Publishes `127.0.0.1:11434` + `100.122.58.40:11434` (loopback + tailnet
+  only — no 0.0.0.0). Open WebUI reaches it over compose network `http://ollama:11434`. Earlier note claiming
+  0.0.0.0 was WRONG (stale unit env was misattributed).
 - ~~FreeLLMAPI (3005)~~ — **REMOVED** (2026-07-30), redundant aggregator
 - ~~MenteDB (6677)~~ — **REMOVED** (2026-08-10) per user request, redundant with consolidated `unified_memory.db`
 

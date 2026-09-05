@@ -81,3 +81,29 @@ was stale. The systemd service (v16.2.12) had been running all along.
   still Depends on agentharness-proxy — re-point its ANTHROPIC_BASE_URL/OPENAI_BASE_URL when ready.
 - Note: Ollama env OLLAMA_HOST=0.0.0.0 (ollama.service) contradicts the "loopback-only" memory note — port
   11434 is open on all interfaces; wrap or bind if not intended.
+
+## Re-pointing done (2026-09-05) + Ollama-bind correction
+
+- CORRECTION: the OLLAMA_HOST=0.0.0.0 note was WRONG (misattributed). Ollama runs as a COMPOSE container
+  (/home/rohit/services/docker/compose/apps.yml), publishing 127.0.0.1:11434 + 100.122.58.40:11434 (loopback +
+  tailnet only — matches the tailnet-only posture). The systemd ollama.service holding OLLAMA_HOST=0.0.0.0 is
+  INACTIVE and has now been `systemctl disable`d (no risk of a rogue 0.0.0.0 bind). Open WebUI → compose net
+  http://ollama:11434 (unaffected).
+- hop gained MODEL_REMAP (env `MODEL_REMAP=agentharness-proxy=ollama/qwen3:8b`): rewrites legacy consumer model
+  names into real OMR models; `/v1/models` now injects the alias ids (371 total) so LiteLLM-style clients that
+  validate against /v1/models keep working.
+- Consumers re-pointed :8080 → :8083:
+  - Hermes /home/rohit/.hermes/config.yaml: base_url `http://localhost:8083/v1/` (backup *.bak-repoint-20260904).
+    Applied via restarting the `hermes` container (host networking confirmed; container reaches hop :8083 → 200).
+  - Jarvis /home/rohit/.openjarvis/config.toml: api_base `http://localhost:8083/v1` (was 100.122.58.40:8080).
+    `openjarvis.service` restarted → active.
+  - agentproxy (`agentharness-proxy.service`) left RUNNING as cold standby on :8080 (verified 200) — instant
+    revert possible; not stopped per plan.
+- Remap verified live through hop→OMR→ollama: chat `model:"agentharness-proxy"` → wire model qwen3:8b,
+  "REMAP-OK", 5 completion tokens, 7s; anthropic shape → thinking+text REMAP-MSG-OK, end_turn, 16.5s;
+  /v1/models count 371 with `agentharness-proxy` present.
+- Known: anthropic non-stream still shows a small thinking block (no-think applies to chat path perfectly; OMR
+  /v1/messages keeps a short reasoning deltas) — functionally correct, slightly more output tokens. Not blocking.
+- Tradeoff flagged: Hermes/Jarvis now route to OMR → its free cloud tiers are ALL down, so today everything lands
+  on ollama/qwen3:8b (no-think). Reviving OMR free tiers (auggie login, ddgw) restores cloud-level routing
+  through the same hop without moving consumers again.
