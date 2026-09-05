@@ -57,3 +57,24 @@ needs credits; gemini needs the 429 window to clear.
 claude-code-valid SSE confirmed (message_start → content_block_delta* → message_stop; `print('hello')`
 delivered, 2.1s). End-to-end: `agentharness-proxy` → wire `cohere/north-mini-code:free`, 0.9s; `haiku-4.5`
 anthropic shape → `DELEGATE-LIVE`, 1.0s.
+## Key bounty + corrected provider story (2026-09-05)
+Inventoried all keys on disk; probed each DIRECT from Mac IP + homelab IP:
+- **GROQ key was never dead.** `403 error code: 1010` = Groq Cloudflare banning homelab WAN egress
+  (73.239.85.189, "browser signature"), not the key. From Mac IP: auth passes, models live:
+  `qwen/qwen3.6-27b`, `qwen/qwen3.8-27b` (content "ok"), `openai/gpt-oss-120b`.
+- OMR→groq: breaker trips on the CF 1010 every call (log: "access denied | api.groq.com used Cloudflare
+  to restrict access | ... errorCode 1010 ... Your IP 73.239.85.189"). Cleared breaker (DB
+  backoff_level=0, test_status=active + restart) → still CF-blocked → re-arms. Groq unusable from homelab
+  without a proxy (OMR proxy tables exist but empty) — could egress via Mac (Tailscale) if wanted.
+- CEREBRAS = 402 `payment_required` (quota/billing), SAMBANOVA = 402 `PAYMENT_METHOD_REQUIRED` — account
+  state, not keys. GEMINI = "prepayment balance" 429 — account/billing. All NOT fixable by swapping ids.
+- Fresh OpenRouter keys `OPENROUTER_API_KEY_2`/`_3` valid ($0 usage, no limit) — spare capacity.
+- `FREELLMAPI_ENDPOINT=http://localhost:20128` → it's OMR itself (was agentproxy's internal label).
+
+## Signup reality
+Automated account creation is not possible from here: every provider requires email verification link
+access + (CAPTCHA) + first-party ToS acceptance — I have none of those. Wrapping this up with the user:
+paths = (a) they paste fresh keys (AI Studio for Gemini fixes the quota line; Mistral/DeepSeek/Cohere/HF
+gitHub/Cloudflare all add NEW free tiers), (b) browser-use MCP assist where they do captcha+email and I
+handle the rest, (c) prep step-by-step scripts. Wiring any key = custom node (openai-compatible) + enc:v1
+DB write + hop chain leg — the exact pattern already proven with openrouter/ollama.
