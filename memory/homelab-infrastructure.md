@@ -39,11 +39,19 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
 
 ### AI / LLM
 - AgentHarness LLM Proxy (8080, systemd user unit) — OpenAI-compatible proxy routing to direct free-tier providers (Groq, Cerebras, OpenRouter, Mistral, DeepSeek, Google, Cohere, Cloudflare, GitHub models) + local Ollama fallback
-- Ollama (11434, host) — local inference with 5 models (llama3.2:3b, qwen2.5:7b, qwen2.5:14b, mistral, nomic-embed-text)
+- Ollama (11434, host, `ollama.service`) — local inference; `OLLAMA_KEEP_ALIVE=-1`, `OLLAMA_NUM_THREADS=8`; models: qwen3:32b-64k (slow on 8 cores, 20GB) + qwen3:8b (5.2GB, warm ~1.5s, end-to-end via OmniRoute 15-35s incl. built-in thinking)
 - Open WebUI (8082) — LLM chat UI
 - Khoj (4321) — AI second brain with pgvector
 - Qdrant (6333) — vector database
-- ~~OmniRoute (20128)~~ — **REMOVED** (2026-07-30), redundant aggregator
+- OmniRoute (20128, systemd `omniroute.service`, v16.2.12) — **ACTIVE again** (2026-09-05; earlier note said REMOVED).
+  Multi-provider gateway: 370-model catalog, OpenAI-compatible `chat/completions` + Anthropic `/v1/messages`,
+  embeddings/audio/images/Responses APIs, combos/auto-routing, breakers, quota/credit system, free no-auth tiers
+  (aug/ddgw/felo/pepper — currently down), custom openai/anthropic-compatible nodes, dashboard+CLI. Data:
+  `/home/rohit/.omniroute` (storage.sqlite + `.env`). Custom node `ollama` → local Ollama: provider id
+  `openai-compatible-chat-fb4e338b-cba4-4987-ad0a-bbd4e1a4558d`, connection `db7a77aa-...` (auth_type openai,
+  PSD `{"baseUrl":"http://localhost:11434/v1"}`), prefix-routed model ids `ollama/<model>`. End-to-end verified
+  (chat 15s, /v1/messages 35s). Queue budget: `RATE_LIMIT_MAX_WAIT_MS=120000` added to unit (default 15s too low
+  for CPU Ollama).
 - ~~FreeLLMAPI (3005)~~ — **REMOVED** (2026-07-30), redundant aggregator
 - ~~MenteDB (6677)~~ — **REMOVED** (2026-08-10) per user request, redundant with consolidated `unified_memory.db`
 
