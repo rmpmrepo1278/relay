@@ -112,3 +112,16 @@ Answer to "do we still need agentharness?": the LLM proxy = NO, but the dir = on
   north-mini-code 1.7s, anthropic path 1.2s).
 - Remaining attachment: agentharness/data/.env.local holds legacy keys (OpenRouter _2/_3 etc.) that
   other configs read — keep the dir until key migration; archive, don't delete.
+
+## BAI key added & generalized direct hop (2026-09-05)
+User pasted b.ai key (`sk-1cofzrjuw0ds5besngbw5jemncwxiimd`).
+- Probed b.ai: `https://b.ai` is the static frontend (S3/CloudFront); the API base is `https://api.b.ai`
+  (a one-api deployment). GET /v1/models works, but chat is premium-rate/deposit locked for most models
+  (returns 403 premium, or 400 insufficient user quota e.g. deepseek-v4-flash required=4 credits).
+  However, `qwen3.8-flash` is 100% free (required=0, balance=0 allowed) and returns fast completions.
+- Refactored `hop.py` direct legs into a generalized map (`KNOWN_DIRECT = {"groq": {...}, "bai": {...}}`)
+  and client cache to handle multiple independent direct routes cleanly without boilerplate.
+- Appended `BAI_API_KEY` to `~/.omniroute/.env` (tail `…wxiimd`).
+- Swapped unit service, restarted hop.
+- Re-verified all paths: `bai/qwen3.8-flash` (200, 2.5s), refactored `groq/qwen/qwen3.8-27b` (200, 0.3s),
+  and first-leg chain (200, 0.8s).

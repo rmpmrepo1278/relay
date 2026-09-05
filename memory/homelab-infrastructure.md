@@ -63,10 +63,10 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   `localhost:8083/v1`. Both send `model: agentharness-proxy`. `MODEL_REMAP` is now a **fallback chain**
   (cloud → local, auto-failover on non-2xx or 2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`,
   `claude-sonnet-4-20250514`, `anthropic/claude-haiku-4.5` →
-  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,ollama/qwen3:8b`
+  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,bai/qwen3.8-flash,ollama/qwen3:8b`
   (chain refreshed 2026-09-05 with **verified-live** model ids only; groq leg is hop-direct via Mac proxy;
-  reasoning `:free` models that emit empty content auto-fall through). /v1/models injects keys + chain
-  targets (371 entries).
+  bai leg is hop-direct via homelab; reasoning `:free` models that emit empty content auto-fall through).
+  /v1/models injects keys + chain targets (371 entries).
   **Delegate flipped to free path (2026-09-05)**: `~/.claude/settings.json` `ANTHROPIC_BASE_URL` now
   `http://127.0.0.1:8083` (was paid openrouter.ai; backup `settings.json.bak-paid-openrouter`); model
   `anthropic/claude-haiku-4.5` (remapped). claude-code-valid SSE verified (message_start → deltas →
@@ -80,6 +80,10 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   - NVIDIA ✓ LIVE with current ids: `nvidia/minimaxai/minimax-m3` (~1s, in chain), `nvidia/moonshotai/kimi-k3`
     (~28s). Old id `nvidia/meta/llama-3.3-70b-instruct` = retired (410).
   - GEMINI — key alive, 429 (rate/quota — "prepayment balance"; needs AI Studio fresh key or top-up).
+  - BAI (b.ai, api.b.ai) — **KEY ADDED (2026-09-05)**: a `one-api` gateway. Account has 0 balance, so
+    premium models return 403 or 400 (insufficient user quota). However, `qwen3.8-flash` is fully
+    free-tier (required=0, balance=0 allowed). Wired as a direct hop leg `bai/qwen3.8-flash` calling
+    `api.b.ai` directly from homelab (no proxy). Responded ~2.5s, clean content OK. Key tail `…wxiimd`.
   - GROQ — **NOW LIVE (2026-09-05)**: hop has a direct Groq leg (`groq/qwen/qwen3.8-27b`, also
     `groq/qwen/qwen3.6-27b`, `groq/openai/gpt-oss-120b` — these are the CURRENT ids) that bypasses OMR:
     Groq Cloudflare bans the homelab WAN IP (1010 "browser signature"); instead hop egresses via an HTTP
