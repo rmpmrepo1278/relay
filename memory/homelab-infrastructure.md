@@ -38,15 +38,20 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
 - OpenViking (1933/8020) — map server
 
 ### AI / LLM
-- AgentHarness LLM Proxy (8080, systemd user unit) — OpenAI-compatible proxy routing to direct free-tier providers (Groq, Cerebras, OpenRouter, Mistral, DeepSeek, Google, Cohere, Cloudflare, GitHub models) + local Ollama fallback
-- Ollama (11434, host, `ollama.service`) — local inference; `OLLAMA_KEEP_ALIVE=-1`, `OLLAMA_NUM_THREADS=8`; models: qwen3:32b-64k (slow on 8 cores, 20GB) + qwen3:8b (5.2GB, warm ~1.5s, end-to-end via OmniRoute 15-35s incl. built-in thinking)
+- ~~AgentHarness LLM Proxy (8080)~~ — **REMOVED 2026-09-05** (decommissioned). Its OpenAI-compatible LLM role was
+  superseded by **TokenJuice Hop (8083)**; consumers (Hermes, Jarvis, Claude delegate) all route through it.
+  Kept `:8080` as cold standby during cutover (agentharness-proxy.service disabled after verification),
+  then stopped. Direct-provider legs (Groq, b.ai) now live in hop.py, not agentproxy.
+- Ollama (11434, compose container, **not** the inactive systemd `ollama.service`) — local inference;
+  `OLLAMA_KEEP_ALIVE=-1`, `OLLAMA_NUM_THREADS=8`; models: qwen3:32b-64k (slow on 8 cores, 20GB) + qwen3:8b
+  (5.2GB, warm ~1.5s, end-to-end via OmniRoute 15-35s incl. built-in thinking). Publishes 127.0.0.1:11434
+  + Tailscale 100.122.58.40 (loopback + tailnet only).
 - Open WebUI (8082) — LLM chat UI
 - Khoj (4321) — AI second brain with pgvector
 - Qdrant (6333) — vector database
 - OmniRoute (20128, systemd `omniroute.service`, v16.2.12) — **ACTIVE again** (2026-09-05; earlier note said REMOVED).
   Multi-provider gateway: 370-model catalog, OpenAI-compatible `chat/completions` + Anthropic `/v1/messages`,
-  embeddings/audio/images/Responses APIs, combos/auto-routing, breakers, quota/credit system, free no-auth tiers
-  (aug/ddgw/felo/pepper — currently down), custom openai/anthropic-compatible nodes, dashboard+CLI, no-think
+  embeddings/audio/images/Responses APIs, combos/auto-routing, breakers, quota/credit system, no-think
   gateway alias (`no-think/<provider>/<model>`). Data: `/home/rohit/.omniroute` (storage.sqlite + `.env`).
   Custom node `ollama` → local Ollama: provider id
   `openai-compatible-chat-fb4e338b-cba4-4987-ad0a-bbd4e1a4558d`, connection `db7a77aa-...` (auth_type openai,
@@ -54,24 +59,27 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   (chat 15s, /v1/messages 35s). Queue budget: `RATE_LIMIT_MAX_WAIT_MS=120000` added to unit (default 15s too low
   for CPU Ollama).
 - TokenJuice Hop (8083, systemd `tokenjuice-hop.service`) — token-maxxing preprocessor in front of OmniRoute.
-  Reuses AgentHarness `core/providers/token_juice.py` verbatim (was NEVER wired into agentproxy's live path —
-  first time it's actually applied). API surface = agentproxy's (chat/completions + /v1/messages + /v1/models +
-  /health + /v1/token-juice stats), deterministic response shaping (aggregates SSE→JSON for non-stream clients,
-  relays SSE for stream), auto `no-think/` alias for ollama (TJ_NO_THINK=true). Code: `/home/rohit/tokenjuice-hop/`;
-  upstream OMR :20128. **Consumers re-pointed to it (2026-09-05)**: Hermes `config.yaml` base_url
-  `localhost:8080/v1/` → `localhost:8083/v1/`; Jarvis `config.toml` api_base `100.122.58.40:8080/v1` →
-  `localhost:8083/v1`. Both send `model: agentharness-proxy`. `MODEL_REMAP` is now a **fallback chain**
-  (cloud → local, auto-failover on non-2xx or 2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`,
-  `claude-sonnet-4-20250514`, `anthropic/claude-haiku-4.5` →
+  Reuses AgentHarness `core/providers/token_juice.py` verbatim (copied to /home/rohit/tokenjuice-hop/; was
+  NEVER wired into agentproxy's live path — first time actually applied). API surface = agentproxy's
+  (chat/completions + /v1/messages + /v1/models + /health + /v1/token-juice stats), deterministic
+  response shaping (aggregates SSE→JSON for non-stream clients, relays SSE for stream), auto `no-think/`
+  alias for ollama (TJ_NO_THINK=true), + generalized direct-provider legs (`KNOWN_DIRECT`: groq via Mac
+  egress proxy, bai direct) that bypass OMR entirely. Own venv; upstream OMR :20128.
+  **Consumers re-pointed (2026-09-05)**: Hermes `config.yaml`
+  base_url `localhost:8080/v1/` → `localhost:8083/v1/`; Jarvis `config.toml` api_base
+  `100.122.58.40:8080/v1` → `localhost:8083/v1`. Both send `model: agentharness-proxy`.
+  `MODEL_REMAP` is now a **fallback chain** (cloud → local, auto-failover on non-2xx or
+  2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`, `claude-sonnet-4-20250514`,
+  `anthropic/claude-haiku-4.5` →
   `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,bai/qwen3.8-flash,ollama/qwen3:8b`
   (chain refreshed 2026-09-05 with **verified-live** model ids only; groq leg is hop-direct via Mac proxy;
   bai leg is hop-direct via homelab; reasoning `:free` models that emit empty content auto-fall through).
-  /v1/models injects keys + chain targets (371 entries).
-  **Delegate flipped to free path (2026-09-05)**: `~/.claude/settings.json` `ANTHROPIC_BASE_URL` now
-  `http://127.0.0.1:8083` (was paid openrouter.ai; backup `settings.json.bak-paid-openrouter`); model
-  `anthropic/claude-haiku-4.5` (remapped). claude-code-valid SSE verified (message_start → deltas →
-  message_stop).
-  agentproxy (`agentharness-proxy.service`) kept as **cold standby** on :8080 (200 OK).
+  /v1/models injects keys + chain targets (371 entries). **Delegate flipped to free path (2026-09-05)**:
+  `~/.claude/settings.json` `ANTHROPIC_BASE_URL` now `http://127.0.1.1:8083` (was paid openrouter.ai; backup
+  `settings.json.bak-paid-openrouter`); model `anthropic/claude-haiku-4.5` (remapped).
+  claude-code-valid SSE verified (message_start → deltas → message_stop).
+  agentproxy (`agentharness-proxy.service`) kept as **cold standby** on :8080 during cutover, then
+  `disable --now`'d and stopped (2026-09-05).
   **Free cloud tier status (2026-09-05, all probed live):**
   - OPENROUTER ✓ LIVE (3 verified free models): `cohere/north-mini-code:free` (coding, ~1s), `poolside/
     laguna-s-2.1:free`, `minimax/minimax-m3:free`. Stored OMR openrouter key was a different dead one →
