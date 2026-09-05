@@ -96,3 +96,19 @@ User chose "unblock Groq via Mac egress". Done end-to-end:
 - groq current ids: `qwen/qwen3.6-27b`, `qwen/qwen3.8-27b`, `openai/gpt-oss-120b`. Dead ids:
   `groq/llama-3.3-70b-versatile`, `groq/qwen3.6-27b`, `groq/groq/compound`.
 - Corrected memory: groq was NOT a dead key (earlier note wrong).
+
+## AgentHarness proxy decommissioned (2026-09-05) — consumers already moved
+Answer to "do we still need agentharness?": the LLM proxy = NO, but the dir = only as legacy data.
+- Verified each consumer path before stopping: hermes config.yaml base_url=8083 (hop); claude delegate
+  settings base_url=8083; openjarvis config.toml `host=:8080` hits are its OWN engine ports
+  ([engine.llamacpp]/[engine.uzu]) NOT the agentproxy — jarvis defaults to vLLM/GLM-4.7-Flash
+  (localhost:8001) via its own engine registry. openjarvis.service still has a stale
+  Wants/After=agentharness-proxy.service (harmless now that it's disabled; soft dep).
+- Disabled + stopped agentharness-proxy.service (:8080 now free). Stopped idle start_dashboard.py
+  (pid, port 9100, core.observe.dashboard admin UI — restartable via start_dashboard.py).
+- Decoupled hop from the agentharness venv: created dedicated /home/rohit/tokenjuice-hop/.venv
+  (uvicorn 0.52.4, fastapi 0.141.1, httpx 0.28.1 — httpx[proxy] extra no longer exists, `proxy=` is
+  native in 0.28). Unit ExecStart now points there. Re-verified all 3 legs through hop (groq 0.3s,
+  north-mini-code 1.7s, anthropic path 1.2s).
+- Remaining attachment: agentharness/data/.env.local holds legacy keys (OpenRouter _2/_3 etc.) that
+  other configs read — keep the dir until key migration; archive, don't delete.
