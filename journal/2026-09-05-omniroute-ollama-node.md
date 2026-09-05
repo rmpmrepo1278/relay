@@ -54,3 +54,30 @@ was stale. The systemd service (v16.2.12) had been running all along.
   `/home/rohit/.omniroute/db_backups/storage-pre-ollama-conn.sqlite`, unit `.bak-queue-20260905`.
 - Memory updated: homelab-infrastructure.md OmniRoute REMOVED→ACTIVE + Ollama model list. `omni_add_conn.py` /
   `omni_fix2.py` / `omni_fix_conn.py` left in `/home/rohit/` (re-runnable).
+
+## Follow-up: TokenJuice Hop (token-maxxing) in front of OmniRoute
+
+- KEY FINDING: agentproxy's TokenJuice (token_juice.py) was NEVER wired into its live request path
+  (only /v1/cache + /v1/token-juice stats + tests). The 40-80% token savings claim was latent. So migrating
+  to OmniRoute loses nothing — and the hop makes TokenJuice REAL for the first time.
+- Built `tokenjuice-hop` (FastAPI, systemd `tokenjuice-hop.service`, 127.0.0.1:8083): reuses the unchanged
+  `token_juice.py` module; exposes agentproxy's inference API surface and forwards to OMR :20128:
+  POST /v1/chat/completions (OpenAI), POST /v1/messages (Anthropic), GET /v1/models, GET /v1/token-juice,
+  GET /health. Deterministic response shaping: always streams upstream, aggregates to JSON for non-stream
+  clients, re-emits SSE for stream clients (immune to OMR shape quirks). Code: /home/rohit/tokenjuice-hop/.
+- OMR quirk discovered: it streams SSE when a completion is all-thinking / empty content (small max_tokens +
+  reasoning model). Verified via source (chat.ts T01 accept-header logic) + live probes.
+- OMR has a no-thinking gateway alias `no-think/<provider>/<model>` (chat.ts applyNoThinkingAlias). Hop sets
+  TJ_NO_THINK=true (providers: ollama) → rewrites `ollama/...` → `no-think/ollama/...`. Measured on qwen3:8b:
+  "FINE" cost 80 completion tokens with thinking vs 2 with no-think (3.3x fewer total, ~15x fewer output).
+  Web summary: 211→32 completion tokens. Latency: 15-35s → 2-6s warm.
+- Verified end-to-end through hop→OMR→ollama: OpenAI JSON (5.4s web-heavy summary, finish stop);
+  Anthropic JSON (15.7s, thinking+text MSG-HOP-OK, end_turn); OpenAI SSE stream relay (2.3s, text/event-stream,
+  [DONE]); /v1/models 370. TokenJuice stats: 3 reqs, 70 tokens_saved, 0 timeouts/errors.
+- Port mapping for agentproxy deprecation: /v1/status,/v1/usage,/v1/cost,/v1/reliability,/v1/routing,
+  /v1/rate-limits are agentproxy observability — OMR equivalents = dashboard, request_detail_logs,
+  usage_history, logs/application/app.log; hop adds /v1/token-juice.
+- Re-point consumers (:8080 agentproxy → :8083 hop) BEFORE retiring agentproxy. Jarvis (openjarvis.service)
+  still Depends on agentharness-proxy — re-point its ANTHROPIC_BASE_URL/OPENAI_BASE_URL when ready.
+- Note: Ollama env OLLAMA_HOST=0.0.0.0 (ollama.service) contradicts the "loopback-only" memory note — port
+  11434 is open on all interfaces; wrap or bind if not intended.

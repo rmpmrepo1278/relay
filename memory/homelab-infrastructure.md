@@ -46,12 +46,19 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
 - OmniRoute (20128, systemd `omniroute.service`, v16.2.12) — **ACTIVE again** (2026-09-05; earlier note said REMOVED).
   Multi-provider gateway: 370-model catalog, OpenAI-compatible `chat/completions` + Anthropic `/v1/messages`,
   embeddings/audio/images/Responses APIs, combos/auto-routing, breakers, quota/credit system, free no-auth tiers
-  (aug/ddgw/felo/pepper — currently down), custom openai/anthropic-compatible nodes, dashboard+CLI. Data:
-  `/home/rohit/.omniroute` (storage.sqlite + `.env`). Custom node `ollama` → local Ollama: provider id
+  (aug/ddgw/felo/pepper — currently down), custom openai/anthropic-compatible nodes, dashboard+CLI, no-think
+  gateway alias (`no-think/<provider>/<model>`). Data: `/home/rohit/.omniroute` (storage.sqlite + `.env`).
+  Custom node `ollama` → local Ollama: provider id
   `openai-compatible-chat-fb4e338b-cba4-4987-ad0a-bbd4e1a4558d`, connection `db7a77aa-...` (auth_type openai,
   PSD `{"baseUrl":"http://localhost:11434/v1"}`), prefix-routed model ids `ollama/<model>`. End-to-end verified
   (chat 15s, /v1/messages 35s). Queue budget: `RATE_LIMIT_MAX_WAIT_MS=120000` added to unit (default 15s too low
   for CPU Ollama).
+- TokenJuice Hop (8083, systemd `tokenjuice-hop.service`) — token-maxxing preprocessor in front of OmniRoute.
+  Reuses AgentHarness `core/providers/token_juice.py` verbatim (was NEVER wired into agentproxy's live path —
+  first time it's actually applied). API surface = agentproxy's (chat/completions + /v1/messages + /v1/models +
+  /health + /v1/token-juice stats), deterministic response shaping (aggregates SSE→JSON for non-stream clients,
+  relays SSE for stream), auto `no-think/` alias for ollama (TJ_NO_THINK=true). Code: `/home/rohit/tokenjuice-hop/`;
+  upstream OMR :20128. Consumers should be re-pointed :8080 (agentproxy) → :8083 (hop).
 - ~~FreeLLMAPI (3005)~~ — **REMOVED** (2026-07-30), redundant aggregator
 - ~~MenteDB (6677)~~ — **REMOVED** (2026-08-10) per user request, redundant with consolidated `unified_memory.db`
 
