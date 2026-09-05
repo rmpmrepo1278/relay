@@ -63,17 +63,24 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   `localhost:8083/v1`. Both send `model: agentharness-proxy`. `MODEL_REMAP` is now a **fallback chain**
   (cloud → local, auto-failover on non-2xx or 2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`,
   `claude-sonnet-4-20250514`, `anthropic/claude-haiku-4.5` →
-  `openrouter/poolside/laguna-s-2.1:free,ollama/qwen3:8b` (+ `/v1/models` injects keys + chain targets,
-  371 entries). Empty skip means reasoning `:free` models (inkling-small, glm-5.2) auto-fall through.
+  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,ollama/qwen3:8b`
+  (chain refreshed 2026-09-05 with **verified-live** model ids only; reasoning `:free` models that emit
+  empty content auto-fall through). `/v1/models` injects keys + chain targets (371 entries).
+  **Delegate flipped to free path (2026-09-05)**: `~/.claude/settings.json` `ANTHROPIC_BASE_URL` now
+  `http://127.0.0.1:8083` (was paid openrouter.ai; backup `settings.json.bak-paid-openrouter`); model
+  `anthropic/claude-haiku-4.5` (remapped). claude-code-valid SSE verified (message_start → deltas →
+  message_stop).
   agentproxy (`agentharness-proxy.service`) kept as **cold standby** on :8080 (200 OK).
   **Free cloud tier status (2026-09-05, all probed live):**
-  - OPENROUTER ✓ LIVE — `poolside/laguna-s-2.1:free` verified end-to-end via hop (57 tokens, ~1s, clean
-    content; OpenAI + Anthropic shapes + SSE stream). Stored OMR openrouter key was a different dead one →
+  - OPENROUTER ✓ LIVE (3 verified free models): `cohere/north-mini-code:free` (coding, ~1s), `poolside/
+    laguna-s-2.1:free`, `minimax/minimax-m3:free`. Stored OMR openrouter key was a different dead one →
     rotated to the alive `.env` key via direct DB write (replicated OMR's `enc:v1` scrypt+AES-256-GCM scheme;
-    backup `db_backups/storage-pre-openrouter-key.sqlite`; restart). OpenRouter free = the working cloud leg.
-  - GEMINI — key live but 429 rate-limited right now (retry later); via hop returns empty (masked keepalives).
-  - NVIDIA — key valid but current free model ids 410 Gone (retired); needs a live id.
-  - GROQ / CEREBRAS — keys DEAD at provider (403); agentproxy "OK" = cascade masking (rides openrouter).
+    backup `db_backups/storage-pre-openrouter-key.sqlite`; restart). OpenRouter free = working cloud legs.
+  - NVIDIA ✓ LIVE with current ids: `nvidia/minimaxai/minimax-m3` (~1s, in chain), `nvidia/moonshotai/kimi-k3`
+    (~28s). Old id `nvidia/meta/llama-3.3-70b-instruct` = retired (410).
+  - GEMINI — key live but 429 rate-limited right now (retry later).
+  - GROQ / CEREBRAS — keys DEAD at provider: 403 across ALL current ids (`groq/qwen/qwen3.6-27b`,
+    `groq/groq/compound`, `cerebras/gemma-4-31b`, ...) → needs fresh keys, NOT model swap.
   - SAMBANOVA — 402 (no credits). Builtin tiers: auggie 502 noauth (needs dashboard login), ddgw 418
     ERR_BN_LIMIT (IP anti-abuse), pepper/felo dead upstream.
   **OMR internals learned:** native `provider_connections` rows exist for openrouter/groq/nvidia/gemini/

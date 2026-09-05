@@ -32,23 +32,28 @@ Note: agentproxy `-OK` on groq/cerebras = cascade masking riding openrouter, NOT
 
 ## hop MODEL_REMAP → fallback chain
 `agentharness-proxy`, `haiku-4.5`, `claude-sonnet-4-20250514`, `anthropic/claude-haiku-4.5`
-→ `openrouter/poolside/laguna-s-2.1:free,ollama/qwen3:8b`
-- Hope walks candidates in order; success = 2xx + non-empty aggregated content (chat / messages); otherwise next.
+→ `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,ollama/qwen3:8b`
+- Chain walks candidates in order; success = 2xx + non-empty aggregated content (chat / messages); otherwise next.
 - `/v1/models` injects keys + chain targets (371). no-think auto-applied to ollama leg.
-- Deploy pattern that works: `systemctl kill -s KILL` + `reset-failed` + `start` (graceful restart hangs).
+- Deploy pattern: `systemctl kill -s KILL` + `reset-failed` + `start` (graceful restart hangs).
 
-## End-to-end verified (via hop :8083, 2026-09-05)
-- `agentharness-proxy` openai shape → wire `poolside/laguna-s-2.1:free`, "E2E-CLOUD-OK", 3.6s, 63 tokens.
-- Anthropic `/v1/messages` shape → text block, `end_turn`.
-- SSE stream relay → clean chunks. `haiku-4.5` / `claude-sonnet-4-20250514` / `anthropic/claude-haiku-4.5` → laguna free.
+## Live-model replacement sweep (2026-09-05)
+Direct-probed current ids from OMR `/v1/models` catalogs (true status, non-stream):
+| provider | live now | dead |
+|---|---|---|
+| openrouter | `cohere/north-mini-code:free` ~1s · `poolside/laguna-s-2.1:free` · `minimax/minimax-m3:free` | laguna-xs 502, `openrouter/free` 502, gemma-4-31b-it:free 429, z-ai/glm-5.2:free (not in catalog) |
+| nvidia (valid key) | `minimaxai/minimax-m3` 1.1s · `moonshotai/kimi-k3` 27.9s | all `nvidia/meta/llama-3.3-70b-instruct`-style old ids 404/410 |
+| groq | — | 403 across ALL ids (key dead, not model): `groq/qwen/qwen3.6-27b`, `groq/groq/compound`, `groq/openai/gpt-oss-120b` |
+| cerebras | — | 403 both ids (key dead) |
+| sambanova | — | 402 no credits |
+| gemini | key live but throttled | 429 on `gemini-flash-latest`, `-3.5-flash`, `-3.6-flash` |
 
-## Delegate lever (not yet flipped — user decision)
-`~/.claude/settings.json` on homelab still points `ANTHROPIC_BASE_URL=https://openrouter.ai/api/v1`
-(paid path, model `anthropic/claude-haiku-4.5`). Flipping base_url → `http://127.0.0.1:8083` routes the
-auto-fixer + claude sessions onto the free laguna→ollama chain.
+→ Chain updated to verified-live ids only. groq/cerebras REQUIRE fresh keys (not a model fix); sambanova
+needs credits; gemini needs the 429 window to clear.
 
-## Open items
-- Gemini retry after 429 window; nvidia needs a non-deprecated model id.
-- groq/cerebras fresh keys / sambanova credit from user to fix 403/402.
-- auggie/ddgw need dashboard login (NextAuth csrf-gated) or IP cooldown — externally blocked.
-- OMR REST management auth unusable → DB edits are the supported automation path.
+## Delegate flipped to free path (2026-09-05)
+`~/.claude/settings.json` `ANTHROPIC_BASE_URL`: `https://openrouter.ai/api/v1` → `http://127.0.0.1:8083`
+(backup `settings.json.bak-paid-openrouter`). Model `anthropic/claude-haiku-4.5` remapped by hop.
+claude-code-valid SSE confirmed (message_start → content_block_delta* → message_stop; `print('hello')`
+delivered, 2.1s). End-to-end: `agentharness-proxy` → wire `cohere/north-mini-code:free`, 0.9s; `haiku-4.5`
+anthropic shape → `DELEGATE-LIVE`, 1.0s.
