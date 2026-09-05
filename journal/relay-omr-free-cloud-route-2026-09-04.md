@@ -78,3 +78,21 @@ paths = (a) they paste fresh keys (AI Studio for Gemini fixes the quota line; Mi
 gitHub/Cloudflare all add NEW free tiers), (b) browser-use MCP assist where they do captcha+email and I
 handle the rest, (c) prep step-by-step scripts. Wiring any key = custom node (openai-compatible) + enc:v1
 DB write + hop chain leg — the exact pattern already proven with openrouter/ollama.
+
+## GROQ unblocked via Mac egress proxy (2026-09-05) — new free tier live
+User chose "unblock Groq via Mac egress". Done end-to-end:
+- Root cause: api.groq.com Cloudflare error 1010 bans homelab WAN IP (73.239.85.189, "browser signature").
+  Key + models were fine (200 from Mac IP). OMR re-tripped its breaker on every groq call (empty streams).
+- Built a CONNECT-only HTTP proxy on the Mac: `~/.local/bin/mac_egress_proxy.py`, binds Tailscale IP
+  `100.86.100.87:8089`, whitelist {api.groq.com, generativelanguage.googleapis.com, openrouter.ai,
+  api.openai.com}:443, launchd agent `com.relay.mac-egress-proxy` (KeepAlive, ~/.local/logs/egress-proxy
+  .log). Classic CONNECT pitfall fixed: must drain request-headers up to blank line before 200, else the
+  leftover `Host:` line is forwarded and api.groq.com answers plaintext `400`.
+- hop.py gained a DIRECT groq leg: reads key from `/home/rohit/.omniroute/.env` (no new secret), issues
+  groq chat via the proxy, aggregates SSE (non-stream) / relays (stream). Chain now:
+  north-mini-code:free → laguna-s-2.1:free → minimax-m3:free → nvidia/minimaxai/minimax-m3 →
+  groq/qwen/qwen3.8-27b → ollama/qwen3:8b. Verified: groq leg 0.2s "HOP-GROQ-OK"; stream relay has
+  real chatcmpl/x_groq tokens.
+- groq current ids: `qwen/qwen3.6-27b`, `qwen/qwen3.8-27b`, `openai/gpt-oss-120b`. Dead ids:
+  `groq/llama-3.3-70b-versatile`, `groq/qwen3.6-27b`, `groq/groq/compound`.
+- Corrected memory: groq was NOT a dead key (earlier note wrong).
