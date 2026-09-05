@@ -52,3 +52,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • Nitter has more working instances than before the takedowns
     https://codeberg.org/mv12star/shitter/wiki/Instances
     (127 points on HN)
+
+## Curiosity — 12:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • 2026 Product Catalog
+    https://plugtechinc.com/wp-content/uploads/2026/01/2026-Opus-Water-Inc-Product-and-Price-Catalog.pdf
+  • Multi-Size Remote Placement Plugs - Plug Technologies
+    https://plugtechinc.com/remote-placement-plugs/
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (automation):**
+  • DRACO: Fine-Grained Credit Assignment with Dynamic Rubrics for Long-Horizon Agen
+    http://arxiv.org/abs/2609.04094v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐213056
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26493
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐20773
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • .gitignore Everything by Default
+    https://packagemain.tech/p/gitignore-everything-by-default
+    (92 points on HN)
