@@ -78,11 +78,17 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
     backup `db_backups/storage-pre-openrouter-key.sqlite`; restart). OpenRouter free = working cloud legs.
   - NVIDIA ✓ LIVE with current ids: `nvidia/minimaxai/minimax-m3` (~1s, in chain), `nvidia/moonshotai/kimi-k3`
     (~28s). Old id `nvidia/meta/llama-3.3-70b-instruct` = retired (410).
-  - GEMINI — key live but 429 rate-limited right now (retry later).
-  - GROQ / CEREBRAS — keys DEAD at provider: 403 across ALL current ids (`groq/qwen/qwen3.6-27b`,
-    `groq/groq/compound`, `cerebras/gemma-4-31b`, ...) → needs fresh keys, NOT model swap.
-  - SAMBANOVA — 402 (no credits). Builtin tiers: auggie 502 noauth (needs dashboard login), ddgw 418
-    ERR_BN_LIMIT (IP anti-abuse), pepper/felo dead upstream.
+  - GEMINI — key alive, 429 (rate/quota — "prepayment balance"; needs AI Studio fresh key or top-up).
+  - GROQ — **key + models VALIDATED live** (`groq/qwen/qwen3.6-27b`, `groq/qwen/qwen3.8-27b`,
+    `groq/openai/gpt-oss-120b` → 200 from Mac IP; `groq/groq/compound` = no such model). Homelab egress
+    (WAN IP 73.239.85.189) is Cloudflare-1010-banned by api.groq.com → OMR re-trips the groq breaker on
+    every call (empty streams; last_error = CF block page). Needs proxy/different egress (OMR has
+    `proxy_registry`/`proxy_assignments` tables — both empty). NOT a dead key.
+  - CEREBRAS — 402 `payment_required`/quota (billing tab) — account, not key.
+  - SAMBANOVA — 402 `PAYMENT_METHOD_REQUIRED` — account, not key.
+  - Two spare OpenRouter keys in `.env.local` (`OPENROUTER_API_KEY_2`, `_3`) — valid, $0 usage, no limits
+    (capacity backup). All GOOGLE_* fields = same project key. `FREELLMAPI_ENDPOINT=http://localhost:20128`
+    = just OMR (internal label, no external aggregator).
   **OMR internals learned:** native `provider_connections` rows exist for openrouter/groq/nvidia/gemini/
   cerebras/sambanova (keys encrypted in `api_key` col, NOT `access_token`); only custom node = ollama.
   Management REST API auth unusable for scripting (cli-token 401; `providers rotate` 405/401; api_keys Bearer
