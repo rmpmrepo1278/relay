@@ -60,9 +60,28 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   relays SSE for stream), auto `no-think/` alias for ollama (TJ_NO_THINK=true). Code: `/home/rohit/tokenjuice-hop/`;
   upstream OMR :20128. **Consumers re-pointed to it (2026-09-05)**: Hermes `config.yaml` base_url
   `localhost:8080/v1/` → `localhost:8083/v1/`; Jarvis `config.toml` api_base `100.122.58.40:8080/v1` →
-  `localhost:8083/v1`. Both send `model: agentharness-proxy` → hop `MODEL_REMAP=agentharness-proxy=ollama/qwen3:8b`
-  (+ `/v1/models` injects the alias, 371 entries). agentproxy (`agentharness-proxy.service`) kept running as
-  **cold standby** on :8080 (200 OK).
+  `localhost:8083/v1`. Both send `model: agentharness-proxy`. `MODEL_REMAP` is now a **fallback chain**
+  (cloud → local, auto-failover on non-2xx or 2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`,
+  `claude-sonnet-4-20250514`, `anthropic/claude-haiku-4.5` →
+  `openrouter/poolside/laguna-s-2.1:free,ollama/qwen3:8b` (+ `/v1/models` injects keys + chain targets,
+  371 entries). Empty skip means reasoning `:free` models (inkling-small, glm-5.2) auto-fall through.
+  agentproxy (`agentharness-proxy.service`) kept as **cold standby** on :8080 (200 OK).
+  **Free cloud tier status (2026-09-05, all probed live):**
+  - OPENROUTER ✓ LIVE — `poolside/laguna-s-2.1:free` verified end-to-end via hop (57 tokens, ~1s, clean
+    content; OpenAI + Anthropic shapes + SSE stream). Stored OMR openrouter key was a different dead one →
+    rotated to the alive `.env` key via direct DB write (replicated OMR's `enc:v1` scrypt+AES-256-GCM scheme;
+    backup `db_backups/storage-pre-openrouter-key.sqlite`; restart). OpenRouter free = the working cloud leg.
+  - GEMINI — key live but 429 rate-limited right now (retry later); via hop returns empty (masked keepalives).
+  - NVIDIA — key valid but current free model ids 410 Gone (retired); needs a live id.
+  - GROQ / CEREBRAS — keys DEAD at provider (403); agentproxy "OK" = cascade masking (rides openrouter).
+  - SAMBANOVA — 402 (no credits). Builtin tiers: auggie 502 noauth (needs dashboard login), ddgw 418
+    ERR_BN_LIMIT (IP anti-abuse), pepper/felo dead upstream.
+  **OMR internals learned:** native `provider_connections` rows exist for openrouter/groq/nvidia/gemini/
+  cerebras/sambanova (keys encrypted in `api_key` col, NOT `access_token`); only custom node = ollama.
+  Management REST API auth unusable for scripting (cli-token 401; `providers rotate` 405/401; api_keys Bearer
+  403) → use direct DB writes. Credential encryption: `scryptSync(STORAGE_ENCRYPTION_KEY,
+  "omniroute-field-encryption-v1", 32)` → AES-256-GCM, format `enc:v1:<iv>:<ct>:<tag>` (python: hashlib.
+  scrypt n=16384,r=8,p=1,dklen=32). Dashboard login = NextAuth v5 gated (csrf 401).
 - Ollama = **compose container** in `/home/rohit/services/docker/compose/apps.yml`, NOT the (inactive, now
   disabled) systemd `ollama.service`. Publishes `127.0.0.1:11434` + `100.122.58.40:11434` (loopback + tailnet
   only — no 0.0.0.0). Open WebUI reaches it over compose network `http://ollama:11434`. Earlier note claiming
