@@ -166,3 +166,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • "Next-token predictor" is the wrong mental model for LLMs
     https://gmcgoldr.github.io/2026/09/04/llm-next-token-predictors.html
     (55 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • How to Get Started with HashiCorp Nomad
+    https://oneuptime.com/blog/post/2026-01-26-hashicorp-nomad-getting-started/view
+🌱 **Adjacent to ai agents:** multi agent systems
+  • MULTI- | English meaning - Cambridge Dictionary
+    https://dictionary.cambridge.org/dictionary/english/multi
+🔀 **Intersection:** self hosting × automation
+📄 **arXiv (security):**
+  • SENTINEL-RL: Offloading Topological Reasoning from LLM Agents in the Security Op
+    http://arxiv.org/abs/2609.04159v1
+  • A Non-Formulable Theorem: A Fundamental Limit of Finite Syntactic Systems and It
+    http://arxiv.org/abs/2609.04086v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐212345
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26476
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐20612
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
