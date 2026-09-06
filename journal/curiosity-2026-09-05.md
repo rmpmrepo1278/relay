@@ -103,3 +103,21 @@ Interests: self_hosting, ai_agents, llm_inference
   • Isar Aerospace launch into orbit [video]
     https://www.youtube.com/watch?v=Ss1DUqLjecc
     (68 points on HN)
+
+## Curiosity — 20:17 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • MultiCare Covington Family Practice
+    https://www.multicare.org/location/multicare-covington-clinic/multicare-covington-family-practice/
+🔀 **Intersection:** self hosting × automation
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐213222
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26493
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐20817
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
