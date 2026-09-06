@@ -74,3 +74,28 @@ channel, 2026-09-06 night)
   drop the residual 43-message blown-up session (20260906) and start clean.
 - The recurring auto-reset rows in state.db are historical (pre-fix) — no db
   surgery needed.
+
+## Follow-up: mind loop restored (same session)
+After fixing the exchange, diagnosed "how to make Hermes smarter/more
+self-aware": the `hermes-mind-loop.service` daemon (the OBSERVE→…→EVOLVE brain)
+had been DOWN since 2026-09-03 — its unit had `After=/Wants=hermes-gateway.service`
+but that unit was deleted when the gateway moved into the container (s6), so a
+dead dependency permanently blocked start.
+
+Fixes (verified live):
+1. `~/.config/systemd/user/hermes-mind-loop.service` — removed the dead
+   hermes-gateway.service dependency. daemon-reload → start → `active`.
+2. `mind_loop.py observe_health()` reported "Health score: ?" because
+   `data/health_signals.json` had no producer (its writer, health_dashboard.py,
+   was shipped out in wave-2). Fixed: `healthcheck.sh` now WRITES
+   `data/health_signals.json` (score + checks: docker/disk/hop/magnitude/
+   telegram/dns/backups/duckdns), and `observe_health()` regenerates it when
+   missing/stale (>15min). Health score went from `?` → `95/100`.
+3. De-duplicated insight noise is still TBD (50 mostly-repetitive insights).
+
+Known residual issue surfaced by the score: `hermes-backup.timer` is inactive
+(Hermes home backup timer not running) — separate fix, not yet done.
+
+Files changed now on the box: mind_loop.py (+observe_health fallback),
+healthcheck.sh (+health-score JSON writer), hermes-mind-loop.service;
+`.bak-healthscore` / `.bak-telegramfix` copies kept.
