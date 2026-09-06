@@ -44,12 +44,15 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   then stopped. Direct-provider legs (Groq, b.ai) now live in hop.py, not agentproxy.
 - **Magnitude (10100, per-user systemd `~/.config/systemd/user/magnitude.service`, Linger=yes) — ADDED 2026-09-05**:
   open-source local inference server (no cloud) that profiles hardware and tunes models. Detected AMD
-  Radeon via Vulkan (RADV RENOIR) + 8C/62Gi. Installed `lfm2.5-8b-a1b:gguf:q4` (Liquid LFM2.5 8B-A1B Q4,
-  7.2GB): **28.8 tok/s predict, TTFT 642ms, 2.8s/200tok** (vs OMR→Ollama 15-35s!). OpenAI-compatible at
-  `127.0.0.1:10100/inference/v1` + `.../inference/anthropic`; reasoning model (emits reasoning_content
-  first — ensure max_tokens ≳120 or content stays empty and hop auto-falls through). Wired as hop DIRECT
-  no-auth leg (`magnitude/lfm2.5-8b-a1b:gguf:q4`) before ollama in the chain. NOTE: magnitude non-stream
-  returns content (earlier 200-token probe worked); 60-token probes returned reasoning-only.
+  Radeon via Vulkan (RADV RENOIR) + 8C/62Gi. ACTIVE MODEL = `gemma-4-26b-a4b-it-qat:gguf:q4` (Gemma 4
+  26B-A4B Q4, 17.8GB, no speculative accel, 100K ctx): **12.3 tok/s predict, TTFT 1.5s, ~7.5s via hop**
+  (bigger/better than LFM 8B). First tried `lfm2.5-8b-a1b:gguf:q4` (LFM2.5 8B-A1B Q4, 7.2GB, DSpark) =
+  28.8 tok/s, 2.8s but weaker model — kept on disk as backup. **Nemotron 3.5 Lightning 30B-A3B Q4 (q4,
+  DFlash) CRASHES on this box** — `Failed - worker IPC read failed: failed to fill whole buffer` ~90s into
+  weight load, reproducibly, no OOM/segv/journal artifacts; removed from disk. Dense 27B+ models ~1 tok/s
+  unusable. OpenAI-compatible at `127.0.0.1:10100/inference/v1` + `.../inference/anthropic`; reasoning
+  models emit reasoning_content first (ensure max_tokens ≳120 or content stays empty and hop auto-falls
+  through). Wired as hop DIRECT no-auth leg (`magnitude/<model>`), before ollama in the chain.
 - Ollama (11434, compose container, **not** the inactive systemd `ollama.service`) — local inference;
   `OLLAMA_KEEP_ALIVE=-1`, `OLLAMA_NUM_THREADS=8`; models: qwen3:32b-64k (slow on 8 cores, 20GB) + qwen3:8b
   (5.2GB, warm ~1.5s, end-to-end via OmniRoute 15-35s incl. built-in thinking). Publishes 127.0.0.1:11434
@@ -79,7 +82,7 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   `MODEL_REMAP` is now a **fallback chain** (cloud → local, auto-failover on non-2xx or
   2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`, `claude-sonnet-4-20250514`,
   `anthropic/claude-haiku-4.5` →
-  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,bai/qwen3.8-flash,magnitude/lfm2.5-8b-a1b:gguf:q4,ollama/qwen3:8b`
+  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,bai/qwen3.8-flash,magnitude/gemma-4-26b-a4b-it-qat:gguf:q4,ollama/qwen3:8b`
   (chain refreshed 2026-09-05 with **verified-live** model ids only; groq leg is hop-direct via Mac proxy;
   bai leg is hop-direct via homelab; reasoning `:free` models that emit empty content auto-fall through).
   /v1/models injects keys + chain targets (371 entries). **Delegate flipped to free path (2026-09-05)**:

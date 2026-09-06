@@ -58,7 +58,23 @@ OpenClaw/Codex/Claude Code/Cline).
 - BraveOPotato/FckSignups — junk; burn. Skip.
 - anomalyco/opencode — user's own project; keep maintained, not installed-on-homelab.
 
+## Outcome (final, evening same day)
+- **ACTIVE = Gemma 4 26B-A4B (Q4 QAT)** (`gemma-4-26b-a4b-it-qat:gguf:q4`) — 17.8GB, no speculative
+  acceleration, loads reliably in ~20s, benchmarks 12.3 tok/s predict / TTFT 1.5s / prompt 20.9 tok/s,
+  real content; via hop: 7.5s `HOP-GEMMA-OK`. Chain id swapped (`magnitude/gemma-4-26b-a4b-it-qat:gguf:q4`),
+  unit redeployed (backup `hop.py.bak-gemmalej`), groq + chain + gemma legs all re-verified.
+- **Nemotron 3.5 Lightning 30B-A3B (Q4) FAILED** on this box: `models load` reaches "Loading", RAM grabs
+  ~25-28G, then the worker dies ~90s in → `Failed - worker IPC read failed: failed to fill whole buffer`.
+  Reproduced 3× incl. after full `service stop/start`. No OOM (MemoryMax=infinity), no dmesg/segfault,
+  no journal errors, no core dumps, empty ~/.magnitude/logs. Probable synthetic-DFlash/weight-path issue
+  on RADV RENOIR; no disable-acceleration flag exposed. Removed from disk (reclaimed ~24G).
+- **LFM2.5 8B-A1B Q4 kept on disk** as fast-but-weak local backup (28.8 tok/s).
+- Decode methods doc: None < MTP < DFlash < DSpark (speculative; speed-only, not quality).
+
 ## Next steps
 - (maybe) connect magnitude to Hermes/OpenCode via `magnitude connections add` and A/B
   against the cloud-first chain to decide whether to promote magnitude earlier/alone.
-- Deferred repo follow-ups only if wanted: ponytail (mac), ECC minimal (hermes).
+- Ollama-vs-magnitude redundancy: magnitude trumps ollama in the chain (speed+quality); ollama
+  container idle at 269MB — drop ollama from chain optionally.
+- Deferred repo follow-ups only if wanted: ponytail (mac), ECC minimal (hermes), cherry-picked
+  mattpocock skills, humanizer patterns folded into voice_guide.md.
