@@ -52,12 +52,15 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   weight load, reproducibly, no OOM/segv/journal artifacts; removed from disk. Dense 27B+ models ~1 tok/s
   unusable. OpenAI-compatible at `127.0.0.1:10100/inference/v1` + `.../inference/anthropic`; reasoning
   models emit reasoning_content first (ensure max_tokens ≳120 or content stays empty and hop auto-falls
-  through). Wired as hop DIRECT no-auth leg (`magnitude/<model>`), before ollama in the chain.
-- Ollama (11434, compose container, **not** the inactive systemd `ollama.service`) — local inference;
-  `OLLAMA_KEEP_ALIVE=-1`, `OLLAMA_NUM_THREADS=8`; models: qwen3:32b-64k (slow on 8 cores, 20GB) + qwen3:8b
-  (5.2GB, warm ~1.5s, end-to-end via OmniRoute 15-35s incl. built-in thinking). Publishes 127.0.0.1:11434
-  + Tailscale 100.122.58.40 (loopback + tailnet only).
-- Open WebUI (8082) — LLM chat UI
+  through). Wired as hop DIRECT no-auth leg (`magnitude/<model>`), the local fallback (was before ollama,
+   now last local leg after ollama removal).
+- Ollama (11434) — **REMOVED 2026-09-05** (was compose container in `apps.yml`; superseded by magnitude:
+  28.8 tok/s LFM vs 15-35s OMR→ollama). `ollama:` service block, `compose_ollama-data` volume,
+  `ollama/ollama:latest` image (~8.5GB), and Open WebUI (8082, its chat UI, `OLLAMA_BASE_URL=http://ollama:11434`)
+  all deleted from `/home/rohit/services/docker/compose/apps.yml` (backup `apps.yml.bak-ollama-openwebui-2026-09-05`).
+  Containers/images/volumes gone, ports 8082+11434 free. systemd `ollama.service` already disabled/inactive.
+  OMR's inert `ollama` custom node (provider `openai-compatible-chat-fb4e338b-...`) now points at a dead
+  localhost:11434 — no consumer calls it (hop is the front door); left as-is.
 - Khoj (4321) — AI second brain with pgvector
 - Qdrant (6333) — vector database
 - OmniRoute (20128, systemd `omniroute.service`, v16.2.12) — **ACTIVE again** (2026-09-05; earlier note said REMOVED).
@@ -82,7 +85,7 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   `MODEL_REMAP` is now a **fallback chain** (cloud → local, auto-failover on non-2xx or
   2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`, `claude-sonnet-4-20250514`,
   `anthropic/claude-haiku-4.5` →
-  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,bai/qwen3.8-flash,magnitude/gemma-4-26b-a4b-it-qat:gguf:q4,ollama/qwen3:8b`
+  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,bai/qwen3.8-flash,magnitude/gemma-4-26b-a4b-it-qat:gguf:q4`
   (chain refreshed 2026-09-05 with **verified-live** model ids only; groq leg is hop-direct via Mac proxy;
   bai leg is hop-direct via homelab; reasoning `:free` models that emit empty content auto-fall through).
   /v1/models injects keys + chain targets (371 entries). **Delegate flipped to free path (2026-09-05)**:
@@ -122,10 +125,10 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   403) → use direct DB writes. Credential encryption: `scryptSync(STORAGE_ENCRYPTION_KEY,
   "omniroute-field-encryption-v1", 32)` → AES-256-GCM, format `enc:v1:<iv>:<ct>:<tag>` (python: hashlib.
   scrypt n=16384,r=8,p=1,dklen=32). Dashboard login = NextAuth v5 gated (csrf 401).
-- Ollama = **compose container** in `/home/rohit/services/docker/compose/apps.yml`, NOT the (inactive, now
-  disabled) systemd `ollama.service`. Publishes `127.0.0.1:11434` + `100.122.58.40:11434` (loopback + tailnet
-  only — no 0.0.0.0). Open WebUI reaches it over compose network `http://ollama:11434`. Earlier note claiming
-  0.0.0.0 was WRONG (stale unit env was misattributed).
+- Ollama — **REMOVED 2026-09-05** (compose `apps.yml` service + volume + image + Open WebUI; backup
+  `apps.yml.bak-ollama-openwebui-2026-09-05`). Was the compose container (NOT systemd `ollama.service`,
+  already disabled/inactive) publishing 127.0.0.1 + tailnet 11434 only. Open WebUI consumed it over the
+  compose network. Superseded by magnitude (faster local); hop chain no longer references it.
 - ~~FreeLLMAPI (3005)~~ — **REMOVED** (2026-07-30), redundant aggregator
 - ~~MenteDB (6677)~~ — **REMOVED** (2026-08-10) per user request, redundant with consolidated `unified_memory.db`
 
