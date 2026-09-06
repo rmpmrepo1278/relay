@@ -42,6 +42,14 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   superseded by **TokenJuice Hop (8083)**; consumers (Hermes, Jarvis, Claude delegate) all route through it.
   Kept `:8080` as cold standby during cutover (agentharness-proxy.service disabled after verification),
   then stopped. Direct-provider legs (Groq, b.ai) now live in hop.py, not agentproxy.
+- **Magnitude (10100, per-user systemd `~/.config/systemd/user/magnitude.service`, Linger=yes) — ADDED 2026-09-05**:
+  open-source local inference server (no cloud) that profiles hardware and tunes models. Detected AMD
+  Radeon via Vulkan (RADV RENOIR) + 8C/62Gi. Installed `lfm2.5-8b-a1b:gguf:q4` (Liquid LFM2.5 8B-A1B Q4,
+  7.2GB): **28.8 tok/s predict, TTFT 642ms, 2.8s/200tok** (vs OMR→Ollama 15-35s!). OpenAI-compatible at
+  `127.0.0.1:10100/inference/v1` + `.../inference/anthropic`; reasoning model (emits reasoning_content
+  first — ensure max_tokens ≳120 or content stays empty and hop auto-falls through). Wired as hop DIRECT
+  no-auth leg (`magnitude/lfm2.5-8b-a1b:gguf:q4`) before ollama in the chain. NOTE: magnitude non-stream
+  returns content (earlier 200-token probe worked); 60-token probes returned reasoning-only.
 - Ollama (11434, compose container, **not** the inactive systemd `ollama.service`) — local inference;
   `OLLAMA_KEEP_ALIVE=-1`, `OLLAMA_NUM_THREADS=8`; models: qwen3:32b-64k (slow on 8 cores, 20GB) + qwen3:8b
   (5.2GB, warm ~1.5s, end-to-end via OmniRoute 15-35s incl. built-in thinking). Publishes 127.0.0.1:11434
@@ -64,18 +72,18 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   (chat/completions + /v1/messages + /v1/models + /health + /v1/token-juice stats), deterministic
   response shaping (aggregates SSE→JSON for non-stream clients, relays SSE for stream), auto `no-think/`
   alias for ollama (TJ_NO_THINK=true), + generalized direct-provider legs (`KNOWN_DIRECT`: groq via Mac
-  egress proxy, bai direct) that bypass OMR entirely. Own venv; upstream OMR :20128.
+  egress proxy, bai direct, magnitude no-auth local) that bypass OMR entirely. Own venv; upstream OMR :20128.
   **Consumers re-pointed (2026-09-05)**: Hermes `config.yaml`
   base_url `localhost:8080/v1/` → `localhost:8083/v1/`; Jarvis `config.toml` api_base
   `100.122.58.40:8080/v1` → `localhost:8083/v1`. Both send `model: agentharness-proxy`.
   `MODEL_REMAP` is now a **fallback chain** (cloud → local, auto-failover on non-2xx or
   2xx-with-empty-content): `agentharness-proxy`, `haiku-4.5`, `claude-sonnet-4-20250514`,
   `anthropic/claude-haiku-4.5` →
-  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,bai/qwen3.8-flash,ollama/qwen3:8b`
+  `openrouter/cohere/north-mini-code:free,openrouter/poolside/laguna-s-2.1:free,openrouter/minimax/minimax-m3:free,nvidia/minimaxai/minimax-m3,groq/qwen/qwen3.8-27b,bai/qwen3.8-flash,magnitude/lfm2.5-8b-a1b:gguf:q4,ollama/qwen3:8b`
   (chain refreshed 2026-09-05 with **verified-live** model ids only; groq leg is hop-direct via Mac proxy;
   bai leg is hop-direct via homelab; reasoning `:free` models that emit empty content auto-fall through).
   /v1/models injects keys + chain targets (371 entries). **Delegate flipped to free path (2026-09-05)**:
-  `~/.claude/settings.json` `ANTHROPIC_BASE_URL` now `http://127.0.1.1:8083` (was paid openrouter.ai; backup
+  `~/.claude/settings.json` `ANTHROPIC_BASE_URL` now `http://127.0.0.1:8083` (was paid openrouter.ai; backup
   `settings.json.bak-paid-openrouter`); model `anthropic/claude-haiku-4.5` (remapped).
   claude-code-valid SSE verified (message_start → deltas → message_stop).
   agentproxy (`agentharness-proxy.service`) kept as **cold standby** on :8080 during cutover, then
