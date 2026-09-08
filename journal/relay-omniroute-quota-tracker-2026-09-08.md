@@ -51,3 +51,27 @@ Today via call_logs: apinex 117 req (102 ok, 47855 tok_in), openrouter 94 req (9
 Tracker live and verified. Future: alert when xkiro remaining <10%, add Gemini quota API if a key exists, keep journal updated on weekly spend.
 
 Journal prev: relay-omniroute-free-capacity-2026-09-08.md. Next: relay-omniroute-quota-tracker.md.
+---
+
+## Addendum (2026-09-08 19:30Z — audit complete)
+
+### Audit run summary (Claude Code, homelab, ~2 hrs)
+- 1,513 total calls, 19.86M input tokens, 409k output tokens — **0 billable tokens paid**.
+- Live polls: Xkiro 80,904/5,000,000 tok/day used (98.4% left) + $5 wallet; apinex balance $0.0003 (spent $0.10).
+- Top winners: openrouter 389k out / apinex deepseek 16.5k / local gemma 1k / xkiro 1.08k.
+- Error mix today: 123×429, 103×413 (groq input ceiling), 30×502 (transient), 22×402 (quota), 30×401 (freemodel dead).
+
+### Re: circuit-breaker follow-up — already built-in
+Proposed a custom circuit-breaker tracker. **It already exists in OmniRoute v3.8.49** (FSE-04 Resilience layer, `src/shared/utils/circuitBreaker.ts`):
+- CLOSED → DEGRADED (~3 fails) → OPEN (5 fails) → HALF_OPEN → CLOSED.
+- cooldowns: `rate_limit` 60,000 ms; `quota_exhausted` 3,600,000 ms.
+- exponential backoff (16x max), 3 escalation cycles before backoff ramps.
+- smart 429 classification `classify429FromError` distinguishes rate-limit vs quota-exhausted (avoids the "individual quota reached / 164h reset" misclassify bug referenced in source).
+- DB-persisted via `domainState.ts`; readable by `healthReport` skill (`/api/health` shows per-provider state/failures/retryAfterMs).
+- Local lifecycle errors (`Controller is already closed`, aborts) excluded from failure count (#4602), so bridge bugs don't blackhole a provider.
+
+So no standalone tracker circuit was needed — OmniRoute's router already trip-cooldown-retry on dead legs. The audit's free-tier walk completed cleanly with no manual reroute.
+
+### Tooling stays
+- /home/rohit/scripts/omniroute-quota-tracker.py (cron */15, log at /home/rohit/logs/omniroute-quota-tracker.log, sqlite at /home/rohit/.omniroute/tracker/usage.sqlite).
+- Journal next: none unless free-tier policy changes.
