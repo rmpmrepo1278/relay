@@ -29,3 +29,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • How well do agents use test/verification techniques?
     https://danluu.com/agentic-testing/
     (57 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** k3s
+  • カレー研究家が無印良品の「レトルトパッケージ裏」を凝視 ...
+    https://media.moneyforward.com/articles/5123
+  • カレー研究家が無印良品の「レトルトパッケージ裏」を凝視 ...
+    https://media.moneyforward.com/articles/5123?page=2
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (self hosting):**
+  • On the Delay-Constrained Maximum Concurrent Flow Problem
+    http://arxiv.org/abs/2609.05068v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐216161
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26583
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21381
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • The Helicopter with Radioactive Blades
+    https://hackaday.com/2026/09/07/the-helicopter-with-radioactive-blades/
+    (96 points on HN)
