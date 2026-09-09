@@ -83,3 +83,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • FreeBSD 14.5-Release
     https://www.freebsd.org/releases/14.5R/announce/
     (107 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × llm inference
+📄 **arXiv (ai agents):**
+  • ProcArena: A Multi-Scenario Benchmark for LLMs on Direct and Interactive PL/SQL 
+    http://arxiv.org/abs/2609.06527v1
+  • OracleZoom: On-Policy Self-Distillation Inspired Reference-Constrained Recursive
+    http://arxiv.org/abs/2609.06490v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐216428
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26594
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21419
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Show HN: Copperhead – Cursor for circuit boards
+    https://copperhead.sh/
+    (213 points on HN)
