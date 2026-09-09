@@ -50,3 +50,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • How to build a printer
     https://nishantjosh.dev/blogs/how-to-build-a-fking-printer/
     (412 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • Official Miami Marlins Website | MLB.com
+    https://www.mlb.com/marlins?msockid=308355bf3738681419b1427036e369c4
+  • Miami Marlins - Wikipedia
+    https://en.wikipedia.org/wiki/Miami_Marlins
+🔀 **Intersection:** self hosting × ai agents
+  • PhD Fellowships - Two Sigma
+    https://www.twosigma.com/graduate-students/phd-fellowships/
+📄 **arXiv (llm inference):**
+  • Learning Length-Extrapolatable Recurrent Models
+    http://arxiv.org/abs/2609.09157v1
+  • Silver Rate Is (Almost) Optimal for Gradient Descent Acceleration
+    http://arxiv.org/abs/2609.09152v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐217354
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26614
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21526
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
