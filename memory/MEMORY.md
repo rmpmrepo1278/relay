@@ -132,8 +132,8 @@ N8N_BRIDGE_HOST=172.18.0.1).
   100.122.58.40**:
   searxng :8118; healthchecks :8004->8000; bookstack :6875->80; paperless :8000;
   homepage :3003->3000; vaultwarden :8443->80; linkwarden :3011->3000;
-  immich :2283; authentik-server :9001->9000. (ollama still loopback-only, standalone
-  `docker run` not in compose; pihole binds 0.0.0.0 for DNS on LAN.)
+  immich :2283; authentik-server :9001->9000. (ollama REMOVED 2026-09-09; magnitude is the only
+  local inference backend, loopback 10100/10110; pihole binds 0.0.0.0 for DNS on LAN.)
 - **Per-app URL envs pointed at tailnet URLs**: bookstack APP_URL, healthchecks
   SITE_ROOT, paperless PAPERLESS_URL, linkwarden NEXTAUTH_URL = http://100.122.58.40:<port>;
   vaultwarden DOMAIN = http://100.122.58.40:8443. immich IMMICH_SERVER_URL =
