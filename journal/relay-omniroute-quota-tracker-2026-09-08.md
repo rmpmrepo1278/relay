@@ -75,3 +75,16 @@ So no standalone tracker circuit was needed — OmniRoute's router already trip-
 ### Tooling stays
 - /home/rohit/scripts/omniroute-quota-tracker.py (cron */15, log at /home/rohit/logs/omniroute-quota-tracker.log, sqlite at /home/rohit/.omniroute/tracker/usage.sqlite).
 - Journal next: none unless free-tier policy changes.
+
+## Addendum 2 — empty-200 breaker patch (post-audit)
+After audit, Claude (PID 3363715) stalled on empty-200 legs (freemodel/gemini returning 200 with 0 tokens); breaker only tripped thrown errors, not empty-body 200s.
+
+Fix (idempotent, re-run after omniroute npm upgrade):
+- Patch script: /home/rohit/patches/omniroute_empty200_circuit.py
+  - Adds isEmptyLegResponse() to src/shared/utils/circuitBreaker.ts
+  - Extends isFailure in src/sse/handlers/chat.ts and chatHelpers.ts:
+    isFailure: (e) => !isLocalStreamLifecycleError(e) && !isEmptyLegResponse(e)
+A zero-token 200 (empty `content|choices|data` body) now counts as a failure → trips the circuit breaker, stops dead-leg loops. omniroute restarted (active).
+- Claude env cap: installed /etc/profile.d/claude.sh (CLAUDE_CODE_MAX_OUTPUT_TOKENS=32768, CLAUDE_CODE_REQUEST_TIMEOUT_MS=300000), sourced by ~/.bashrc.
+
+Current audit totals (tracker run @ 19:47Z): openrouter 83 req / 11.27M in / 78.8k out tok, xkiro 788k/5M day used, apinex $0.0003. Claude process still alive (PID 3363715, idle on pts/0 — a hung session can't be cleanly resumed; restart it so the patch picks up).
