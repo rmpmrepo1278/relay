@@ -16,9 +16,9 @@ source: direct observation, homelab exploration, SSH, configs
 **How he works:**
 - Prefers Telegram-first operation for all ops tasks
 - Gives broad direction, expects initiative
-- Has built extensively (23 Docker containers currently running across 2 compose stacks + ollama; 50+ Python scripts) — ships code
+- Has built extensively (23 Docker containers across 2 compose stacks + local magnitude; 50+ Python scripts) — ships code
 - Runs bleeding-edge agent infrastructure (Hermes, MCP, Agent Harness)
-- Zero-cost policy on LLM routing (8 free providers + local Ollama)
+- Zero-cost policy on LLM routing (8 free providers + local magnitude)
 - Electric about AI autonomy research and implementation
 
 **What he's building:**

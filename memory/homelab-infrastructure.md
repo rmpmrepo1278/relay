@@ -54,24 +54,23 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   models emit reasoning_content first (ensure max_tokens ≳120 or content stays empty and hop auto-falls
   through). Wired as hop DIRECT no-auth leg (`magnitude/<model>`), the local fallback (was before ollama,
    now last local leg after ollama removal).
-- Ollama (11434) — **REMOVED 2026-09-05** (was compose container in `apps.yml`; superseded by magnitude:
-  28.8 tok/s LFM vs 15-35s OMR→ollama). `ollama:` service block, `compose_ollama-data` volume,
-  `ollama/ollama:latest` image (~8.5GB), and Open WebUI (8082, its chat UI, `OLLAMA_BASE_URL=http://ollama:11434`)
-  all deleted from `/home/rohit/services/docker/compose/apps.yml` (backup `apps.yml.bak-ollama-openwebui-2026-09-05`).
-  Containers/images/volumes gone, ports 8082+11434 free. systemd `ollama.service` already disabled/inactive.
-  OMR's inert `ollama` custom node (provider `openai-compatible-chat-fb4e338b-...`) now points at a dead
-  localhost:11434 — no consumer calls it (hop is the front door); left as-is.
+- Ollama — **FULLY REMOVED 2026-09-09** (bleeding-edge era: compose container in `apps.yml` removed
+  2026-09-05, then systemd `ollama.service` + `/usr/local/bin/ollama` binary + 19GB model store
+  `/usr/share/ollama/.ollama` + `ollama` system user/homedir removed 2026-09-09). Port 11434 closed, all
+  processes gone, ~29GB RAM freed (52Gi→23Gi used), enabling magnitude to load a larger local model.
+  Magnitude is now the ONLY local inference backend. The OMR `ollama` custom node / provider connection
+  (`openai-compatible-chat-fb4e338b-...` → `localhost:11434`) was deleted from the OmniRoute DB.
 - Khoj (4321) — AI second brain with pgvector
 - Qdrant (6333) — vector database
 - OmniRoute (20128, systemd `omniroute.service`, v16.2.12) — **ACTIVE again** (2026-09-05; earlier note said REMOVED).
   Multi-provider gateway: 370-model catalog, OpenAI-compatible `chat/completions` + Anthropic `/v1/messages`,
   embeddings/audio/images/Responses APIs, combos/auto-routing, breakers, quota/credit system, no-think
   gateway alias (`no-think/<provider>/<model>`). Data: `/home/rohit/.omniroute` (storage.sqlite + `.env`).
-  Custom node `ollama` → local Ollama: provider id
-  `openai-compatible-chat-fb4e338b-cba4-4987-ad0a-bbd4e1a4558d`, connection `db7a77aa-...` (auth_type openai,
-  PSD `{"baseUrl":"http://localhost:11434/v1"}`), prefix-routed model ids `ollama/<model>`. End-to-end verified
-  (chat 15s, /v1/messages 35s). Queue budget: `RATE_LIMIT_MAX_WAIT_MS=120000` added to unit (default 15s too low
-  for CPU Ollama).
+  Custom node `ollama` → local Ollama (provider id
+  `openai-compatible-chat-fb4e338b-cba4-4987-ad0a-bbd4e1a4558d`, PSD `{"baseUrl":"http://localhost:11434/v1"}`,
+  prefix-routed `ollama/<model>`) — **DELETED from OmniRoute DB 2026-09-09** as part of full Ollama removal.
+  Queue budget `RATE_LIMIT_MAX_WAIT_MS=120000` (added for CPU Ollama) is now moot for local; magnitude is the
+  only local leg.
 - TokenJuice Hop (8083, systemd `tokenjuice-hop.service`) — token-maxxing preprocessor in front of OmniRoute.
   Reuses AgentHarness `core/providers/token_juice.py` verbatim (copied to /home/rohit/tokenjuice-hop/; was
   NEVER wired into agentproxy's live path — first time actually applied). API surface = agentproxy's
@@ -120,15 +119,15 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
     (capacity backup). All GOOGLE_* fields = same project key. `FREELLMAPI_ENDPOINT=http://localhost:20128`
     = just OMR (internal label, no external aggregator).
   **OMR internals learned:** native `provider_connections` rows exist for openrouter/groq/nvidia/gemini/
-  cerebras/sambanova (keys encrypted in `api_key` col, NOT `access_token`); only custom node = ollama.
+  cerebras/sambanova (keys encrypted in `api_key` col, NOT `access_token`); no custom nodes remain (ollama node deleted 2026-09-09).
   Management REST API auth unusable for scripting (cli-token 401; `providers rotate` 405/401; api_keys Bearer
   403) → use direct DB writes. Credential encryption: `scryptSync(STORAGE_ENCRYPTION_KEY,
   "omniroute-field-encryption-v1", 32)` → AES-256-GCM, format `enc:v1:<iv>:<ct>:<tag>` (python: hashlib.
   scrypt n=16384,r=8,p=1,dklen=32). Dashboard login = NextAuth v5 gated (csrf 401).
-- Ollama — **REMOVED 2026-09-05** (compose `apps.yml` service + volume + image + Open WebUI; backup
-  `apps.yml.bak-ollama-openwebui-2026-09-05`). Was the compose container (NOT systemd `ollama.service`,
-  already disabled/inactive) publishing 127.0.0.1 + tailnet 11434 only. Open WebUI consumed it over the
-  compose network. Superseded by magnitude (faster local); hop chain no longer references it.
+- Ollama — **FULLY REMOVED 2026-09-09** (compose `apps.yml` service + volume + image + Open WebUI removed
+  2026-09-05, backup `apps.yml.bak-ollama-openwebui-2026-09-05`; systemd `ollama.service` + binary + 19GB models
+  + `ollama` user removed 2026-09-09). Was a compose container + standalone systemd install publishing
+  11434. Superseded by magnitude (only local backend); OMR node + connection deleted; hop chain does not reference it.
 - ~~FreeLLMAPI (3005)~~ — **REMOVED** (2026-07-30), redundant aggregator
 - ~~MenteDB (6677)~~ — **REMOVED** (2026-08-10) per user request, redundant with consolidated `unified_memory.db`
 

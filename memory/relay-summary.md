@@ -118,7 +118,7 @@ hermes-scheduler, loopany, opencode-web, proxy-server, tdai-gateway
 
 ### Kept as-is (assessed, not changed):
 - `health_dashboard.py` vs `health_dashboard_server.py`: different purposes (collector vs server), 15+ imports would break — not worth renaming
-- 3 LLM backends (bmoe-server, ollama, freellmapi): all serve distinct roles (big local, small local + embeddings, cloud proxy)
+- LLM backends: magnitude (local; ollama fully removed 2026-09-09), bmoe-server + freellmapi (cloud) — other backends assessed
 
 ## Dead Code Cleanup (code-review-graph driven) — 2026-07-22
 
