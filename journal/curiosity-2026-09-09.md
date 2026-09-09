@@ -77,3 +77,31 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐21526
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=106ba6c1f2f764f4125fb10ef33f65fd
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Get started with OneDrive agents | Microsoft Support
+    https://support.microsoft.com/en-us/onedrive/copilot/get-started-with-onedrive-agents
+  • Create and use an agent in OneDrive | Microsoft Support
+    https://support.microsoft.com/en-us/onedrive/copilot/create-and-use-an-agent-in-onedrive
+🔀 **Intersection:** ai agents × self hosting
+📄 **arXiv (self hosting):**
+  • A New Backscattering Dual-Polarized Rectenna for Wireless Power Transfer and IoT
+    http://arxiv.org/abs/2609.08833v1
+  • Hybrid Continuous DoA Estimation with Shared-Radius Co-Prime Circular Arrays
+    http://arxiv.org/abs/2609.08827v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐217417
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26620
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21535
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
