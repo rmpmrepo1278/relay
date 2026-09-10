@@ -30,3 +30,7 @@ JD text is NOT persisted in applications.db (jd_snippet empty) — it lives INSI
 - rg/grep on homelab PDFs: use pdftotext, tooling can't read PDFs directly.
 - rclone overwrite pattern: `rclone copyto <local> "gdrive:<folder>/<same-name>"` (single file overwrite semantics).
 - Watch indentation when patching parse_experience_to_html region — two iterative patches bit me (8 vs 12-space body under `if exp_text:`).
+## Gem round 2 (score 97/100) — final cleanup applied 2026-09-10 12:04
+- Summary header: role-title now spliced directly onto base summary (drop redundant "Director of Technical Program Management" lead via graded_role dedupe in generate_customized_resume first-bullet render).
+- Weave appends now trailing-period-safe: bullets end "... SOX-aligned governance." / "... cutover roadmaps, deployment cycles." (rstrip(",.") then re-add period; no double periods). Verified via /tmp/cv-paylocity.html: spliced-header=1, residual-dup=0.
+- GDrive resume overwritten: 17,553 B @ 12:04:45.
