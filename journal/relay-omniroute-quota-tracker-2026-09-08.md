@@ -88,3 +88,37 @@ A zero-token 200 (empty `content|choices|data` body) now counts as a failure →
 - Claude env cap: installed /etc/profile.d/claude.sh (CLAUDE_CODE_MAX_OUTPUT_TOKENS=32768, CLAUDE_CODE_REQUEST_TIMEOUT_MS=300000), sourced by ~/.bashrc.
 
 Current audit totals (tracker run @ 19:47Z): openrouter 83 req / 11.27M in / 78.8k out tok, xkiro 788k/5M day used, apinex $0.0003. Claude process still alive (PID 3363715, idle on pts/0 — a hung session can't be cleanly resumed; restart it so the patch picks up).
+
+## Addendum 3 — Gemini native provider wired (2026-09-09)
+
+### Problem
+The `pi-free-fallback` combo had all 14 legs rate-limited (429) simultaneously due to 10+ concurrent sub-agents from the "Omelab autonomous capabilities" audit saturating every free-tier provider.
+
+### Root causes
+- All free cloud providers (OpenRouter, Apinex, Groq, Xkiro, OVH) returning 429 rate_limit
+- Local gemma model (gemma-4-26b) timing out with 524 gateway timeouts
+- Groq rejecting requests with `reasoning_effort` parameter errors
+- Existing `gemini-main` provider connection had depleted Google AI Studio credits (403)
+
+### Fix: Wired native Gemini provider
+Added 6 new Gemini API keys and configured the native Gemini provider in OmniRoute:
+
+1. **New API keys added to `/home/rohit/.omniroute/.env`**: `GOOGLE_API_KEY_1` through `GOOGLE_API_KEY_5`
+2. **6 new `provider_connections` entries** in OmniRoute SQLite DB (`gemini-2` through `gemini-6`)
+3. **Disabled AQ-prefixed keys** (gemini-4/5/6) — they return 403 "Requests blocked" for generativelanguage.googleapis.com
+4. **Updated `pi-free-fallback` combo** to include native Gemini models:
+   - `gemini/gemini-3-flash-preview` (works, ~780ms latency)
+   - Removed deprecated `gemini/gemini-2.5-flash` (returns 404 "no longer available to new users")
+5. **Reset circuit breaker** for Gemini provider
+
+### Working configuration
+- `gemini-main` and `gemini-2` use `AIzaSyChjuOCxszl05FFinFVmHUH2buR9DFI4U8` (active)
+- `gemini-3` (AQ key, restricted) deleted
+- `gemini-4/5/6` (AQ keys, restricted) deactivated
+- `pi-free-fallback` combo now has 15 models total (14 original + 1 Gemini native)
+- Model name mapping: `gemini-3-flash` → `gemini/gemini-3-flash-preview`, `gemini-2.5-flash` → `gemini/gemini-3-flash-preview`, `gemini-2.5-pro` → `gemini/gemini-3.1-pro-preview`
+
+### Notes
+- AQ-prefixed API keys (`AQ.Ab8RN6L...`) are from a restricted Google project and return 403 on generativelanguage.googleapis.com
+- AIza-prefixed keys (`AIzaSyChjuOC...`, `AIzaSyB55wNM...`) work correctly
+- The `gemini-3.1-pro-preview` model is rate-limited (429) and currently cooling down — may need separate quota management

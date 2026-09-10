@@ -1,0 +1,32 @@
+# Relay — Paylocity resume regeneration + Gem feedback (2026-09-10)
+
+## Context
+User ran Gem (AI resume reviewer) on the regenerated Paylocity resume. Gem gave 94/100 score with 4 actionable notes. All were implemented in `auto_pipeline.py` and both PDFs re-pushed to GDrive (overwrite).
+
+## Resume pipeline changes (auto_pipeline.py @ career-ops)
+1. **Dedupe**: HCM bridge no longer appended into the summary string; kept ONLY as dedicated `<div class="skill-line"><span class="skill-cat">Domain expertise:</span> …` line after summary bullet list. (The 5-bullet summary cap used to drop/dupe the sentence.)
+2. **Role-header stitch**: `graded_role` derived from `title` param — e.g. `Paylocity - Senior Director Enterprise Applications` → **`Senior Director / Director of Enterprise Applications & Technical Program Management`**, prepended bold to first summary bullet. Generic for any `Senior Director`/`Director`/`Head of` grade (domain from title else jd: enterprise-applications / enterprise-platforms / technology).
+3. **Keyword weaving** in `parse_experience_to_html(…, jd_lower=None, sox_requested=False)`:
+   - SOX: target bullet = T-Mobile governance/RAID/risk line, else first bullet with governance/raid/risk/compliance → append `under SOX-aligned governance`. Gate = `sox`/`regulatory` literal in jd OR (`governance` in jd AND `sox` in ats missing_terms) — context-gated, no fabrication.
+   - ERP/Oracle/platform bullet → append `across release engineering, cutover roadmaps, deployment cycles` (terms added only if not already present).
+4. **Standalone KEYWORDS block** now only emitted for terms still missing from the final HTML — two provenance gates: (a) weave-first (only leftovers), (b) `_defensible` filter — a bare tag is printed only if the term appears in the JD text or the raw cv.md, so no fabricated keywords. For Paylocity the block is now fully gone (0 occurrences).
+
+## Cover letter (also patched)
+`generate_customized_cover_letter` gained an HCM/payroll domain-adjacency paragraph (`hcm_par`) injected as its own `<p>` when jd contains payroll/hcm/benefits/workforce/talent/etc. → closes with "modern HCM and payroll ecosystem … payroll integration, benefits administration, time & attendance, workforce identity, tax/regulatory compliance".
+
+## Verified (Paylocity, html checksum)
+- `Direct enterprise platform modernization` occurrences = 1 (no dup)
+- role-title present; `SOX-aligned governance` present (x2 lines); release engineering / cutover roadmaps / deployment cycles present; `>Keywords<` block = 0
+
+## GDrive (Job Hunt/September 2026/2000 - Paylocity - Senior Director Enterprise Applications/)
+- `Rohit Mishra - Resume (Paylocity - Senior Director Enterprise Applications).pdf` — 17,587 B @ 2026-09-10 11:57
+- `Cover_Letter_2000.pdf` — 8,559 B @ 2026-09-10 11:57 (local name Cover_Letter_paylocity.pdf, renamed on copy for slug continuity)
+- report + linkedin msgs untouched
+
+## Regeneration recipe
+JD text is NOT persisted in applications.db (jd_snippet empty) — it lives INSIDE the evaluation report (`## Job Description (Extracted)` section of `reports/214-2000-2026-09-09.md`). Use that extract as `jd_text`; eval_data = `{"match_score":5,"recommendation":"Strong Match","ats_keyword_match": <_compute_ats_keyword_match(jd,cv)>}`. Filename for resume must keep `Paylocity - ` prefix in the title arg so the PDF name matches the Drive filename (safe_title regex keeps word chars/space/hyphen).
+
+## Tool notes
+- rg/grep on homelab PDFs: use pdftotext, tooling can't read PDFs directly.
+- rclone overwrite pattern: `rclone copyto <local> "gdrive:<folder>/<same-name>"` (single file overwrite semantics).
+- Watch indentation when patching parse_experience_to_html region — two iterative patches bit me (8 vs 12-space body under `if exp_text:`).
