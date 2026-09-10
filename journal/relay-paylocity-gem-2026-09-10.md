@@ -63,3 +63,21 @@ User asked: "will these grammatical issues resurface for the next round?" Built 
 
 ### Regeneration recipe (curl-paste to next session)
 `cd /home/rohit/projects/career-ops && python3 tests/verify_resumes.sh` — must stay green before any apply/resume push.
+
+## Gem round 3 (99/100) — applied & verified (2026-09-10 12:30)
+Four completion tweaks; all permanent via generation fixes + lint gates:
+1. Comma-before-appended-clause removed: `_append_clause` now joins with a single space, not `', '` (was `Delivery in progress, across release engineering, deployment cycles.` → `in progress across ...`). New lint FAIL: `,\s+(across|under)\b` (`comma_append`).
+2. ERP list joins: 2 items → `a and b`; ≥3 items → Oxford comma `a, b, and c` (Microsoft bullet now `...cutover roadmaps, and deployment cycles.`).
+3. Stray markdown `**` eliminated everywhere:
+   - summary sentences + fallback: `re.sub(r'\*\*(.+?)\*\*', r'\1', s)` (summary path was leaking bold markers).
+   - `parse_education_to_html`: full `line.replace('**','')` (multi-segment "**A**, **B**, **C**").
+   - New lint FAIL `raw_markdown` if any `**` in html.
+   - EXPERIENCE real bug: cv.md Experience section begins with an intro paragraph (duplicate of summary). Parser littered it as job #0's company line → now drops all text before first `\n### ` when section doesn't start with `###`. Removed duplication + the `**` + ~1KB.
+4. Date separator guard: lint FAIL `date_sep` on `\d{2}/\d{4} (Present|Current)` (bare word, no ` - `). Tightened from a too-broad rule that false-positived on `09/2006 - 12/2014 Redmond`.
+
+### Final state (all 5 fixture cases green)
+- Suite: 5/5 PASS: Paylocity 16,669 B; GEICO 16,375; fintech 16,376; platform 16,302; generic 16,227.
+- Paylocity resume pushed to GDrive @ 12:30 (16,669 B). Cover_Letter_2000.pdf 8,559 B @ 11:57 unchanged (round-3 only touched resume).
+- PDF ground truth confirmed: `04/2015 - Present`, `...in progress across release engineering and deployment cycles.`, `...annually under SOX-aligned governance.`, `...matrixed teams under SOX-aligned governance.`, `...release engineering, cutover roadmaps, and deployment cycles.` — all matching Gem's ask.
+
+### NOTE for future: canonical verify = `cd /home/rohit/projects/career-ops && ./tests/verify_resumes.sh` (5 fixtures, both lint gates), re-push via rclone copyto to the GDrive folder above.
