@@ -42,3 +42,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐21631
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Frequently Asked Questions about Office Agent
+    https://support.microsoft.com/en-us/office/frequently-asked-questions-about-office-agent
+  • Get started with the Legal Agent (Frontier) | Microsoft Support
+    https://support.microsoft.com/en-us/word/get-started-with-the-legal-agent-frontier
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (llm inference):**
+  • Characterizing Language Generation in the Limit: Finite Witnesses and a Separati
+    http://arxiv.org/abs/2609.10525v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐219101
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26651
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21645
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Cognition's SWE-2 achieves 92.8 on Terminal-Bench 2.1
+    https://tokenstead.ai/models/swe-2
+    (52 points on HN)
