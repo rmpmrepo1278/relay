@@ -34,3 +34,32 @@ JD text is NOT persisted in applications.db (jd_snippet empty) — it lives INSI
 - Summary header: role-title now spliced directly onto base summary (drop redundant "Director of Technical Program Management" lead via graded_role dedupe in generate_customized_resume first-bullet render).
 - Weave appends now trailing-period-safe: bullets end "... SOX-aligned governance." / "... cutover roadmaps, deployment cycles." (rstrip(",.") then re-add period; no double periods). Verified via /tmp/cv-paylocity.html: spliced-header=1, residual-dup=0.
 - GDrive resume overwritten: 17,553 B @ 12:04:45.
+
+## Resume polish layer (normalize + lint gates + regression suite) — 2026-09-10 12:19
+User asked: "will these grammatical issues resurface for the next round?" Built permanent protection so the Gem/Gemini QA loop never has to be whack-a-mole again.
+
+### 1. Normalization helpers in auto_pipeline.py
+- `_append_clause(sentence, clause)` — canonical punctuation: exactly one trailing period, comma-joins lowercase clauses. SOX + ERP weaves now routed through it.
+- `_finish_bullet(b)` — every experience bullet gets collapsed whitespace + exactly one terminal period before render (`bullets = [_finish_bullet(b) for b in bullets]` after `_reorder_bullets_by_relevance`).
+
+### 2. resume_lint.py (new, career-ops/) — hard-fail gate, runs twice
+- `check_html(html)` before PDF render; `check_pdf(pdf)` after via `pdftotext -layout` round-trip (catches render-time issues).
+- FAIL checks: entity_leak (raw `&`), double_space (html only; pdf = warn, layout padding), run_punct (run of .!?), stacked_lead (graded role-title + "Director of Technical Program Management" together, gated on graded marker so generic TPM resumes aren't blocked), bridge_dup (HCM bridge >1x), dup_sentence (identical ≥40-char sentence), dup_phrase (repeated 8-gram across experience bullets), bullet_period (experience li missing terminator), empty_pdf.
+- WARN: standalone_keywords (ok only if terms unwoven), dash_style, sentence_case.
+- `generate_customized_resume` returns None + saves debug html `Rohit_Mishra_<slug>_Resume.html` on any hard-fail → nothing broken ever ships.
+
+### 3. Regression suite
+- `tests/fixtures/{hcm,geico,fintech,platform,generic}.txt` (hcm is real Paylocity JD from report extraction; others synthetic to cover all hook/proof/weave paths).
+- `tests/driver_resume_lint.py` (runs generator + re-checks PDF lint, asserts >10KB) + `tests/verify_resumes.sh` (`./tests/verify_resumes.sh` after ANY auto_pipeline.py / resume_lint.py change).
+- Provenance note: missing_terms that aren't in the JD text or cv.md are dropped from the Keywords block (never fabricate). kept-sox because 'governance' in jd + cv has governance/risk language — defensible.
+
+### Real bugs the lint caught (would have shipped unnoticed)
+1. `Education & Certifications` section header — raw unescaped `&` (fixed → `&amp;`).
+2. cv.md skills categories ("Cloud & Platforms") rendered via `_ats_clean` (no escaping) → now `_ats_clean_html(_ats_clean(...))` for cat/vals/plain-lines.
+
+### Status
+- Suite: 5/5 PASS (Paylocity 17,558 B; GEICO 17,050; fintech 17,053; platform 16,975; generic 16,909), HTML + PDF lint clean each.
+- Paylocity resume re-pushed to GDrive via linted build (17,558 B @ 12:19).
+
+### Regeneration recipe (curl-paste to next session)
+`cd /home/rohit/projects/career-ops && python3 tests/verify_resumes.sh` — must stay green before any apply/resume push.
