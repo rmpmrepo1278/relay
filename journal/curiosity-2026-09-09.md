@@ -105,3 +105,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐21535
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** talos linux
+  • Talos Linux: Bare metal to Kubernetes in under a minute
+    https://www.siderolabs.com/talos-linux
+🔀 **Intersection:** llm inference × monitoring
+📄 **arXiv (ai agents):**
+  • Show-Harness: Just a VLM Agent Can Play Robots
+    http://arxiv.org/abs/2609.10522v1
+  • IBIB: A Protocol for Measuring Enterprise AI Systems by Serving Route, Not Model
+    http://arxiv.org/abs/2609.10494v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐217632
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26626
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21549
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
