@@ -86,3 +86,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • Nine coding harnesses vs. your laptop
     https://nasutton.notion.site/Nine-coding-harnesses-vs-your-laptop-3d139990182b80d59fa3cf500f0450ba?pvs=74
     (152 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** multi agent systems
+  • How to Build Multi-Agent Systems: Complete 2026 Guide - DEV Community
+    https://dev.to/eira-wexford/how-to-build-multi-agent-systems-complete-2026-guide-1io6
+🔀 **Intersection:** self hosting × monitoring
+  • Deploying Self-Hosted Sentry for Application Monitoring | by Peter Selva P | Med
+    https://medium.com/@peterselvaponseelan/deploying-self-hosted-sentry-for-application-monitoring-15525e6f7e69
+📄 **arXiv (self hosting):**
+  • From Open RAN to Open Spectrum: A Programmable, Intelligent Architecture for Mul
+    http://arxiv.org/abs/2609.11843v1
+  • Electroencephalography Signal Analysis for Human Activities Classification: A So
+    http://arxiv.org/abs/2609.11695v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐220441
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26676
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21732
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Show HN: Hacker News, Without AI
+    https://www.unslop.news/
+    (94 points on HN)
