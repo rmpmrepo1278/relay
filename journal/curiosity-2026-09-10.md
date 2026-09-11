@@ -69,3 +69,29 @@ Interests: self_hosting, ai_agents, llm_inference
   • Cognition's SWE-2 achieves 92.8 on Terminal-Bench 2.1
     https://tokenstead.ai/models/swe-2
     (52 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × ai agents
+  • What is Monitoring? (Definition, Purpose, and Best Practices)
+    https://allquiet.app/glossary/what-is-monitoring
+📄 **arXiv (ai agents):**
+  • ZipCodec: Ultra-Low-Frame-Rate Streaming Speech Coding
+    http://arxiv.org/abs/2609.11642v1
+  • LoaDiff: Conditional Generation of Electricity Consumption Time Series for Energ
+    http://arxiv.org/abs/2609.11639v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐219391
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26656
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21661
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Proof of Capture: Apple Reference Image, but open source and using steganography
+    https://merybenavente.me/blog/proof-of-capture
+    (74 points on HN)
