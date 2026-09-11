@@ -115,3 +115,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • Show HN: Hacker News, Without AI
     https://www.unslop.news/
     (94 points on HN)
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=0519dd57a95e64a43882ca86a8cb651c
+  • Your Smart Home, Powered by Gemini | Google Home
+    https://home.google.com/
+🔀 **Intersection:** monitoring × ai agents
+📄 **arXiv (self hosting):**
+  • Unmanned Aerial Vehicle Propagation Channel over Vegetation and Lake Areas: Firs
+    http://arxiv.org/abs/2609.11672v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐220517
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26677
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21740
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Litelm: LiteLLM Without the Bloat
+    https://github.com/kennethwolters/litelm
+    (79 points on HN)
