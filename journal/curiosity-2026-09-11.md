@@ -62,3 +62,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • RTK reports token savings, but our cost benchmarks disagree
     https://quesma.com/blog/does-rtk-make-ai-coding-cheaper/
     (79 points on HN)
+
+## Curiosity — 08:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** self hosting × monitoring
+📄 **arXiv (llm inference):**
+  • Data Scarcity and Model Sparsity: Mixtures-of-Experts Overfit More to Repeated D
+    http://arxiv.org/abs/2609.11917v1
+  • Generative Marketing Mix Modeling: A Causal Inference Framework Linking GEO and 
+    http://arxiv.org/abs/2609.11915v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐220306
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26673
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21719
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Nine coding harnesses vs. your laptop
+    https://nasutton.notion.site/Nine-coding-harnesses-vs-your-laptop-3d139990182b80d59fa3cf500f0450ba?pvs=74
+    (152 points on HN)
