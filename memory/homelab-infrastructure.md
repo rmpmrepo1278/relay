@@ -124,6 +124,36 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   403) → use direct DB writes. Credential encryption: `scryptSync(STORAGE_ENCRYPTION_KEY,
   "omniroute-field-encryption-v1", 32)` → AES-256-GCM, format `enc:v1:<iv>:<ct>:<tag>` (python: hashlib.
   scrypt n=16384,r=8,p=1,dklen=32). Dashboard login = NextAuth v5 gated (csrf 401).
+  **`auto/*` remap + chain-resilience fix (2026-09-11):** task router returned UNKNOWN for short/ambiguous
+  messages → `auto/*` chain collapsed to the bare alias → OMR answered 200-with-empty-content → hop failed
+  `"chain returned only empty responses"` (502) for every `auto/*` id (incl. dsh default `auto/best-chat`).
+  Fixed: `MODEL_REMAP` (systemd unit) now also maps `auto/best-{chat,fast,coding,reasoning}` →
+  `magnitude/gemma-4-26b-a4b-it-qat:gguf:q4,combo/pi-free-fallback` and `qwen3:8b` →
+  `combo/pi-free-fallback`; `hop.py` magnitude_map values are lists with the combo fallback appended; chain
+  retries ×2 with 2s backoff (`CHAIN_ATTEMPTS`/`CHAIN_RETRY_DELAY_S`); **empty-content guard now also
+  applied to STREAMING responses** (previously only aggregate/non-stream, so a cold/empty magnitude emitted
+  an empty SSE clients could not recover from); failures logged at WARNING/ERROR. Verified:
+  `auto/best-chat` non-stream + SSE return real content (gemma), `qwen3:8b` + SIMPLE_CHAT both 200. Caveat:
+  `combo/pi-free-fallback` (remote `qwen/qwen3.6-27b`) is itself flaky (intermittently empty) — fallback
+  tier only; real degradation is caught by the probe + auto-heal below.
+- **proxy_watchdog.py — generation probe + auto-heal (2026-09-11)** (`~/.hermes/scripts/proxy_watchdog.py`,
+  user unit `proxy-watchdog.service`, `--loop=60`): added an ACTUAL generation probe (`auto/best-chat`, tiny
+  completion; `/health` alone cannot see port-up-but-empty). Two consecutive empty probes → recover:
+  1) restart `tokenjuice-hop`; 2) if still empty, restart `magnitude.service` (user unit). Plain
+  `systemctl restart tokenjuice-hop` hangs (graceful shutdown stuck, strands the service `deactivating`), so
+  restarts escalate to SIGKILL + start (`restart_service`). Rate-limited 180s (`last_empty_recovery`).
+  Telegram alert on recovery / red-alert if neither restart fixes it. State:
+  `~/.hermes/state/proxy_watchdog_state.json` (`consecutive_empty`, `last_empty_recovery`, `empty_recoveries`).
+- **DeepSeek Harness (dsh) — ADDED 2026-09-11** (`~/.dsh`, `@deepseek-ai/dsh@0.1.1-rc.2` in `~/.npm-global`,
+  PATH via `~/.bashrc`): harness CLI + web UI as user unit **`dsh-web.service`** on `http://127.0.0.1:3080`
+  (loopback; access via `ssh homelab-cmd -L 3080:127.0.0.1:3080`). Pinned at 0.1.1-rc.2 (dev preview,
+  breaking changes; `~/.npmrc` `min-release-age=14` blocks newer alphas). Plugin `dsh-modellix@0.2.1`
+  (free-cloud LLM via Modellix; needs a Modellix API key — not yet configured). `/home/rohit/.dsh/settings.yaml`:
+  provider `hop` → `http://127.0.0.1:8083/v1` (no-auth), models `auto/best-{chat,fast,coding}`,
+  `auto/best-free`, `combo/pi-free-fallback`, `qwen3:8b`; `agent-default-model: {provider: hop, model:
+  auto/best-chat}`. Homelab context for every session: `~/.dsh/AGENTS.md` + persona injected via
+  `~/.dsh/profiles/web/cordis.patch.yml` (the web-app bundle disables the host `agent-instructions` loader,
+  so the `system-prompt` persona is the always-on channel — pulls collab-memory/docs before acting).
 - Ollama — **FULLY REMOVED 2026-09-09** (compose `apps.yml` service + volume + image + Open WebUI removed
   2026-09-05, backup `apps.yml.bak-ollama-openwebui-2026-09-05`; systemd `ollama.service` + binary + 19GB models
   + `ollama` user removed 2026-09-09). Was a compose container + standalone systemd install publishing
