@@ -1,0 +1,52 @@
+{
+  "agents": [
+    {
+      "agent": "hermes-mind-loop",
+      "version": "1.0.0",
+      "last_seen": "2026-09-12T17:54:56.945762+00:00",
+      "capabilities": [
+        {
+          "name": "health_check",
+          "description": "Check homelab health",
+          "input_schema": {},
+          "output_schema": {},
+          "tool_provider": "",
+          "tool_name": ""
+        },
+        {
+          "name": "pattern_detection",
+          "description": "Cross-domain pattern finding",
+          "input_schema": {},
+          "output_schema": {},
+          "tool_provider": "",
+          "tool_name": ""
+        },
+        {
+          "name": "proactive_messaging",
+          "description": "Send proactive insights",
+          "input_schema": {},
+          "output_schema": {},
+          "tool_provider": "",
+          "tool_name": ""
+        }
+      ],
+      "well_known": {
+        "protocol": "gnap-v1"
+      },
+      "health_url": "",
+      "parent": ""
+    },
+    {
+      "agent": "hermes-test",
+      "version": "1.0.0",
+      "last_seen": "2026-07-14T03:07:39.174750+00:00",
+      "capabilities": [],
+      "well_known": {
+        "protocol": "gnap-v1"
+      },
+      "health_url": "",
+      "parent": ""
+    }
+  ],
+  "updated": "2026-09-12T17:54:56.946121+00:00"
+}

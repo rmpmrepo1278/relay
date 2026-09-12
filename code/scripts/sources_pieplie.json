@@ -1,0 +1,15 @@
+{
+  "greenhouse_newrelic": {
+    "engine": "generic",
+    "rows": [
+      {
+        "title": "New Relic Job",
+        "company": "New Relic",
+        "location": "Remote",
+        "url": "https://job-boards.greenhouse.io/newrelic/jobs/5396456008?gh_src=hlczvs1p8us",
+        "score": 80,
+        "fetched": "2026-08-29T00:00:00Z"
+      }
+    ]
+  }
+}

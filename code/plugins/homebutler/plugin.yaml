@@ -1,0 +1,10 @@
+name: homebutler
+version: 0.1.0
+description: "Real-time Docker container event streaming and self-healing."
+author: Claude
+provides_tools:
+  - docker_health_summary
+  - docker_restart_service
+  - docker_event_history
+provides_hooks:
+  - on_session_start

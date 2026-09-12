@@ -1,0 +1,6 @@
+name: telegram-notify
+description: Notify the Telegram channel when long bridge /run commands execute and when agent turns finish.
+events:
+  - command:run
+  - command:hrun
+  - agent:end

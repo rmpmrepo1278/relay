@@ -1,0 +1,10 @@
+name: simplemem
+version: 0.1.0
+description: "Semantic lossless compression on top of existing ClaudeMem."
+author: Claude
+provides_tools:
+  - memory_search
+  - memory_compress_now
+  - memory_stats
+provides_hooks:
+    - on_session_start

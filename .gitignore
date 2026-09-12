@@ -1,2 +1,57 @@
 # Added by code-review-graph
 .code-review-graph/
+# Added by code-review-graph
+.code-review-graph/
+
+# === Secrets & credentials (never commit) ===
+code/config/auth.json
+code/config/auth.json.*.bak*
+code/calendar/token.json
+**/token.json
+**/auth.json
+**/credentials.json
+**/*.key
+**/id_ed25519*
+
+# === Python artifacts ===
+__pycache__/
+*.pyc
+*.pyo
+*.whl
+.venv/
+venv/
+
+# === Runtime state & generated data ===
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+code/cron/executions.db
+code/cron/output/
+code/cron/ticker_last_success
+code/cron/ticker_heartbeat/
+code/cron/ticker_heartbeat
+code/capsules/outcomes.jsonl
+
+# === Stale backups (git preserves history; .bak files are transient) ===
+*.bak
+*.bak-*
+*.bak.*
+*.orig
+
+# === Skill curator caches & snapshots ===
+code/skills/.hub/
+code/skills/.curator_backups/
+code/skills/.curator_state
+code/skills/.bundled_manifest
+code/skills/.usage.json
+code/skills/.usage
+
+# === AppleDouble / OS junk ===
+.DS_Store
+._*
+
+# === Node modules ===
+node_modules/
+code/mcp/*/node_modules/

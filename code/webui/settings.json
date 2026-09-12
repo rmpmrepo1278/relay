@@ -1,0 +1,20 @@
+{
+  "default_workspace": "/home/hermeswebui/workspace",
+  "onboarding_completed": true,
+  "send_key": "enter",
+  "show_token_usage": true,
+  "show_cli_sessions": true,
+  "sync_to_insights": true,
+  "check_for_updates": true,
+  "theme": "dark",
+  "skin": "default",
+  "language": "en",
+  "bot_name": "ChaguliAgent",
+  "sound_enabled": false,
+  "notifications_enabled": false,
+  "show_thinking": true,
+  "sidebar_density": "compact",
+  "auto_title_refresh_every": "0",
+  "busy_input_mode": "queue",
+  "password_hash": null
+}

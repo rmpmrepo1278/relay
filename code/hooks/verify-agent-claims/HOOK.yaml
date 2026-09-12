@@ -1,0 +1,5 @@
+name: verify-agent-claims
+description: "Anti-fabrication verification — cross-checks agent completion claims against actually-executed tools for the turn, posts ⚠️ Not verified when a claim has zero tool evidence."
+events:
+  - agent:step
+  - agent:end

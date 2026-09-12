@@ -1,0 +1,33 @@
+{
+  "documents": [
+    {
+      "name": "Rohit Passport (Indian)",
+      "type": "passport",
+      "expiry": "",
+      "ref": "",
+      "notes": "Bio page photo at /mnt/usb/immich_library/library/admin/2022/2022-10-22/RohitMishra_PassportBioPage.jpg. Multi-entry Japan visa valid 2-3 years."
+    },
+    {
+      "name": "Rohit Green Card (US)",
+      "type": "other",
+      "expiry": "",
+      "ref": "",
+      "notes": "US permanent resident. Photo on Google Drive: Rohit Mishra - New Green Card Front.JPG"
+    },
+    {
+      "name": "Nicky Passport",
+      "type": "passport",
+      "expiry": "",
+      "ref": "",
+      "notes": "Bio page photo at /mnt/usb/immich_library/library/admin/2022/2022-10-22/SunayanaKar_PassportBioPage.jpg"
+    },
+    {
+      "name": "Nicky Green Card (US)",
+      "type": "other",
+      "expiry": "",
+      "ref": "",
+      "notes": "Photo on Google Drive: Sunayana Kar - New Green Card Front.JPG"
+    }
+  ],
+  "last_updated": "2026-05-14T16:10:21Z"
+}

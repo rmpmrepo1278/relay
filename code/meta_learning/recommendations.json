@@ -1,0 +1,110 @@
+{
+  "generated_at": "2026-05-14T18:52:39.134852",
+  "model_recommendations": [
+    {
+      "type": "best_overall_model",
+      "model": "gpt-5.3-codex",
+      "score": 40.0,
+      "reason": "Highest composite score: 100.0% completion, 0.0% reset rate"
+    },
+    {
+      "type": "avoid_model",
+      "model": "llama-3.3-70b-versatile",
+      "reason": "High reset rate (100.0%) \u2014 consider deprioritizing"
+    },
+    {
+      "type": "category_model",
+      "category": "cron",
+      "recommended_model": "agentharness-proxy",
+      "reason": "Best performer for cron tasks (413 sessions, 87.7% success)"
+    },
+    {
+      "type": "category_model",
+      "category": "general",
+      "recommended_model": "unknown",
+      "reason": "Best performer for general tasks (436 sessions, 0.0% success)"
+    },
+    {
+      "type": "category_model",
+      "category": "infra",
+      "recommended_model": "agentharness-proxy",
+      "reason": "Best performer for infra tasks (68 sessions, 0.0% success)"
+    },
+    {
+      "type": "category_model",
+      "category": "research",
+      "recommended_model": "agentharness-proxy",
+      "reason": "Best performer for research tasks (6 sessions, 0.0% success)"
+    },
+    {
+      "type": "category_model",
+      "category": "email",
+      "recommended_model": "agentharness-proxy",
+      "reason": "Best performer for email tasks (5 sessions, 0.0% success)"
+    },
+    {
+      "type": "category_model",
+      "category": "code",
+      "recommended_model": "agentharness-proxy",
+      "reason": "Best performer for code tasks (3 sessions, 0.0% success)"
+    },
+    {
+      "type": "category_model",
+      "category": "career",
+      "recommended_model": "agentharness-proxy",
+      "reason": "Best performer for career tasks (7 sessions, 0.0% success)"
+    }
+  ],
+  "prompt_recommendations": [
+    {
+      "type": "prompt_length",
+      "recommendation": "Best performing prompt length: long (>2000 chars) (success rate: 84.4%)"
+    }
+  ],
+  "alert_recommendations": [
+    {
+      "type": "low_engagement",
+      "job_id": "cron_d598c031127a",
+      "reason": "Low engagement: 7.1 avg messages, 64.3% empty runs",
+      "action": "Consider reducing frequency or improving alert content"
+    },
+    {
+      "type": "low_engagement",
+      "job_id": "cron_c7016ac0695c",
+      "reason": "Low engagement: 13.7 avg messages, 66.7% empty runs",
+      "action": "Consider reducing frequency or improving alert content"
+    },
+    {
+      "type": "low_engagement",
+      "job_id": "cron_test-envleak",
+      "reason": "Low engagement: 1.0 avg messages, 100.0% empty runs",
+      "action": "Consider reducing frequency or improving alert content"
+    },
+    {
+      "type": "low_engagement",
+      "job_id": "cron_job-1",
+      "reason": "Low engagement: 0.0 avg messages, 100.0% empty runs",
+      "action": "Consider reducing frequency or improving alert content"
+    },
+    {
+      "type": "low_engagement",
+      "job_id": "20260429_194206",
+      "reason": "Low engagement: 0.0 avg messages, 100.0% empty runs",
+      "action": "Consider reducing frequency or improving alert content"
+    },
+    {
+      "type": "low_engagement",
+      "job_id": "20260429_193931",
+      "reason": "Low engagement: 0.0 avg messages, 100.0% empty runs",
+      "action": "Consider reducing frequency or improving alert content"
+    }
+  ],
+  "cost_recommendations": [
+    {
+      "type": "high_token_usage",
+      "avg_input": 302929,
+      "recommendation": "High average input tokens per session \u2014 consider more concise prompts or context pruning"
+    }
+  ],
+  "general_recommendations": []
+}

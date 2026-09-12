@@ -1,0 +1,6 @@
+{
+    "type": "wellness_checkin",
+    "date": "2026-06-14",
+    "prompt": "Daily wellness check-in for 2026-06-14. Ask Rohit about his mood (1-10), energy (1-10), sleep quality last night (1-10), stress level (1-10), and any notes about his day. Be conversational and brief.",
+    "created_at": "2026-06-14T20:25:28-07:00"
+}

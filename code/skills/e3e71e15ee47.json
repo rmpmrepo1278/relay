@@ -1,0 +1,28 @@
+{
+  "id": "e3e71e15ee47",
+  "name": "web_research",
+  "description": "Search the web, fetch pages, extract structured info",
+  "when_to_use": "Need current info, competitor analysis, pricing, documentation, news",
+  "steps": [
+    "Search with semantic query",
+    "Fetch top 3-5 results",
+    "Extract key facts, numbers, URLs",
+    "Synthesize into structured summary"
+  ],
+  "examples": [
+    {
+      "input": "Latest Anthropic Claude pricing",
+      "output": "Claude 3.5 Sonnet: $3/mo input, $15/mo output..."
+    }
+  ],
+  "script": null,
+  "script_lang": "bash",
+  "credentials": [
+    "exa_api_key",
+    "serpapi_key"
+  ],
+  "created_at": "2026-07-14T23:22:54.139652",
+  "updated_at": "2026-07-14T23:22:54.139664",
+  "version": 1,
+  "scope": "user"
+}

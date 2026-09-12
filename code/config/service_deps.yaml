@@ -1,0 +1,26 @@
+# Service dependency graph for Hermes auto-repair
+# When a service fails, its dependents are also restarted.
+immich_server:
+  depends_on:
+    - immich_database
+    - redis
+
+bookstack:
+  depends_on:
+    - bookstack-db
+
+paperless:
+  depends_on:
+    - paperless-db
+
+hermes-webui-hermes-webui-1:
+  depends_on:
+    - redis
+
+homeassistant:
+  depends_on:
+    - mcp-gateway
+
+linkwarden:
+  depends_on:
+    - linkwarden-db

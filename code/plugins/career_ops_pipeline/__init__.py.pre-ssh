@@ -1,0 +1,479 @@
+"""
+Career-Ops Pipeline Plugin — pre_gateway_dispatch hook.
+
+Intercepts messages containing job URLs (LinkedIn, Greenhouse, Ashby, Lever, etc.)
+and runs auto_pipeline.py directly, returning the results without involving the LLM.
+
+This ensures the pipeline ALWAYS runs when a job URL is shared, regardless of
+whether the LLM decides to use the terminal tool or not.
+"""
+
+import logging
+import os
+import re
+import subprocess
+import threading
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
+
+# URL patterns that trigger the pipeline
+# ponytail: keep the specific patterns for fast-path matching, but fall back
+# to a generic URL catch-all so new employers (Pinterest, etc.) are not
+# silently dropped. auto_pipeline.py decides if it can extract a JD.
+JOB_URL_PATTERNS = [
+    r'https?://(?:www\.)?linkedin\.com/jobs/view/\d+',
+    r'https?://(?:www\.)?linkedin\.com/jobs/collection/\d+',
+    r'https?://(?:jobs|job-boards)\.greenhouse\.io/[^/\s]+/jobs/\d+',
+    r'https?://jobs\.ashbyhq\.com/[^/\s]+',
+    r'https?://jobs\.lever\.co/[^/\s]+',
+    r'https?://boards\.greenhouse\.io/[^/\s]+',
+    r'https?://www\.indeed\.com/viewjob\?jk=',
+    r'https?://www\.glassdoor\.com/job-listing/',
+    r'https?://careers\.[^/\s]+/jobs/\d+',
+    r'https?://[^/\s]*workday[^/\s]*/job/',
+    # Google Careers — detected but handled specially (JS-rendered, unscrapable).
+    # Must include the job-slug segment so it isn't left behind as "jd text".
+    r'https?://(?:www\.)?google\.com/about/careers/applications/jobs/results/\S+',
+]
+
+COMPILED_PATTERNS = [re.compile(p, re.IGNORECASE) for p in JOB_URL_PATTERNS]
+
+# Generic URL pattern as fallback — catches any career/job URL from employers
+# not in the explicit list above. auto_pipeline.py handles JD extraction.
+GENERIC_URL_PATTERN = re.compile(r'https?://[^\s<>"\']+', re.IGNORECASE)
+
+PIPELINE_SCRIPT = Path("/home/rohit/projects/career-ops/auto_pipeline.py")
+PIPELINE_REMOTE = "rohit@127.0.0.1"
+SSH_KEY = "/opt/data/.ssh/id_ed25519"
+PIPELINE_TIMEOUT = 300  # seconds (5 min) - pipeline can be slow on first run
+
+_SSH_BASE = [
+    "ssh",
+    "-o", "BatchMode=yes",
+    "-o", "StrictHostKeyChecking=no",
+    "-o", "ConnectTimeout=10",
+    "-i", SSH_KEY,
+    PIPELINE_REMOTE,
+]
+
+
+def _run_pipeline(url: str, jd_text: str = "") -> Dict[str, Any]:
+    """Run auto_pipeline.py on the HOST via SSH.
+
+    The pipeline runs on the host (where python3, weasyprint, rclone and the
+    gdrive: remote all exist and work). If jd_text is provided (from a Telegram
+    link preview / pasted JD), it is written to a temp file on the host and
+    passed to the pipeline so it need not fetch the URL (critical for LinkedIn
+    which blocks automated access).
+    """
+    # Sites known to be 100% JS-rendered (no useful HTML for scrapers).
+    _JS_RENDERED_HOSTS = [
+        "google.com/about/careers",
+        "workday.com",
+        "workdayjobs.com",
+        "icims.com",
+    ]
+    _is_js_rendered = any(host in url.lower() for host in _JS_RENDERED_HOSTS)
+
+    host_jd_file = None
+    try:
+        # Build a single shell command executed on the host.
+        import shlex, tempfile
+        run_cmd = ["cd", "/home/rohit/projects/career-ops", "&&"]
+
+        if url == "pasted-jd":
+            if not jd_text or len(jd_text) < 100:
+                return {"error": "Pasted JD text is too short (need >100 chars). Paste the full job description."}
+            host_jd_file = f"/tmp/career_jd_{tempfile.mktemp(prefix='', suffix='.md').split('/')[-1]}"
+            _ssh_write_file(host_jd_file, jd_text)
+            run_cmd += ["python3", "auto_pipeline.py", "pasted-jd", "--jd-file", host_jd_file]
+            first_line = jd_text.split('\n')[0].strip() if jd_text else ""
+            if ',' in first_line and len(first_line) < 100:
+                parts = [p.strip() for p in first_line.split(',', 1)]
+                if len(parts) == 2:
+                    run_cmd += ["--title", parts[0], "--company", parts[1]]
+        else:
+            run_cmd += ["python3", "auto_pipeline.py", url]
+
+            _is_link_preview = ("..." in jd_text) and ("http" in url)
+            _has_pasted_jd = bool(jd_text) and not _is_link_preview and len(jd_text) > 100
+            if _has_pasted_jd:
+                host_jd_file = f"/tmp/career_jd_{tempfile.mktemp(prefix='', suffix='.md').split('/')[-1]}"
+                _ssh_write_file(host_jd_file, jd_text)
+                run_cmd += ["--jd-file", host_jd_file]
+
+            if _is_js_rendered and not _has_pasted_jd:
+                return {
+                    "error": f"This careers page ({url.split('/')[2]}) is JavaScript-rendered and cannot be auto-scraped. "
+                             "Please paste the full job description as text and I'll run the pipeline manually.",
+                    "js_rendered": True,
+                }
+
+        cmd = list(_SSH_BASE) + [" ".join(shlex.quote(c) for c in run_cmd)]
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=PIPELINE_TIMEOUT,
+        )
+
+        # Clean up host JD temp file
+        if host_jd_file:
+            _ssh_write_file(host_jd_file, None)  # remove
+
+        output = result.stdout + result.stderr
+
+        logger.info(f"career_ops_pipeline: pipeline exit_code={result.returncode} output_len={len(output)}")
+        import datetime
+        _log_path = Path("/opt/data/logs/career_ops_pipeline_debug.log")
+        _log_path.parent.mkdir(exist_ok=True)
+        with open(_log_path, "a") as _lf:
+            _lf.write(f"\n{'='*60}\n[{datetime.datetime.now().isoformat()}] exit={result.returncode}\n")
+            _lf.write(f"STDOUT:\n{result.stdout}\n")
+            _lf.write(f"STDERR:\n{result.stderr}\n")
+        if output:
+            preview = output[:500] + ("..." if len(output) > 1000 else "") + output[-500:] if len(output) > 1000 else output
+            logger.info(f"career_ops_pipeline: output preview: {preview}")
+
+        score = None
+        recommendation = None
+        resume_pdf = None
+        gdrive_link = None
+        error = None
+
+        for line in output.split("\n"):
+            line = line.strip()
+            if "Score:" in line and "/" in line:
+                try:
+                    score = line.split("Score:")[1].split("/")[0].strip()
+                except (IndexError, ValueError):
+                    pass
+            if "Recommendation:" in line:
+                recommendation = line.split("Recommendation:", 1)[1].strip()
+            if ("resume PDF:" in line.lower() or "Resume PDF:" in line) and ("✓" in line or "✅" in line):
+                resume_pdf = line
+            if "Pushed:" in line and (".pdf" in line.lower() or ".html" in line.lower()):
+                resume_pdf = resume_pdf or line
+            if "GDrive:" in line and "Job Hunt" in line:
+                gdrive_link = line.split("GDrive:")[1].strip() if "GDrive:" in line else line
+            if "Report:" in line and ("✓" in line or "✅" in line):
+                report_path = line
+            if "Error:" in line or "FAIL:" in line:
+                error = line
+
+        if result.returncode != 0 and not error:
+            error = f"Pipeline exited with code {result.returncode}"
+
+        return {
+            "score": score,
+            "recommendation": recommendation,
+            "resume_pdf": resume_pdf,
+            "gdrive_link": gdrive_link,
+            "error": error,
+            "raw_output": output[-1000:],
+        }
+    except subprocess.TimeoutExpired:
+        return {"error": f"Pipeline timed out after {PIPELINE_TIMEOUT}s"}
+    except Exception as e:
+        return {"error": f"Pipeline error: {e}"}
+
+
+def _ssh_write_file(host_path: str, content: str) -> None:
+    """Write (or remove, when content is None) a small file on the host via SSH."""
+    import shlex
+    if content is None:
+        cmd = list(_SSH_BASE) + [f"rm -f {shlex.quote(host_path)}"]
+        subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        return
+    # Base64 over stdin to avoid quoting/unicode issues through SSH.
+    import base64
+    b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
+    cmd = list(_SSH_BASE) + [f"echo {b64} | base64 -d > {shlex.quote(host_path)}"]
+    subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+
+def _format_response(results: List[Dict[str, Any]]) -> str:
+    """Format pipeline results into a Telegram-friendly response."""
+    lines = []
+
+    for i, result in enumerate(results):
+        if len(results) > 1:
+            lines.append(f"\n--- Job {i+1} ---")
+
+        if result.get("google_careers") or result.get("js_rendered"):
+            domain = result.get("url", "").split("/")[2] if result.get("url") else "This careers site"
+            lines.append(f"⚠️ **JS-Rendered Page Detected**")
+            lines.append("")
+            lines.append(f"{domain} uses client-side rendering and cannot be auto-scraped.")
+            lines.append("")
+            lines.append("**To evaluate this job:**")
+            lines.append("1. Open the job page in your browser")
+            lines.append("2. Copy the full job description text")
+            lines.append("3. Paste it here with: `run job pipeline: [pasted text]`")
+            continue
+
+        if result.get("error"):
+            lines.append(f"❌ Pipeline error: {result['error']}")
+            if result.get("raw_output"):
+                # Show last 300 chars of output for debugging
+                raw = result['raw_output'][-300:].strip()
+                if raw:
+                    lines.append(f"```\n{raw}\n```")
+            continue
+
+        score = result.get("score", "?")
+        recommendation = result.get("recommendation", "N/A")
+
+        lines.append(f"📊 **Score: {score}/5** — {recommendation}")
+        lines.append("")
+
+        if result.get("resume_pdf"):
+            lines.append(f"✅ {result['resume_pdf']}")
+        if result.get("gdrive_link"):
+            lines.append(f"📁 GDrive: {result['gdrive_link']}")
+
+    return "\n".join(lines)
+
+
+def register(ctx: Any) -> None:
+    """Register the pre_gateway_dispatch hook."""
+    ctx.register_hook("pre_gateway_dispatch", on_pre_gateway_dispatch)
+    # Use print to guarantee visibility even if logging is not configured
+    import sys; print("✅ career_ops_pipeline plugin loaded: pre_gateway_dispatch hook registered", file=sys.stderr, flush=True)
+    logger.info("career_ops_pipeline: registered pre_gateway_dispatch hook")
+
+
+def _send_to_telegram(bot_token: str, chat_id: str, thread_id: Optional[str], response_text: str):
+    """Send pipeline results to Telegram. Called from background thread."""
+    try:
+        import json, urllib.request
+
+        msg_text = f"✅ **Career-Ops Pipeline Results**\n\n{response_text}"
+        payload_data = {
+            "chat_id": chat_id,
+            "text": msg_text[:4000],
+            "parse_mode": "Markdown",
+        }
+        if thread_id:
+            payload_data["message_thread_id"] = int(thread_id)
+        payload = json.dumps(payload_data).encode()
+        req = urllib.request.Request(
+            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read())
+            if result.get("ok"):
+                logger.info(f"career_ops_pipeline: sent results to chat {chat_id}")
+            else:
+                logger.warning(f"career_ops_pipeline: Telegram send failed: {result}")
+    except Exception as e:
+        logger.warning(f"career_ops_pipeline: direct send failed: {e}")
+
+
+def _get_creds_and_send(source: Any, response_text: str):
+    """Load credentials and send to Telegram in current thread.
+
+    Args:
+        source: The event.source object (NOT the event itself)
+        response_text: Formatted pipeline results
+    """
+    import os, json
+
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_HOME_CHANNEL", "")
+
+    if not bot_token:
+        env_path = os.path.join(os.path.expanduser("~"), ".hermes", ".env")
+        if os.path.exists(env_path):
+            with open(env_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("TELEGRAM_BOT_TOKEN="):
+                        bot_token = line.split("=", 1)[1].strip().strip('"').strip("'")
+                    elif line.startswith("TELEGRAM_HOME_CHANNEL="):
+                        chat_id = line.split("=", 1)[1].strip().strip('"').strip("'")
+
+    # Get chat_id/thread_id from source — the CORRECT chat the message came from
+    thread_id = None
+    if source:
+        if hasattr(source, "chat_id") and source.chat_id:
+            chat_id = str(source.chat_id)
+        if hasattr(source, "thread_id") and source.thread_id:
+            thread_id = str(source.thread_id)
+
+    logger.info(f"career_ops_pipeline: sending to chat={chat_id} thread={thread_id}")
+    if bot_token and chat_id:
+        _send_to_telegram(bot_token, chat_id, thread_id, response_text)
+    else:
+        logger.warning("career_ops_pipeline: no bot_token or chat_id")
+
+
+def on_pre_gateway_dispatch(event: Any, **kwargs) -> Optional[Dict[str, Any]]:
+    """
+    pre_gateway_dispatch hook handler.
+
+    If the message contains a job URL, run the pipeline in a background thread
+    and return skip immediately. The thread sends results to Telegram when done.
+
+    This is non-blocking — the gateway can process other messages while the
+    pipeline runs.
+    """
+    text = getattr(event, "text", "") or ""
+    if not text:
+        return None
+
+    logger.info(f"career_ops_pipeline: hook called, text={text[:80]}")
+
+    # Research commands — intercept BEFORE job URL matching
+    research_commands = {
+        "research_status": "status",
+        "research_pause": "pause",
+        "research_resume": "resume",
+        "research_clear": "clear",
+        "research:status": "status",
+        "research:pause": "pause",
+        "research:resume": "resume",
+        "research:clear": "clear",
+        "homelab_status": "status",
+        "homelab:pause": "pause",
+        "homelab:resume": "resume",
+    }
+    cleaned = text.strip().lower()
+    if cleaned in research_commands:
+        subcommand = research_commands[cleaned]
+        event_source = getattr(event, "source", None)
+        logger.info(f"career_ops_pipeline: research command detected: {cleaned} -> {subcommand}")
+
+        def _run_research(sub=subcommand, src=event_source):
+            try:
+                import subprocess as sp
+                script = "/home/rohit/.hermes/scripts/personal_research_digest.py"
+                result = sp.run(
+                    ["python3", script, sub],
+                    capture_output=True, text=True, timeout=30,
+                )
+                output = (result.stdout or "").strip() or (result.stderr or "").strip()
+                # Send directly via Bot API to the SAME chat/thread
+                import os, json, urllib.request
+                bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+                cid = (str(src.chat_id) if hasattr(src, "chat_id") and src.chat_id else os.environ.get("TELEGRAM_HOME_CHANNEL", ""))
+                _raw = str(src.thread_id) if hasattr(src, "thread_id") and src.thread_id else None
+                tid = None if _raw is None or _raw == "1" else int(_raw)
+                if bot_token and cid and output:
+                    payload = {"chat_id": cid, "text": output}
+                    if tid is not None:
+                        payload["message_thread_id"] = tid
+                    req = urllib.request.Request(
+                        f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                        data=json.dumps(payload).encode(),
+                        headers={"Content-Type": "application/json"},
+                    )
+                    with urllib.request.urlopen(req, timeout=15) as resp:
+                        logger.info(f"career_ops_pipeline: sent research response to {cid} thread={tid}")
+            except Exception as e:
+                logger.error(f"career_ops_pipeline: research command error: {e}")
+            except Exception as e:
+                logger.error(f"career_ops_pipeline: research command error: {e}")
+
+        t = threading.Thread(target=_run_research, daemon=True)
+        t.start()
+        return {"action": "skip", "reason": f"research command: {cleaned}"}
+
+
+    urls = _extract_job_urls(text)
+
+    # Support "run job pipeline: <pasted JD text>" without a URL.
+    # When there's no URL but the trigger phrase is present, run the pipeline
+    # with the pasted text as JD directly (no URL fetch needed).
+    _trigger_phrases = ["run job pipeline:", "job pipeline:", "run pipeline:"]
+    _has_trigger = any(text.lower().startswith(p) for p in _trigger_phrases)
+    _pasted_jd = ""
+    if _has_trigger:
+        for prefix in _trigger_phrases:
+            if text.lower().startswith(prefix):
+                _pasted_jd = text[len(prefix):].strip()
+                break
+
+    if not urls and not _pasted_jd:
+        return None
+
+    # If only generic URLs matched (no known job board), require job keywords
+    if urls and not _pasted_jd:
+        specific_count = len([u for u in urls if any(
+            p.search(u) for p in COMPILED_PATTERNS
+        )])
+        # ponytail: exclude github URLs and remove 'apply' (too generic — "apply for our home lab")
+        if specific_count == 0:
+            if any('github.com' in u for u in urls):
+                return None  # GitHub is never a job posting
+            job_keywords = ['job', 'career', 'hiring', 'position', 'opening',
+                            'opportunity', 'role', 'vacancy', 'pipeline', 'cv', 'resume',
+                            'run job pipeline', 'run pipeline']
+            if not any(kw in text.lower() for kw in job_keywords):
+                return None
+
+    # Dedup: skip URLs already processed this session
+    if urls:
+        new_urls = [u for u in urls if u not in _PROCESSED_URLS]
+        if not new_urls and not _pasted_jd:
+            logger.info(f"career_ops_pipeline: skipping {len(urls)} already-processed URL(s)")
+            return None
+        _PROCESSED_URLS.update(new_urls)
+        urls = new_urls
+    else:
+        new_urls = []
+
+    logger.info(f"career_ops_pipeline: detected {len(new_urls)} job URL(s){', pasted JD (' + str(len(_pasted_jd)) + ' chars)' if _pasted_jd else ''}")
+
+    # Extract JD text from message (remove URL and common prefixes)
+    jd_text = _pasted_jd  # already extracted from trigger phrase above
+    if not jd_text:
+        jd_text = text
+        for url in urls:
+            jd_text = jd_text.replace(url, "")
+        jd_text = jd_text.strip()
+        for prefix in ["run job pipeline:", "job pipeline:", "run pipeline:"]:
+            if jd_text.lower().startswith(prefix):
+                jd_text = jd_text[len(prefix):].strip()
+
+    # For pasted JD with no URL: use a sentinel URL so the pipeline
+    # skips URL fetch and uses the provided JD text directly.
+    if _pasted_jd and not urls:
+        urls = ["pasted-jd"]  # sentinel — pipeline will use --jd-file only
+
+    # Copy event data for the thread (event object may be reused by gateway)
+    event_source = getattr(event, "source", None)
+    event_text = text
+    # Log source details for debugging routing
+    if event_source:
+        logger.info(f"career_ops_pipeline: source.chat_id={getattr(event_source, 'chat_id', None)} "
+                     f"source.thread_id={getattr(event_source, 'thread_id', None)} "
+                     f"source.chat_type={getattr(event_source, 'chat_type', None)}")
+    else:
+        logger.warning("career_ops_pipeline: event.source is None!")
+
+    def _run_and():
+        """Run pipeline and send results in background thread."""
+        try:
+            results = []
+            for url in urls:
+                result = _run_pipeline(url, jd_text=jd_text)
+                result["url"] = url
+                results.append(result)
+            response_text = _format_response(results)
+            _get_creds_and_send(event_source, response_text)
+        except Exception as e:
+            logger.error(f"career_ops_pipeline: thread error: {e}")
+
+    # Run in daemon thread — won't block gateway, dies if process exits
+    t = threading.Thread(target=_run_and, daemon=True)
+    t.start()
+
+    # Return skip immediately — gateway continues processing
+    return {
+        "action": "skip",
+        "reason": "career_ops_pipeline: job URL auto-processed (async)",
+    }

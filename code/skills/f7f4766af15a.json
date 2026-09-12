@@ -1,0 +1,26 @@
+{
+  "id": "f7f4766af15a",
+  "name": "homelab_evaluate",
+  "description": "Score discovered candidates against resource constraints",
+  "when_to_use": "Decide which discovered tools to deploy",
+  "steps": [
+    "Read discoveries from JSONL",
+    "Check current Docker stack for duplicates",
+    "Check resource availability (mem/disk)",
+    "Score each candidate",
+    "Output decisions: deploy, skip, wait"
+  ],
+  "examples": [
+    {
+      "input": "Evaluate 5 new candidates",
+      "output": "2 deploy, 1 skip, 2 wait"
+    }
+  ],
+  "script": "python3 /home/rohit/.hermes/scripts/homelab_evaluator.py",
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.151217",
+  "updated_at": "2026-07-14T23:22:54.151220",
+  "version": 1,
+  "scope": "user"
+}

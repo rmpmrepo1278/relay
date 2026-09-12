@@ -1,0 +1,8 @@
+name: homelab-healthcheck
+description: Run comprehensive homelab health checks - Docker, system resources, services, network
+triggers:
+  - health check
+  - healthcheck
+  - system status
+  - homelab status
+  - run checks

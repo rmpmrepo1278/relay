@@ -1,0 +1,89 @@
+Last login: Sat Apr 11 16:29:25 on ttys000
+rohitmishra@Rohits-MacBook-Air ~ % ssh rohit@192.168.29.10
+rohit@192.168.29.10's password: 
+Linux home-hp 6.12.74+deb13+1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.74-2 (2026-03-08) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sat Apr 11 16:29:52 2026 from 192.168.29.189
+rohit@home-hp:~$ hermes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗       █████╗  ██████╗ ███████╗███╗   ██╗████████╗
+██║  ██║██╔════╝██╔══██╗████╗ ████║██╔════╝██╔════╝      ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
+███████║█████╗  ██████╔╝██╔████╔██║█████╗  ███████╗█████╗███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║
+██╔══██║██╔══╝  ██╔══██╗██║╚██╔╝██║██╔══╝  ╚════██║╚════╝██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
+██║  ██║███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║      ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║
+╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝      ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
+
+╭────────────────────────────── Hermes Agent v0.8.0 (2026.4.8) · upstream 08f35076 ──────────────────────────────╮
+│                                            Available Tools                                                     │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⣀⣀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       browser: browser_back, browser_click, ...                           │
+│       ⠀⠀⠀⠀⠀⠀⢀⣠⣴⣾⣿⣿⣇⠸⣿⣿⠇⣸⣿⣿⣷⣦⣄⡀⠀⠀⠀⠀⠀⠀       clarify: clarify                                                    │
+│       ⠀⢀⣠⣴⣶⠿⠋⣩⡿⣿⡿⠻⣿⡇⢠⡄⢸⣿⠟⢿⣿⢿⣍⠙⠿⣶⣦⣄⡀⠀       code_execution: execute_code                                        │
+│       ⠀⠀⠉⠉⠁⠶⠟⠋⠀⠉⠀⢀⣈⣁⡈⢁⣈⣁⡀⠀⠉⠀⠙⠻⠶⠈⠉⠉⠀⠀       cronjob: cronjob                                                    │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⡿⠛⢁⡈⠛⢿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       delegation: delegate_task                                           │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠿⣿⣦⣤⣈⠁⢠⣴⣿⠿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       file: patch, read_file, search_files, write_file                    │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠻⢿⣿⣦⡉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       homeassistant: ha_call_service, ha_get_state, ...                   │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢷⣦⣈⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       image_gen: image_generate                                           │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣴⠦⠈⠙⠿⣦⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       (and 10 more toolsets...)                                           │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣤⡈⠁⢤⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                                                                           │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠷⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       Available Skills                                                    │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠑⢶⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       autonomous-ai-agents: claude-code, codex, hermes-agent, opencode    │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠁⢰⡆⠈⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       creative: ascii-art, ascii-video, excalidraw, ideation, m...        │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⠈⣡⠞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       data-science: jupyter-live-kernel                                   │
+│       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀       devops: webhook-subscriptions                                       │
+│                                            email: himalaya                                                     │
+│  gemini-flash-lite-latest · Nous Research  gaming: minecraft-modpack-server, pokemon-player                    │
+│                /home/rohit                 general: dogfood                                                    │
+│      Session: 20260411_163227_661637       github: codebase-inspection, github-auth, github-code-r...          │
+│                                            leisure: find-nearby                                                │
+│                                            mcp: mcporter, native-mcp                                           │
+│                                            media: gif-search, heartmula, songsee, youtube-content              │
+│                                            mlops: audiocraft-audio-generation, axolotl, clip, dsp...           │
+│                                            note-taking: obsidian                                               │
+│                                            productivity: google-workspace, linear, nano-pdf, notion, ocr...    │
+│                                            red-teaming: godmode                                                │
+│                                            research: arxiv, blogwatcher, llm-wiki, polymarket, resea...        │
+│                                            smart-home: openhue                                                 │
+│                                            social-media: xitter                                                │
+│                                            software-development: plan, requesting-code-review,                 │
+│                                            subagent-driven-d...                                                │
+│                                                                                                                │
+│                                            28 tools · 75 skills · /help for commands                           │
+│                                            ⚠ 57 commits behind — run hermes update to update                   │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+Welcome to Hermes Agent! Type your message or /help for commands.
+
+ ⚕ gemini-flash-lite-latest │ ctx -- │ [░░░░░░░░░░] -- │ 4s 
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯                                                                                                                 
+────────

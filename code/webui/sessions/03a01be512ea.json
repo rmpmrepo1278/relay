@@ -1,0 +1,38 @@
+{
+  "session_id": "03a01be512ea",
+  "title": "Casual Greeting Exchange — via owl · openrouter/owl-alpha",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778094541.6387138,
+  "updated_at": 1778094548.1682737,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 6329,
+  "output_tokens": 30,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hi",
+      "timestamp": 1778094548
+    },
+    {
+      "role": "assistant",
+      "content": "Hey Rohit! 👋\n\nWhat's up? Need me to check on something in the homelab, or just saying hi?\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "Hey Rohit! 👋\n\nWhat's up? Need me to check on something in the homelab, or just saying hi?\n\n— via owl · openrouter/owl-alpha",
+      "finish_reason": "stop",
+      "timestamp": 1778094548
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

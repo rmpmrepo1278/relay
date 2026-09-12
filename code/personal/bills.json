@@ -1,0 +1,25 @@
+{
+  "bills": [
+    {
+      "id": "electric_bill_1779606965.172907",
+      "name": "Electric Bill",
+      "amount": 150.0,
+      "frequency": "monthly",
+      "due_date": "2026-06-01",
+      "status": "paid"
+    },
+    {
+      "id": "test_bill_urgent",
+      "name": "Internet Bill (URGENT)",
+      "amount": 80.0,
+      "due_date": "2026-05-27"
+    },
+    {
+      "id": "test_bill_soon",
+      "name": "Water Bill (SOON)",
+      "amount": 45.0,
+      "due_date": "2026-06-03"
+    }
+  ],
+  "last_updated": null
+}

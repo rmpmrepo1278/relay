@@ -1,0 +1,38 @@
+{
+  "session_id": "3309e606920b",
+  "title": "Greeting from OWL Assistant — via owl · openrouter/owl-alpha",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778094665.2360306,
+  "updated_at": 1778094671.0843754,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 6330,
+  "output_tokens": 34,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Say hello",
+      "timestamp": 1778094671
+    },
+    {
+      "role": "assistant",
+      "content": "Hey Rohit! 👋\n\nChaguli here, reporting for duty. Your homelab is humming along — what's on your mind tonight?\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "Hey Rohit! 👋\n\nChaguli here, reporting for duty. Your homelab is humming along — what's on your mind tonight?\n\n— via owl · openrouter/owl-alpha",
+      "finish_reason": "stop",
+      "timestamp": 1778094671
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

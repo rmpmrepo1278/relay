@@ -1,0 +1,6 @@
+[2026-08-18 15:25:35] smoke: 14 subsystems defined, briefs present
+[2026-08-18 15:25:35] smoke WARN: missing file /home/rohit/.hermes/scripts/homelab_audit.py
+[2026-08-18 15:25:35] smoke WARN: missing file /home/rohit/.hermes/scripts/homelab_insights.py
+[2026-08-18 15:25:35] smoke WARN: missing file /home/rohit/.hermes/scripts/capsule_ingest.py
+[2026-08-18 15:25:35] smoke: claude=2.1.233 (Claude Code)
+[2026-08-18 15:25:35] smoke: OK

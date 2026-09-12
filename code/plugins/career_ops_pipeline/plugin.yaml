@@ -1,0 +1,6 @@
+name: career_ops_pipeline
+version: 1.0.0
+description: "Intercepts job URLs in Telegram messages and runs the career-ops auto-pipeline directly, bypassing the LLM."
+author: Claude
+provides_hooks:
+  - pre_gateway_dispatch

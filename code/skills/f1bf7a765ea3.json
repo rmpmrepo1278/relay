@@ -1,0 +1,26 @@
+{
+  "id": "f1bf7a765ea3",
+  "name": "homelab_optimize",
+  "description": "Tune resource limits, log retention, alert thresholds",
+  "when_to_use": "Weekly resource tuning, high memory/disk usage",
+  "steps": [
+    "Collect per-container stats",
+    "Collect system metrics (mem/disk/cpu/swap)",
+    "Suggest memory limits for high-usage containers",
+    "Optimize Docker log retention",
+    "Adjust Prometheus alert thresholds if needed"
+  ],
+  "examples": [
+    {
+      "input": "Optimize resource usage",
+      "output": "Set memory limit for openwebui: 1200MB"
+    }
+  ],
+  "script": "python3 /home/rohit/.hermes/scripts/homelab_optimizer.py",
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.151632",
+  "updated_at": "2026-07-14T23:22:54.151635",
+  "version": 1,
+  "scope": "user"
+}

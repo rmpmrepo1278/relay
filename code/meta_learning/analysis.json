@@ -1,0 +1,329 @@
+{
+  "generated_at": "2026-05-14T18:52:19.293140",
+  "period_days": 30,
+  "total_sessions": 941,
+  "model_rankings": {
+    "gpt-5.3-codex": {
+      "sessions": 27,
+      "completion_rate": 100.0,
+      "reset_rate": 0.0,
+      "empty_rate": 0.0,
+      "avg_messages": 0.0,
+      "avg_cost_usd": 0.0,
+      "total_cost_usd": 0.0,
+      "task_categories": {
+        "cron": 27
+      },
+      "score": 40.0
+    },
+    "agentharness-proxy": {
+      "sessions": 508,
+      "completion_rate": 65.9,
+      "reset_rate": 16.7,
+      "empty_rate": 11.6,
+      "avg_messages": 18.4,
+      "avg_cost_usd": 0.000132,
+      "total_cost_usd": 0.06686,
+      "task_categories": {
+        "cron": 386,
+        "infra": 43,
+        "general": 62,
+        "code": 2,
+        "research": 4,
+        "finance": 1,
+        "career": 4,
+        "email": 4,
+        "knowledge": 1,
+        "travel": 1
+      },
+      "score": 29.04
+    },
+    "gemini-2.5-flash": {
+      "sessions": 4,
+      "completion_rate": 0.0,
+      "reset_rate": 50.0,
+      "empty_rate": 0.0,
+      "avg_messages": 16.0,
+      "avg_cost_usd": 0.010358,
+      "total_cost_usd": 0.041433,
+      "task_categories": {
+        "infra": 3,
+        "general": 1
+      },
+      "score": -5.0
+    },
+    "laguna-m.1:free": {
+      "sessions": 20,
+      "completion_rate": 0.0,
+      "reset_rate": 85.0,
+      "empty_rate": 0.0,
+      "avg_messages": 11.7,
+      "avg_cost_usd": 0.0,
+      "total_cost_usd": 0.0,
+      "task_categories": {
+        "general": 8,
+        "infra": 10,
+        "career": 2
+      },
+      "score": -15.5
+    },
+    "meta-llama/llama-3.3-70b-instruct": {
+      "sessions": 5,
+      "completion_rate": 0.0,
+      "reset_rate": 100.0,
+      "empty_rate": 0.0,
+      "avg_messages": 7.8,
+      "avg_cost_usd": 0.0,
+      "total_cost_usd": 0.0,
+      "task_categories": {
+        "infra": 4,
+        "general": 1
+      },
+      "score": -22.2
+    },
+    "unknown": {
+      "sessions": 376,
+      "completion_rate": 0.0,
+      "reset_rate": 39.6,
+      "empty_rate": 59.0,
+      "avg_messages": 0.4,
+      "avg_cost_usd": 0.0,
+      "total_cost_usd": 0.0,
+      "task_categories": {
+        "general": 364,
+        "infra": 7,
+        "research": 2,
+        "email": 1,
+        "code": 1,
+        "career": 1
+      },
+      "score": -23.32
+    },
+    "llama-3.3-70b-versatile": {
+      "sessions": 1,
+      "completion_rate": 0.0,
+      "reset_rate": 100.0,
+      "empty_rate": 0.0,
+      "avg_messages": 3.0,
+      "avg_cost_usd": 0.0,
+      "total_cost_usd": 0.0,
+      "task_categories": {
+        "infra": 1
+      },
+      "score": -27.0
+    }
+  },
+  "category_analysis": {
+    "cron": {
+      "sessions": 413,
+      "avg_messages": 13.4,
+      "avg_tool_calls": 6.0,
+      "success_rate": 87.7,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "agentharness-proxy": 386,
+        "gpt-5.3-codex": 27
+      }
+    },
+    "general": {
+      "sessions": 436,
+      "avg_messages": 4.1,
+      "avg_tool_calls": 1.7,
+      "success_rate": 0.0,
+      "best_model": "unknown",
+      "models_used": {
+        "unknown": 364,
+        "agentharness-proxy": 62,
+        "laguna-m.1:free": 8,
+        "meta-llama/llama-3.3-70b-instruct": 1,
+        "gemini-2.5-flash": 1
+      }
+    },
+    "infra": {
+      "sessions": 68,
+      "avg_messages": 27.3,
+      "avg_tool_calls": 10.4,
+      "success_rate": 0.0,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "unknown": 7,
+        "agentharness-proxy": 43,
+        "laguna-m.1:free": 10,
+        "meta-llama/llama-3.3-70b-instruct": 4,
+        "llama-3.3-70b-versatile": 1,
+        "gemini-2.5-flash": 3
+      }
+    },
+    "research": {
+      "sessions": 6,
+      "avg_messages": 34.7,
+      "avg_tool_calls": 12.3,
+      "success_rate": 0.0,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "unknown": 2,
+        "agentharness-proxy": 4
+      }
+    },
+    "email": {
+      "sessions": 5,
+      "avg_messages": 10.8,
+      "avg_tool_calls": 3,
+      "success_rate": 0.0,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "unknown": 1,
+        "agentharness-proxy": 4
+      }
+    },
+    "code": {
+      "sessions": 3,
+      "avg_messages": 56.3,
+      "avg_tool_calls": 26,
+      "success_rate": 0.0,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "agentharness-proxy": 2,
+        "unknown": 1
+      }
+    },
+    "career": {
+      "sessions": 7,
+      "avg_messages": 21.6,
+      "avg_tool_calls": 10,
+      "success_rate": 0.0,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "unknown": 1,
+        "agentharness-proxy": 4,
+        "laguna-m.1:free": 2
+      }
+    },
+    "finance": {
+      "sessions": 1,
+      "avg_messages": 6,
+      "avg_tool_calls": 0,
+      "success_rate": 0.0,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "agentharness-proxy": 1
+      }
+    },
+    "knowledge": {
+      "sessions": 1,
+      "avg_messages": 6,
+      "avg_tool_calls": 0,
+      "success_rate": 0.0,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "agentharness-proxy": 1
+      }
+    },
+    "travel": {
+      "sessions": 1,
+      "avg_messages": 15,
+      "avg_tool_calls": 4,
+      "success_rate": 0.0,
+      "best_model": "agentharness-proxy",
+      "models_used": {
+        "agentharness-proxy": 1
+      }
+    }
+  },
+  "prompt_patterns": {
+    "short_prompts": {
+      "count": 0,
+      "success_rate": 0
+    },
+    "medium_prompts": {
+      "count": 0,
+      "success_rate": 0
+    },
+    "long_prompts": {
+      "count": 500,
+      "success_rate": 84.4
+    },
+    "recommendation": "Best performing prompt length: long (>2000 chars) (success rate: 84.4%)"
+  },
+  "alert_engagement": {
+    "total_cron_jobs": 7,
+    "total_cron_runs": 413,
+    "high_engagement_jobs": 1,
+    "low_engagement_jobs": 6,
+    "high_engagement": [
+      {
+        "job_id": "cron_4c01f4955137",
+        "runs": 333,
+        "avg_messages": 15.8,
+        "empty_rate": 29.4
+      }
+    ],
+    "low_engagement": [
+      {
+        "job_id": "cron_d598c031127a",
+        "runs": 14,
+        "avg_messages": 7.1,
+        "empty_rate": 64.3
+      },
+      {
+        "job_id": "cron_c7016ac0695c",
+        "runs": 12,
+        "avg_messages": 13.7,
+        "empty_rate": 66.7
+      },
+      {
+        "job_id": "cron_test-envleak",
+        "runs": 25,
+        "avg_messages": 1.0,
+        "empty_rate": 100.0
+      },
+      {
+        "job_id": "cron_job-1",
+        "runs": 27,
+        "avg_messages": 0.0,
+        "empty_rate": 100.0
+      },
+      {
+        "job_id": "20260429_194206",
+        "runs": 1,
+        "avg_messages": 0.0,
+        "empty_rate": 100.0
+      },
+      {
+        "job_id": "20260429_193931",
+        "runs": 1,
+        "avg_messages": 0.0,
+        "empty_rate": 100.0
+      }
+    ],
+    "recommendation": "6 cron jobs show low engagement \u2014 consider reducing frequency or improving content"
+  },
+  "token_trends": {
+    "total_input_tokens": 119051120,
+    "total_output_tokens": 878393,
+    "avg_input_per_session": 302929,
+    "avg_output_per_session": 2235,
+    "weekly_breakdown": {
+      "2026-W16": {
+        "input": 1452303,
+        "output": 13320,
+        "sessions": 14
+      },
+      "2026-W17": {
+        "input": 107283943,
+        "output": 769780,
+        "sessions": 305
+      },
+      "2026-W18": {
+        "input": 10271416,
+        "output": 94636,
+        "sessions": 70
+      },
+      "2026-W19": {
+        "input": 43458,
+        "output": 657,
+        "sessions": 4
+      }
+    }
+  }
+}

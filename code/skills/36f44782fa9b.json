@@ -1,0 +1,27 @@
+{
+  "id": "36f44782fa9b",
+  "name": "homelab_troubleshoot",
+  "description": "Auto-diagnose and fix failing containers, check disk/DNS/zombie processes",
+  "when_to_use": "Failing containers, high disk usage, zombie processes, DNS issues",
+  "steps": [
+    "List all containers (docker ps -a)",
+    "Check for unhealthy/exited containers",
+    "Diagnose each: logs, port conflicts, volume mounts",
+    "Fix: restart, unpause, recreate, or re-up compose",
+    "Check disk, DNS, OOM, zombie processes",
+    "Log all actions"
+  ],
+  "examples": [
+    {
+      "input": "Container nginx is unhealthy",
+      "output": "Restarted nginx, now healthy"
+    }
+  ],
+  "script": "python3 /home/rohit/.hermes/scripts/homelab_troubleshooter.py",
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.150808",
+  "updated_at": "2026-07-14T23:22:54.150811",
+  "version": 1,
+  "scope": "user"
+}

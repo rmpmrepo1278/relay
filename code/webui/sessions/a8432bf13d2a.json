@@ -1,0 +1,60 @@
+{
+  "session_id": "a8432bf13d2a",
+  "title": "Ready to Help — via owl · openrouter/owl-alpha",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778092306.2934632,
+  "updated_at": 1778092493.949942,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 38065,
+  "output_tokens": 89,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Reply: OK",
+      "timestamp": 1778092336
+    },
+    {
+      "role": "assistant",
+      "content": "OK — I'm here and ready. What do you need?\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "OK — I'm here and ready. What do you need?\n\n— via owl · openrouter/owl-alpha",
+      "timestamp": 1778092336
+    },
+    {
+      "role": "user",
+      "content": "Reply: OK",
+      "timestamp": 1778092447
+    },
+    {
+      "role": "assistant",
+      "content": "OK — standing by. Let me know what you need.\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "OK — standing by. Let me know what you need.\n\n— via owl · openrouter/owl-alpha",
+      "timestamp": 1778092447
+    },
+    {
+      "role": "user",
+      "content": "Reply: OK",
+      "timestamp": 1778092493
+    },
+    {
+      "role": "assistant",
+      "content": "OK — I'm here and ready to go. What's up?\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "OK — I'm here and ready to go. What's up?\n\n— via owl · openrouter/owl-alpha",
+      "finish_reason": "stop",
+      "timestamp": 1778092493
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

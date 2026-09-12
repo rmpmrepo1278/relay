@@ -1,0 +1,5 @@
+rohit@home-hp:~$ sudo systemctl restart mcp-gateway
+[sudo] password for rohit: 
+Failed to restart mcp-gateway.service: Unit mcp-gateway.service not found.
+rohit@home-hp:~$ 
+

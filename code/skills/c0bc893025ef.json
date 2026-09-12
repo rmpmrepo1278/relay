@@ -1,0 +1,27 @@
+{
+  "id": "c0bc893025ef",
+  "name": "homelab_deploy",
+  "description": "Deploy evaluated candidates with compose backup + rollback",
+  "when_to_use": "Deploy new tools, MCP servers from evaluated candidates",
+  "steps": [
+    "Read evaluations marked 'deploy'",
+    "Backup compose files",
+    "Verify compose syntax",
+    "Deploy MCP servers to opencode config",
+    "Post-deploy health check",
+    "Log deployment"
+  ],
+  "examples": [
+    {
+      "input": "Deploy mcp/fetch",
+      "output": "Deployed mcp/fetch to opencode config"
+    }
+  ],
+  "script": "python3 /home/rohit/.hermes/scripts/homelab_deployer.py",
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.151418",
+  "updated_at": "2026-07-14T23:22:54.151420",
+  "version": 1,
+  "scope": "user"
+}

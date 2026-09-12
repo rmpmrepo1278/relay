@@ -1,0 +1,4 @@
+name: paperless-search
+description: Search Paperless documents via Telegram
+events:
+  - pre_gateway_dispatch

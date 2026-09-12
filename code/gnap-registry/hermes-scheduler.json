@@ -1,0 +1,11 @@
+{
+  "agent": "hermes-test",
+  "version": "1.0.0",
+  "last_seen": "2026-07-14T03:07:39.174750+00:00",
+  "capabilities": [],
+  "well_known": {
+    "protocol": "gnap-v1"
+  },
+  "health_url": "",
+  "parent": ""
+}

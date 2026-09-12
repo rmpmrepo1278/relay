@@ -1,0 +1,17 @@
+[
+  {
+    "id": "learn-1778802809",
+    "content": "Implemented CrewAI integration with 5 specialist crews: Researcher, Builder, SRE, LifeAdmin, Reviewer",
+    "tags": [
+      "ai",
+      "agents",
+      "implementation"
+    ],
+    "source": "hermes-agent development",
+    "linked_bookmarks": [],
+    "created_at": "2026-05-14T23:53:29Z",
+    "review_count": 0,
+    "last_reviewed": null,
+    "next_review": "2026-05-15"
+  }
+]

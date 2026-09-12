@@ -1,0 +1,19 @@
+{
+  "entries": [
+    {
+      "date": "2026-06-08",
+      "sleep_quality": 78,
+      "sleep_hours": 7.5,
+      "sleep_deep_min": 95,
+      "sleep_rem_min": 110,
+      "hrv": 45,
+      "resting_hr": 52,
+      "body_temp_deviation": -0.2,
+      "readiness_score": 82,
+      "activity_score": 75,
+      "steps": 8432,
+      "source": "oura",
+      "notes": "Auto-synced from Oura Ring"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "tasks": [
+    {
+      "name": "HVAC Filter Change",
+      "interval_days": 90,
+      "last_done": "",
+      "notes": "Replace HVAC air filter"
+    },
+    {
+      "name": "Water Heater Flush",
+      "interval_days": 365,
+      "last_done": "",
+      "notes": "Annual flush to remove sediment"
+    },
+    {
+      "name": "Smoke Detector Battery Check",
+      "interval_days": 180,
+      "last_done": "",
+      "notes": "Replace batteries in all smoke/CO detectors"
+    },
+    {
+      "name": "Gutter Cleaning",
+      "interval_days": 180,
+      "last_done": "",
+      "notes": "Clean gutters and downspouts (spring + fall)"
+    },
+    {
+      "name": "Duct Cleaning",
+      "interval_days": 365,
+      "last_done": "",
+      "notes": "Annual duct cleaning"
+    }
+  ],
+  "last_updated": "2026-05-14T16:10:51Z"
+}

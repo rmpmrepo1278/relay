@@ -1,0 +1,15 @@
+{
+  "id": "b3fe918d",
+  "name": "skill_gene_container_crash_paperless",
+  "description": "Proven fix for paperless using gene_container_crash. Context: Test record",
+  "steps": "1. Identify the issue: gene_container_crash\n2. Apply fix for target: paperless\n3. Verify resolution",
+  "tags": [
+    "test",
+    "gene_container_crash"
+  ],
+  "source_gene": "gene_container_crash",
+  "success_count": 1,
+  "fail_count": 0,
+  "created": "2026-06-17T18:15:51.834574",
+  "last_used": null
+}

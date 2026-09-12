@@ -1,0 +1,76 @@
+{
+  "_comment": "Tiered Autonomy Configuration for Hermes Agent",
+  "_docs": "default: default tier for new findings in this domain. max_tier: highest tier allowed (safety ceiling).",
+
+  "domain_tiers": {
+    "homelab": {
+      "default": "auto",
+      "max_tier": "full",
+      "_comment": "Infrastructure can be fully autonomous — it's low-risk, high-frequency"
+    },
+    "career": {
+      "default": "propose",
+      "max_tier": "full",
+      "_comment": "Career needs approval for outbound actions (emails, applications) but can auto-scan"
+    },
+    "inbox": {
+      "default": "propose",
+      "max_tier": "propose",
+      "_comment": "Email always needs approval — too risky for autonomous sends"
+    },
+    "calendar": {
+      "default": "notify",
+      "max_tier": "conditional",
+      "_comment": "Calendar is informational — notify about events, conditional for prep reminders"
+    },
+    "learning": {
+      "default": "notify",
+      "max_tier": "propose",
+      "comment": "Research/learning — notify about findings, propose deep-dives"
+    },
+    "self_improvement": {
+      "default": "conditional",
+      "max_tier": "full",
+      "_comment": "Self-improvement can auto-fix cron jobs, update configs"
+    },
+    "cross_domain": {
+      "default": "propose",
+      "max_tier": "propose",
+      "_comment": "Cross-domain insights always proposed — they're complex recommendations"
+    }
+  },
+
+  "conditional_rules_enabled": true,
+  "proposal_timeout_hours": 24,
+  "auto_actions_enabled": true,
+
+  "proposal_settings": {
+    "max_pending_proposals": 10,
+    "batch_proposals": true,
+    "batch_window_minutes": 30,
+    "include_execute_button": true,
+    "include_snooze_button": true,
+    "snooze_options_hours": [2, 6, 24]
+  },
+
+  "conditional_settings": {
+    "min_readings_for_trend": 3,
+    "trend_threshold_pct": 5.0,
+    "consecutive_readings_required": 3
+  },
+
+  "full_tier_settings": {
+    "enabled": true,
+    "allowed_domains": ["homelab", "career", "self_improvement"],
+    "max_steps_per_plan": 10,
+    "require_checkpoint_after": 3
+  },
+
+  "notification_settings": {
+    "quiet_hours_start": 23,
+    "quiet_hours_end": 6,
+    "suppress_non_critical_during_quiet_hours": true,
+    "morning_briefing_integration": true,
+    "max_notifications_per_hour": 5
+  }
+}
