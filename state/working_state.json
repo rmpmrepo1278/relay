@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "device": "home-hp",
+  "updated_at": "2026-09-12T17:24:50+00:00",
+  "priorities": [
+    {
+      "id": "it_1018070",
+      "title": "Research career development opportunities",
+      "priority": "high"
+    },
+    {
+      "id": "it_1018072",
+      "title": "Find LLM inference optimization techniques",
+      "priority": "medium"
+    },
+    {
+      "id": "it_1018071",
+      "title": "Find homelab optimization opportunities",
+      "priority": "low"
+    }
+  ],
+  "open_commitments": 0,
+  "done_intents_today": 1,
+  "last_review": "2026-09-12T17:19:20+00:00",
+  "health": ""
+}
