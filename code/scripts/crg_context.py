@@ -21,7 +21,8 @@ from pathlib import Path
 
 HERMES_HOME = Path.home() / ".hermes"
 REGISTERED = {
-    "hermes": str(Path.home() / ".hermes"),
+    "hermes": str(Path.home() / ".hermes" / "collaborator-memory"),
+    "collaborator-memory": str(Path.home() / ".hermes" / "collaborator-memory"),
     "career-ops": str(Path.home() / "projects" / "career-ops"),
     "BigMoeOnEdge": str(Path.home() / "BigMoeOnEdge"),
 }

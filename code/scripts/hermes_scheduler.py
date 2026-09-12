@@ -343,7 +343,7 @@ Job("homelab_reporter", p(f"{h}/scripts/homelab_reporter.py"),
             Schedule(minute="0", hour="3"), timeout=120, description="Docker image prune", tags=["docker"]),
 
         # ── Code graph update (every 4h) ──
-        Job("crg_update", "cd /home/rohit/.hermes && code-review-graph update 2>/dev/null; cd /home/rohit/projects/career-ops && code-review-graph update 2>/dev/null",
+        Job("crg_update", "cd /home/rohit/.hermes/collaborator-memory && code-review-graph update 2>/dev/null; cd /home/rohit/projects/career-ops && code-review-graph update 2>/dev/null",
             Schedule(minute="15", hour="*/4"), timeout=300, description="Update code-review-graph knowledge graph", tags=["maintenance"], shell=True),
 
         # ── Weekly (Sunday) ──

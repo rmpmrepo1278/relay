@@ -10,6 +10,7 @@ touch "$LOCK"
 
 # Code Review Graph rebuild (per-repo)
 case "$REPO_ROOT" in
+  /home/rohit/.hermes/collaborator-memory) REPO="relay" ;;
   /home/rohit/.hermes/hermes-agent)     REPO="hermes-agent" ;;
   /home/rohit/projects/career-ops)      REPO="career-ops" ;;
   *) REPO="" ;;
@@ -20,6 +21,6 @@ if [ -n "$REPO" ]; then
 fi
 
 # Graphify rebuild (only when scripts dir changes)
-if [ "$REPO_ROOT" = "/home/rohit/.hermes" ] || [ "$REPO_ROOT" = "/home/rohit/.hermes/scripts" ]; then
+if [ "$REPO_ROOT" = "/home/rohit/.hermes/collaborator-memory" ]; then
   /usr/bin/nohup /home/rohit/.local/bin/graphify /home/rohit/.hermes/scripts >> /home/rohit/.hermes/scripts/graphify-out/rebuild.log 2>&1 &
 fi
