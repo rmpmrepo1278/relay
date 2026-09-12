@@ -30,3 +30,10 @@ Unstick the Claude Code session (PID 1036828) routed to OMR 20128 with `combo/pi
 - apinex free tier: ~663K tokens remaining of the 1M daily pool (my testing consumed ~336K). Resets at 00:00 UTC. Model IDs: free/gpt-5.6-luna, free/deepseek-v4-flash-0731.
 - Groq legs still CF 403 with default UA (no customUserAgent on that connection) - separate fix needed if used.
 - The model_context_overrides rows are read cacheless via evaluateContextLimit/contextOverrideGate.ts/getModelContextOverride; combo JSON is cached (combosCacheVersion) so OMR restart was required after the combo edit.
+
+## Groq CF 403 fix (follow-up)
+- Same Cloudflare 1010 `-ua45` browser-signature ban as apinex, but on `api.groq.com`.
+- The groq connection (`provider_connections` where `provider=groq`) lacked `customUserAgent`.
+- Fixed by setting `providerSpecificData.customUserAgent` to the same browser-like UA; restarted `omniroute.service`.
+- Verified: groq `qwen/qwen3.6-27b` now succeeds in ~890ms on combo leg 1.
+- Full 12-leg cascade now functional top-to-bottom (groq → gemini → openrouter → apinex → local llama).
