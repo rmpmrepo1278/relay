@@ -54,4 +54,4 @@ code/skills/.usage
 
 # === Node modules ===
 node_modules/
-code/mcp/*/node_modules/
+code/mcp/*/node_modules/code/scripts/graphify-out/
