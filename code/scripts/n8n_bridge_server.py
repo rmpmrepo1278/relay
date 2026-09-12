@@ -17,7 +17,12 @@ from pathlib import Path
 from datetime import datetime
 
 PORT = 9199
-THROTTLE_FILE = Path.home() / ".hermes" / "data" / "telegram_throttle.json"
+# HERMES_HOME is env-overridable: the n8n-bridge container mounts ~/.hermes at
+# /opt/data and sets HERMES_HOME=/opt/data (its $HOME points at the mount root,
+# so Path.home() would wrongly resolve to /opt/data/.hermes). On the host the
+# env var is unset and we fall back to ~/.hermes (unchanged behavior).
+HERMES_HOME = Path(os.path.expanduser(os.environ.get("HERMES_HOME") or "~/.hermes"))
+THROTTLE_FILE = HERMES_HOME / "data" / "telegram_throttle.json"
 CATEGORY_COOLDOWN = float(os.environ.get("TELEGRAM_CATEGORY_COOLDOWN", "300"))
 BURST_LIMIT = int(os.environ.get("TELEGRAM_BURST_LIMIT", "10"))
 BURST_WINDOW = float(os.environ.get("TELEGRAM_BURST_WINDOW", "60"))
@@ -30,12 +35,11 @@ GENERAL_COOLDOWN = float(os.environ.get("TELEGRAM_GENERAL_COOLDOWN", "600"))
 # Service auto-heal de-escalation: after HEAL_FAIL_THRESHOLD consecutive restart
 # failures a unit is paused for HEAL_COOLDOWN seconds (no more hammering), and the
 # automation is told to stop retrying until the pause expires.
-HEAL_STATE_FILE = Path.home() / ".hermes" / "data" / "service_heal_state.json"
+HEAL_STATE_FILE = HERMES_HOME / "data" / "service_heal_state.json"
 HEAL_FAIL_THRESHOLD = int(os.environ.get("SERVICE_HEAL_THRESHOLD", "3"))
 HEAL_COOLDOWN = float(os.environ.get("SERVICE_HEAL_COOLDOWN", "3600"))
-SCRIPTS_DIR = os.path.expanduser("~/.hermes/scripts")
-HERMES_HOME = Path.home() / ".hermes"
-_ENV_PATH = Path.home() / ".hermes" / ".env"
+SCRIPTS_DIR = HERMES_HOME / "scripts"
+_ENV_PATH = HERMES_HOME / ".env"
 if _ENV_PATH.exists():
     for _line in _ENV_PATH.read_text().splitlines():
         _line = _line.strip()
@@ -55,7 +59,7 @@ TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT = os.environ.get("TELEGRAM_HOME_CHANNEL", "-1003976074764")
 
 HANDLERS = {}
-PROPOSAL_DIR = Path.home() / ".hermes" / "data" / "proposals"
+PROPOSAL_DIR = HERMES_HOME / "data" / "proposals"
 PROPOSAL_DIR.mkdir(parents=True, exist_ok=True)
 
 def handler(path):
@@ -526,7 +530,7 @@ def handle_telegram_send(data):
         pass
 
     # Global exact-match dedup: suppress identical text to same chat within window.
-    dedup_file = Path.home() / ".hermes" / "data" / "telegram_dedup.json"
+    dedup_file = HERMES_HOME / "data" / "telegram_dedup.json"
     window = float(data.get("dedup_window", 120))
     now = time.time()
     last_seen = _load_json(dedup_file, {})
@@ -1128,7 +1132,7 @@ def handle_run_cron(data):
 def handle_morning_briefing(data):
     """Aggregate all morning briefing data into one response."""
     from datetime import datetime
-    HERMES = Path.home() / ".hermes"
+    HERMES = HERMES_HOME
     sections = []
 
     # Journal
@@ -1214,7 +1218,7 @@ def handle_morning_briefing(data):
 def handle_evening_briefing(data):
     """Aggregate all evening briefing data into one response."""
     from datetime import datetime, timedelta
-    HERMES = Path.home() / ".hermes"
+    HERMES = HERMES_HOME
     sections = []
 
     # Interest profile
@@ -1394,7 +1398,7 @@ def _telegram_send_text(chat_id: int, text: str, message_thread_id: int | None =
 def _telegram_poller():
     """Background thread: polls Telegram for incoming commands and routes them."""
     import threading
-    state_file = Path.home() / ".hermes" / "state" / "telegram_offset.json"
+    state_file = HERMES_HOME / "state" / "telegram_offset.json"
     state_file.parent.mkdir(parents=True, exist_ok=True)
 
     def loop():
@@ -1634,7 +1638,7 @@ import json
 import subprocess
 from pathlib import Path
 
-_HH = Path.home() / ".hermes"
+_HH = HERMES_HOME
 
 
 def _run_script(name, *args, timeout=60, cwd=None):
@@ -2922,7 +2926,7 @@ def _route_recall(query: str) -> dict:
     if not query:
         return {"error": "usage: /recall <search term>"}
     try:
-        HERMES_HOME = Path.home() / ".hermes"
+        HERMES_HOME = HERMES_HOME
         sys.path.insert(0, str(HERMES_HOME / "scripts"))
         import narrative_memory as _nm
         results = _nm.retrieve_similar(query, k=5)
@@ -2940,7 +2944,7 @@ def _route_recall(query: str) -> dict:
 def _route_goals():
     """Show active life goals from personal_model."""
     try:
-        HERMES_HOME = Path.home() / ".hermes"
+        HERMES_HOME = HERMES_HOME
         sys.path.insert(0, str(HERMES_HOME / "scripts"))
         import personal_model as _pm
         pm = _pm._load_state()
