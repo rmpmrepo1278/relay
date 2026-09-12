@@ -58,3 +58,29 @@ make the local heavy tier fast enough to be a real day-to-day workhorse (27-35B 
   Vulkan iGPU (llama.cpp stays; MLC-LLM marginal; vLLM/ROCm n/a for gfx90c).
 - Backups: grub .bak-ttm, hop.py.bak-cloudfirst, tokenjuice-hop.service.bak-cloudfirst;
   chatllm unit files have no explicit .bak but ExecStart is in this file.
+## Addendum: unified chain for ALL clients (same session, post  1st commit)
+- Found three clients, two paths:
+  - Claude Code (homelab): ANTHROPIC_BASE_URL=http://127.0.0.1:20128 (OmniRoute direct,
+    Anthropic-compatible), model combo/pi-free-fallback -> was cloud-only, local tail dead
+    (magnitude masked + magnitude-bridge inactive).
+  - dsh: hop :8083 auto/chat -> chain. Hermes: hop :8083 (config.yaml base_url localhost:8083/v1,
+    provider custom, models like haiku-4.5 -> hop MODEL_REMAP) -> same chain.
+- Fix (OmniRoute side): kept Claude on OMR (full Anthropic thinking/tool semantics), repointed
+  combo local tails to direct llama.cpp legs:
+  - NEW provider_connections: local-qwen-8088 (direct llama.cpp qwen3.6-35b-a3b),
+    local-lfm-8086 (lfm2.5-8b). Schema: id, provider=openai-compatible-chat-<id>,
+    name, default_model, provider_specific_data={"baseUrl":"http://127.0.0.1:XXXX/v1",...},
+    is_active=1, api_key="", created_at+updated_at ISO-Z.
+  - combos: pi-free-fallback (8d53b452...) tail now local qwen35-a3b -> lfm (replaced dead
+    mag-gemma leg). mag-480fb243-local-exec -> qwen35 leg. mag-lite-2f7f3019-local-exec-lite
+    -> lfm leg.
+  - DB backup: ~/.omniroute/db_backups/storage.sqlite.bak-local-tail (+ wal/shm).
+  - OMR runs as orphaned init child (pid reparented), NOT systemd; restart = kill pid +
+    nohup omniroute serve --no-open >/tmp/omr.log.   [2m📋 Loaded env from /home/rohit/.omniroute/.env[0m
+  [2m📋 Loaded env from /home/rohit/.env[0m
+  [2m📋 Loaded env from /home/rohit/.npm-global/lib/node_modules/omniroute/.env[0m
+No PID file found, attempting port-based stop...
+Server stopped. does NOT kill this instaance.
+- Verified: mag-480fb243-local-exec streams from qwen3.6-35b-a3b model string on :8088.
+  Anthropic /v1/messages combo/pi-free-fallback -> groq qwen3.6-27b (cloud first) OK.
+  All three clients now: cloud-first combo -> local qwen35 -a3b -> lfm.
