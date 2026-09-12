@@ -75,3 +75,25 @@ Interests: self_hosting, ai_agents, llm_inference
   • Retrospectively Reverse-Engineering Apple's Neural Engine
     https://eiln.github.io/posts/ane.html
     (198 points on HN)
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agent - Wikipedia
+    https://en.m.wikipedia.org/wiki/Agent
+🔀 **Intersection:** ai agents × self hosting
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐221586
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26704
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21820
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • I made a build visualizer to understand Bun's compile times
+    https://lalitm.com/post/buildprof/
+    (85 points on HN)
