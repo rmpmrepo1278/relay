@@ -1,0 +1,56 @@
+{
+  "groups": [
+    {
+      "provider": "OpenAI Codex",
+      "provider_id": "openai-codex",
+      "models": [
+        {
+          "id": "@openai-codex:gpt-5.5",
+          "label": "GPT-5.5"
+        },
+        {
+          "id": "@openai-codex:gpt-5.5-mini",
+          "label": "GPT-5.5 Mini"
+        },
+        {
+          "id": "@openai-codex:gpt-5.4",
+          "label": "GPT-5.4"
+        },
+        {
+          "id": "@openai-codex:gpt-5.4-mini",
+          "label": "GPT-5.4 Mini"
+        },
+        {
+          "id": "@openai-codex:gpt-5.3-codex",
+          "label": "GPT-5.3 Codex"
+        },
+        {
+          "id": "@openai-codex:gpt-5.2-codex",
+          "label": "GPT-5.2 Codex"
+        },
+        {
+          "id": "@openai-codex:gpt-5.1-codex-max",
+          "label": "GPT-5.1 Codex Max"
+        },
+        {
+          "id": "@openai-codex:gpt-5.1-codex-mini",
+          "label": "GPT-5.1 Codex Mini"
+        },
+        {
+          "id": "@openai-codex:codex-mini-latest",
+          "label": "Codex Mini (latest)"
+        }
+      ]
+    },
+    {
+      "provider": "Default",
+      "provider_id": "custom",
+      "models": [
+        {
+          "id": "haiku-4.5",
+          "label": "Agentharness Proxy"
+        }
+      ]
+    }
+  ]
+}

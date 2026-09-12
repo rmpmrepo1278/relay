@@ -1,0 +1,6 @@
+name: career_coach
+version: 1.0.0
+description: "Routes /story /mock /coach /linkedin /career to the host-side career coach CLI (deterministic Telegram coaching)."
+author: Relay
+provides_hooks:
+  - pre_gateway_dispatch

@@ -1,0 +1,4 @@
+name: homelab-graph
+version: 1.0.0
+description: Auto-query CRG/graphify for code-related Telegram commands to inject blast-radius and graph context into LLM decisions
+entry_point: __init__.py

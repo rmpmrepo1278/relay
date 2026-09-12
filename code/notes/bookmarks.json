@@ -1,0 +1,17 @@
+[
+  {
+    "id": "bm-1778802809",
+    "url": "https://docs.crewai.com/concepts/crews",
+    "title": "CrewAI Crews Documentation",
+    "summary": "Core documentation for CrewAI crew-based multi-agent orchestration",
+    "tags": [
+      "ai",
+      "agents",
+      "crewai"
+    ],
+    "notes": "Good reference for evaluator-optimizer pattern",
+    "created_at": "2026-05-14T23:53:29Z",
+    "review_count": 0,
+    "last_reviewed": null
+  }
+]

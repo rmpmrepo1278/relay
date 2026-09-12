@@ -1,0 +1,8 @@
+name: n8n-integration
+description: Trigger n8n workflows from Hermes via webhooks
+version: 1.0.0
+author: hermes
+commands:
+  - trigger: "/n8n"
+    description: "Trigger an n8n workflow. Usage: /n8n <workflow_name> [json_payload]"
+    exec: python3 /home/rohit/.hermes/skills/n8n-integration/n8n_bridge.py

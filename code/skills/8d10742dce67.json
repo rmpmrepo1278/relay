@@ -1,0 +1,25 @@
+{
+  "id": "8d10742dce67",
+  "name": "code_execution",
+  "description": "Run Python/Node/Bash, process data, call APIs",
+  "when_to_use": "Data transformation, API calls, calculations, file processing",
+  "steps": [
+    "Write script to temp file",
+    "Execute with timeout",
+    "Capture stdout/stderr",
+    "Return structured result"
+  ],
+  "examples": [
+    {
+      "input": "Calculate 95th percentile of latency data",
+      "output": "p95 = 1.23s"
+    }
+  ],
+  "script": null,
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.139902",
+  "updated_at": "2026-07-14T23:22:54.139905",
+  "version": 1,
+  "scope": "user"
+}

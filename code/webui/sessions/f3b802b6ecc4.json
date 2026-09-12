@@ -1,0 +1,38 @@
+{
+  "session_id": "f3b802b6ecc4",
+  "title": "hello via owl openrouter alpha — via owl · openrouter/owl-alpha",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778090584.279673,
+  "updated_at": 1778090614.5465446,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 11752,
+  "output_tokens": 2,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Reply with just: hello",
+      "timestamp": 1778090614
+    },
+    {
+      "role": "assistant",
+      "content": "hello\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "hello\n\n— via owl · openrouter/owl-alpha",
+      "finish_reason": "stop",
+      "timestamp": 1778090614
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

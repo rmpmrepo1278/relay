@@ -1,0 +1,35 @@
+{
+  "session_id": "33dfabbd374f",
+  "title": "where is travel hub?",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1777844484.7814512,
+  "updated_at": 1777844536.6059532,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "where is travel hub?"
+    },
+    {
+      "role": "assistant",
+      "content": "**No response received:** Connection error.\n\n*Verify your API key is valid and the selected model is available for your account.*",
+      "timestamp": 1777844536,
+      "_error": true
+    }
+  ],
+  "tool_calls": []
+}

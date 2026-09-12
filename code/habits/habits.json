@@ -1,0 +1,30 @@
+{
+  "habits": [
+    {
+      "id": "exercise",
+      "name": "Exercise",
+      "description": "30+ minutes of physical activity",
+      "frequency": "daily",
+      "target_per_week": 5,
+      "unit": "minutes",
+      "streak_current": 1,
+      "streak_longest": 1,
+      "history": {
+        "2026-08-22": 1.0
+      }
+    },
+    {
+      "id": "read",
+      "name": "Read",
+      "description": "Read for 20+ minutes",
+      "frequency": "daily",
+      "target_per_week": 7,
+      "unit": "minutes",
+      "streak_current": 1,
+      "streak_longest": 1,
+      "history": {
+        "2026-08-22": 25.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+name: sentinel-agent
+description: "Sentinel self-healing agent — runs system sweep on gateway startup, monitors for issues"
+events:
+  - gateway:startup
+  - session:end
+  - agent:end
+  - command:sentinel

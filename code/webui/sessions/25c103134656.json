@@ -1,0 +1,38 @@
+{
+  "session_id": "25c103134656",
+  "title": "Ready to Help — via owl · openrouter/owl-alpha",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778092972.8797174,
+  "updated_at": 1778093030.2287824,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 6331,
+  "output_tokens": 15,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Reply: OK",
+      "timestamp": 1778093030
+    },
+    {
+      "role": "assistant",
+      "content": "OK — I'm here and ready. What do you need?\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "OK — I'm here and ready. What do you need?\n\n— via owl · openrouter/owl-alpha",
+      "finish_reason": "stop",
+      "timestamp": 1778093030
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

@@ -1,0 +1,25 @@
+{
+  "id": "72a77cbeeb71",
+  "name": "homelab_report",
+  "description": "Generate daily digest with pipeline state and career matches",
+  "when_to_use": "Daily 1PM digest, on-demand status report",
+  "steps": [
+    "Read pipeline state: containers, resources, discoveries",
+    "Read career briefing for top matches",
+    "Compact plain-text format",
+    "Send to Telegram via Bot API"
+  ],
+  "examples": [
+    {
+      "input": "Generate daily report",
+      "output": "Report sent to Telegram (446 chars exact match)"
+    }
+  ],
+  "script": "python3 /home/rohit/.hermes/scripts/homelab_reporter.py",
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.151848",
+  "updated_at": "2026-07-14T23:22:54.151853",
+  "version": 1,
+  "scope": "user"
+}

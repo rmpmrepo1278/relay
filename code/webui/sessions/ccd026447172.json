@@ -1,0 +1,38 @@
+{
+  "session_id": "ccd026447172",
+  "title": "Basic Math Answer — via owl · openrouter/owl-alpha",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778095524.7521749,
+  "updated_at": 1778095529.415878,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 6335,
+  "output_tokens": 6,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "What is 2+2?",
+      "timestamp": 1778095529
+    },
+    {
+      "role": "assistant",
+      "content": "4. 🎯\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "4. 🎯\n\n— via owl · openrouter/owl-alpha",
+      "finish_reason": "stop",
+      "timestamp": 1778095529
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

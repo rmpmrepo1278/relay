@@ -1,0 +1,38 @@
+{
+  "session_id": "26486ea1930b",
+  "title": "Hi boss homelab purring — via owl · openrouter/owl-alpha",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778087135.4380257,
+  "updated_at": 1778087804.110475,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 11972,
+  "output_tokens": 12,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Say hi in 5 words",
+      "timestamp": 1778087804
+    },
+    {
+      "role": "assistant",
+      "content": "Hi, boss. Homelab's purring.\n\n— via cerebras · qwen-3-235b-a22b-instruct-2507",
+      "reasoning": "Hi, boss. Homelab's purring.\n\n— via cerebras · qwen-3-235b-a22b-instruct-2507",
+      "finish_reason": "stop",
+      "timestamp": 1778087804
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

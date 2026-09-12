@@ -1,0 +1,26 @@
+{
+  "id": "81ef6c44357d",
+  "name": "homelab_discover",
+  "description": "Scan GitHub trending + MCP registry for new self-hostable tools",
+  "when_to_use": "Find new tools, MCP servers, self-hosted alternatives",
+  "steps": [
+    "Check discovery state (seen/deployed list)",
+    "Fetch GitHub trending repositories",
+    "Fetch MCP registry servers",
+    "Score each candidate (stars, activity, topic relevance)",
+    "Save discoveries to JSONL"
+  ],
+  "examples": [
+    {
+      "input": "Find new MCP servers",
+      "output": "Found 3 new MCP candidates"
+    }
+  ],
+  "script": "python3 /home/rohit/.hermes/scripts/homelab_discoverer.py",
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.151016",
+  "updated_at": "2026-07-14T23:22:54.151018",
+  "version": 1,
+  "scope": "user"
+}

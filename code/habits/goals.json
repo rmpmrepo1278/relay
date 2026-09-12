@@ -1,0 +1,97 @@
+{
+  "goals": [
+    {
+      "id": "job-search-2026",
+      "objective": "Land Director/VP Program Management role",
+      "period": "2026",
+      "key_results": [
+        {
+          "id": "kr1",
+          "description": "Apply to 5+ roles/week",
+          "target": 5,
+          "current": 0,
+          "unit": "apps/week"
+        },
+        {
+          "id": "kr2",
+          "description": "Secure 2+ interviews/month",
+          "target": 2,
+          "current": 0,
+          "unit": "interviews/month"
+        },
+        {
+          "id": "kr3",
+          "description": "Network outreach 3x/week",
+          "target": 3,
+          "current": 0,
+          "unit": "outreach/week"
+        }
+      ],
+      "progress_pct": 15,
+      "status": "active",
+      "created": "2026-04-01"
+    },
+    {
+      "id": "borobudur-trip",
+      "objective": "Complete Borobudur via Tokyo trip",
+      "period": "2026-Q2",
+      "key_results": [
+        {
+          "id": "kr1",
+          "description": "Book all flights",
+          "target": 6,
+          "current": 0,
+          "unit": "segments"
+        },
+        {
+          "id": "kr2",
+          "description": "Book all hotels",
+          "target": 2,
+          "current": 0,
+          "unit": "hotels"
+        },
+        {
+          "id": "kr3",
+          "description": "Complete prep checklist",
+          "target": 8,
+          "current": 0,
+          "unit": "tasks"
+        }
+      ],
+      "progress_pct": 10,
+      "status": "planning",
+      "created": "2026-05-01"
+    },
+    {
+      "id": "japan-kyoto-trip",
+      "objective": "Plan Kyoto Buddhist temples trip",
+      "period": "2026-Q3",
+      "key_results": [
+        {
+          "id": "kr1",
+          "description": "Set travel dates",
+          "target": 1,
+          "current": 0,
+          "unit": "done"
+        },
+        {
+          "id": "kr2",
+          "description": "Book flights",
+          "target": 1,
+          "current": 0,
+          "unit": "done"
+        },
+        {
+          "id": "kr3",
+          "description": "Research new temple sites",
+          "target": 10,
+          "current": 0,
+          "unit": "temples"
+        }
+      ],
+      "progress_pct": 5,
+      "status": "planning",
+      "created": "2026-05-01"
+    }
+  ]
+}

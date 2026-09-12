@@ -1,0 +1,4 @@
+name: hermes-bridge
+version: 1.0.0
+description: "Expose Hermes homelab capabilities (docker, code-graph, briefings, scheduler) as Telegram slash commands via the n8n bridge /cmd endpoint."
+author: Relay

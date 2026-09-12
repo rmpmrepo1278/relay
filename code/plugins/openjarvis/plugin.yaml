@@ -1,0 +1,14 @@
+name: openjarvis
+version: 1.0.0
+description: >
+  Delegation bridge to the local OpenJarvis agent. The openjarvis_ask tool
+  sends a natural-language query to OpenJarvis's OpenAI-compatible server
+  (127.0.0.1:1377, systemd unit: openjarvis.service) and returns its reply.
+  Useful for OpenJarvis's specialized tools (code interpreter, web search,
+  shell exec, file read, retrieval) or a second opinion from an independent
+  agent. OpenJarvis routes through the same hop LLM gateway as Hermes.
+author: Rohit
+provides_tools:
+  - openjarvis_ask
+provides_hooks:
+  - pre_gateway_dispatch

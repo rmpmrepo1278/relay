@@ -1,0 +1,405 @@
+{
+  "skills": {
+    "1434bc741134": {
+      "id": "1434bc741134",
+      "name": "homelab_ops",
+      "description": "Docker, systemd, disk, network, MCP server management",
+      "when_to_use": "Container health, deploy, rollback, resource tuning, log analysis",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/1434bc741134.json"
+    },
+    "36f44782fa9b": {
+      "id": "36f44782fa9b",
+      "name": "homelab_troubleshoot",
+      "description": "Auto-diagnose and fix failing containers, check disk/DNS/zombie processes",
+      "when_to_use": "Failing containers, high disk usage, zombie processes, DNS issues",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/36f44782fa9b.json"
+    },
+    "72a77cbeeb71": {
+      "id": "72a77cbeeb71",
+      "name": "homelab_report",
+      "description": "Generate daily digest with pipeline state and career matches",
+      "when_to_use": "Daily 1PM digest, on-demand status report",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/72a77cbeeb71.json"
+    },
+    "81ef6c44357d": {
+      "id": "81ef6c44357d",
+      "name": "homelab_discover",
+      "description": "Scan GitHub trending + MCP registry for new self-hostable tools",
+      "when_to_use": "Find new tools, MCP servers, self-hosted alternatives",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/81ef6c44357d.json"
+    },
+    "8d10742dce67": {
+      "id": "8d10742dce67",
+      "name": "code_execution",
+      "description": "Run Python/Node/Bash, process data, call APIs",
+      "when_to_use": "Data transformation, API calls, calculations, file processing",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/8d10742dce67.json"
+    },
+    "c0bc893025ef": {
+      "id": "c0bc893025ef",
+      "name": "homelab_deploy",
+      "description": "Deploy evaluated candidates with compose backup + rollback",
+      "when_to_use": "Deploy new tools, MCP servers from evaluated candidates",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/c0bc893025ef.json"
+    },
+    "e3e71e15ee47": {
+      "id": "e3e71e15ee47",
+      "name": "web_research",
+      "description": "Search the web, fetch pages, extract structured info",
+      "when_to_use": "Need current info, competitor analysis, pricing, documentation, news",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/e3e71e15ee47.json"
+    },
+    "ea712a050f06": {
+      "id": "ea712a050f06",
+      "name": "document_creation",
+      "description": "Create persistent markdown/HTML/CSV artifacts with versioning",
+      "when_to_use": "Reports, briefings, dashboards, data exports, documentation",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/ea712a050f06.json"
+    },
+    "f1bf7a765ea3": {
+      "id": "f1bf7a765ea3",
+      "name": "homelab_optimize",
+      "description": "Tune resource limits, log retention, alert thresholds",
+      "when_to_use": "Weekly resource tuning, high memory/disk usage",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/f1bf7a765ea3.json"
+    },
+    "f7f4766af15a": {
+      "id": "f7f4766af15a",
+      "name": "homelab_evaluate",
+      "description": "Score discovered candidates against resource constraints",
+      "when_to_use": "Decide which discovered tools to deploy",
+      "source": "legacy-json",
+      "path": "/home/rohit/.hermes/skills/f7f4766af15a.json"
+    },
+    "dir_1f3870be27": {
+      "id": "dir_1f3870be27",
+      "name": "apple",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/apple"
+    },
+    "dir_2c6e7819a5": {
+      "id": "dir_2c6e7819a5",
+      "name": "autonomous-ai-agents",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/autonomous-ai-agents"
+    },
+    "dir_ebb6305229": {
+      "id": "dir_ebb6305229",
+      "name": "career-ops",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/career-ops"
+    },
+    "dir_b663c17409": {
+      "id": "dir_b663c17409",
+      "name": "chief-of-staff",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/chief-of-staff"
+    },
+    "dir_2dd510e951": {
+      "id": "dir_2dd510e951",
+      "name": "code-graph-query",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/code-graph-query"
+    },
+    "dir_82df41632d": {
+      "id": "dir_82df41632d",
+      "name": "community",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/community"
+    },
+    "dir_3c0bc38bd3": {
+      "id": "dir_3c0bc38bd3",
+      "name": "compose-planning",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/compose-planning"
+    },
+    "dir_828e096fef": {
+      "id": "dir_828e096fef",
+      "name": "creative",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/creative"
+    },
+    "dir_a21c218df4": {
+      "id": "dir_a21c218df4",
+      "name": "devops",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/devops"
+    },
+    "dir_0c83f57c78": {
+      "id": "dir_0c83f57c78",
+      "name": "email",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/email"
+    },
+    "dir_bf215181b5": {
+      "id": "dir_bf215181b5",
+      "name": "github",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/github"
+    },
+    "dir_aa2a6a7623": {
+      "id": "dir_aa2a6a7623",
+      "name": "graphify",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/graphify"
+    },
+    "dir_98eb3b6738": {
+      "id": "dir_98eb3b6738",
+      "name": "habit-gamification",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/habit-gamification"
+    },
+    "dir_38a67dea91": {
+      "id": "dir_38a67dea91",
+      "name": "habit-tracker",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/habit-tracker"
+    },
+    "dir_10070d6b06": {
+      "id": "dir_10070d6b06",
+      "name": "homelab-healthcheck",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/homelab-healthcheck"
+    },
+    "dir_386187153c": {
+      "id": "dir_386187153c",
+      "name": "homelab-ops",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/homelab-ops"
+    },
+    "dir_62933a2951": {
+      "id": "dir_62933a2951",
+      "name": "media",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/media"
+    },
+    "dir_6d1a9cca24": {
+      "id": "dir_6d1a9cca24",
+      "name": "memory-scanner",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/memory-scanner"
+    },
+    "dir_c08c77d395": {
+      "id": "dir_c08c77d395",
+      "name": "mlops",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/mlops"
+    },
+    "dir_106576673d": {
+      "id": "dir_106576673d",
+      "name": "n8n-integration",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/n8n-integration"
+    },
+    "dir_1db7ee86cb": {
+      "id": "dir_1db7ee86cb",
+      "name": "note-taking",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/note-taking"
+    },
+    "dir_7c783b7ae6": {
+      "id": "dir_7c783b7ae6",
+      "name": "paperless-intelligence",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/paperless-intelligence"
+    },
+    "dir_737ad50051": {
+      "id": "dir_737ad50051",
+      "name": "productivity",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/productivity"
+    },
+    "dir_7412df2b1d": {
+      "id": "dir_7412df2b1d",
+      "name": "research",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/research"
+    },
+    "dir_b74a04a3b4": {
+      "id": "dir_b74a04a3b4",
+      "name": "research-control",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/research-control"
+    },
+    "dir_e877de9e34": {
+      "id": "dir_e877de9e34",
+      "name": "self-improvement",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/self-improvement"
+    },
+    "dir_1dcf2ebc1d": {
+      "id": "dir_1dcf2ebc1d",
+      "name": "service-lifecycle",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/service-lifecycle"
+    },
+    "dir_9ccf979964": {
+      "id": "dir_9ccf979964",
+      "name": "session-handoff",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/session-handoff"
+    },
+    "dir_cffc14a1ee": {
+      "id": "dir_cffc14a1ee",
+      "name": "skill-composition",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/skill-composition"
+    },
+    "dir_9cfe473158": {
+      "id": "dir_9cfe473158",
+      "name": "smart-home",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/smart-home"
+    },
+    "dir_ce67d70bf8": {
+      "id": "dir_ce67d70bf8",
+      "name": "social-media",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/social-media"
+    },
+    "dir_fb0e8fa973": {
+      "id": "dir_fb0e8fa973",
+      "name": "software-development",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/software-development"
+    },
+    "dir_bc3b055631": {
+      "id": "dir_bc3b055631",
+      "name": "upstream",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/upstream"
+    },
+    "dir_9475590a49": {
+      "id": "dir_9475590a49",
+      "name": "voice-transcription",
+      "description": "capability folder",
+      "when_to_use": "",
+      "source": "dir",
+      "path": "/home/rohit/.hermes/skills/voice-transcription"
+    }
+  },
+  "pinned": [],
+  "global_skills": [
+    "1434bc741134",
+    "36f44782fa9b",
+    "72a77cbeeb71",
+    "81ef6c44357d",
+    "8d10742dce67",
+    "c0bc893025ef",
+    "dir_0c83f57c78",
+    "dir_10070d6b06",
+    "dir_106576673d",
+    "dir_1db7ee86cb",
+    "dir_1dcf2ebc1d",
+    "dir_1f3870be27",
+    "dir_2c6e7819a5",
+    "dir_2dd510e951",
+    "dir_386187153c",
+    "dir_38a67dea91",
+    "dir_3c0bc38bd3",
+    "dir_62933a2951",
+    "dir_6d1a9cca24",
+    "dir_737ad50051",
+    "dir_7412df2b1d",
+    "dir_7c783b7ae6",
+    "dir_828e096fef",
+    "dir_82df41632d",
+    "dir_9475590a49",
+    "dir_98eb3b6738",
+    "dir_9ccf979964",
+    "dir_9cfe473158",
+    "dir_a21c218df4",
+    "dir_aa2a6a7623",
+    "dir_b663c17409",
+    "dir_b74a04a3b4",
+    "dir_bc3b055631",
+    "dir_bf215181b5",
+    "dir_c08c77d395",
+    "dir_ce67d70bf8",
+    "dir_cffc14a1ee",
+    "dir_e877de9e34",
+    "dir_ebb6305229",
+    "dir_fb0e8fa973",
+    "e3e71e15ee47",
+    "ea712a050f06",
+    "f1bf7a765ea3",
+    "f7f4766af15a"
+  ],
+  "count": 44,
+  "rebuilt_at": "2026-09-12T17:27:57+00:00"
+}

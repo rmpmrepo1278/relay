@@ -1,0 +1,15 @@
+{
+  "id": "8358dece",
+  "name": "skill_gene_memory_pressure_unknown",
+  "description": "Proven fix for unknown using gene_memory_pressure. Context: status=completed",
+  "steps": "1. Identify the issue: gene_memory_pressure\n2. Apply fix for target: unknown\n3. Verify resolution",
+  "tags": [
+    "autonomous_fixer",
+    "gene_memory_pressure"
+  ],
+  "source_gene": "gene_memory_pressure",
+  "success_count": 1,
+  "fail_count": 0,
+  "created": "2026-06-25T10:01:31.794952",
+  "last_used": null
+}

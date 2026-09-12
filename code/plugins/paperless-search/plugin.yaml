@@ -1,0 +1,4 @@
+name: paperless-search
+version: 1.0.0
+description: Search Paperless documents via Telegram
+entry_point: __init__.py

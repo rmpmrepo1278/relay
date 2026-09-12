@@ -1,0 +1,25 @@
+{
+  "id": "ea712a050f06",
+  "name": "document_creation",
+  "description": "Create persistent markdown/HTML/CSV artifacts with versioning",
+  "when_to_use": "Reports, briefings, dashboards, data exports, documentation",
+  "steps": [
+    "Determine format (md/html/csv/json)",
+    "Generate content with sections",
+    "Write to artifacts/ with timestamp",
+    "Return path and preview"
+  ],
+  "examples": [
+    {
+      "input": "Create weekly homelab report",
+      "output": "artifacts/homelab_2026-07-14.md"
+    }
+  ],
+  "script": null,
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.150216",
+  "updated_at": "2026-07-14T23:22:54.150227",
+  "version": 1,
+  "scope": "user"
+}

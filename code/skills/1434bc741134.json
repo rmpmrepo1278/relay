@@ -1,0 +1,25 @@
+{
+  "id": "1434bc741134",
+  "name": "homelab_ops",
+  "description": "Docker, systemd, disk, network, MCP server management",
+  "when_to_use": "Container health, deploy, rollback, resource tuning, log analysis",
+  "steps": [
+    "Run diagnostic commands",
+    "Parse structured output",
+    "Apply fix if safe",
+    "Verify recovery"
+  ],
+  "examples": [
+    {
+      "input": "Restart unhealthy containers",
+      "output": "Restarted 3 containers, all healthy"
+    }
+  ],
+  "script": null,
+  "script_lang": "bash",
+  "credentials": [],
+  "created_at": "2026-07-14T23:22:54.150476",
+  "updated_at": "2026-07-14T23:22:54.150479",
+  "version": 1,
+  "scope": "user"
+}

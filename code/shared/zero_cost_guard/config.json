@@ -1,0 +1,13 @@
+{
+  "free_models": [
+    "qwen/qwen3-coder:free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "qwen/qwen3-next-80b-a3b-instruct:free",
+    "openai/gpt-oss-120b:free",
+    "z-ai/glm-4.5-air:free",
+    "nvidia/nemotron-3-nano-30b-a3b:free",
+    "inclusionai/ling-2.6-1t:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "openrouter/owl-alpha"
+  ]
+}

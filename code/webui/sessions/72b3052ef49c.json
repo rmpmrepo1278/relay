@@ -1,0 +1,52 @@
+{
+  "session_id": "72b3052ef49c",
+  "title": "Say hi in 5 words",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778089090.923031,
+  "updated_at": 1778090549.8054295,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 11770,
+  "output_tokens": 12,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Say hi in 5 words",
+      "timestamp": 1778090202
+    },
+    {
+      "role": "user",
+      "content": "Reply with just: hello",
+      "timestamp": 1778090202
+    },
+    {
+      "role": "assistant",
+      "content": "(empty)",
+      "timestamp": 1778090202
+    },
+    {
+      "role": "user",
+      "content": "Say hi in 5 words",
+      "timestamp": 1778090549
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Rohit! Homelab running smoothly today?\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "Hi Rohit! Homelab running smoothly today?\n\n— via owl · openrouter/owl-alpha",
+      "finish_reason": "stop",
+      "timestamp": 1778090549
+    }
+  ],
+  "tool_calls": []
+}

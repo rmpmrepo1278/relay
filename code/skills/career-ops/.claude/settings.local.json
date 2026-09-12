@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node cv-sync-check.mjs)",
+      "WebSearch",
+      "WebFetch(domain:www.levels.fyi)",
+      "WebFetch(domain:www.glassdoor.com)",
+      "WebFetch(domain:careers.olympusamerica.com)",
+      "Bash(python3 *)",
+      "Bash(node *)",
+      "Bash(chmod +x /home/rohit/projects/career-ops/reference/run_voice_gate_tests.sh)",
+      "Bash(bash /home/rohit/projects/career-ops/reference/run_voice_gate_tests.sh)",
+      "Bash(rclone listremotes *)",
+      "Bash(rclone lsd *)",
+      "Bash(curl -sL \"https://careers.adobe.com/us/en/job/ADOBUSR166237EXTERNALENUS/Director-Engineering-Program-Management-AI-Platforms-Globalization\")",
+      "Bash(systemctl --user restart hermes-gateway)"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "session_id": "2bfef9949051",
+  "title": "Hello! How can I assist you today? — via owl · openai/gpt-oss-120b:free",
+  "workspace": "/home/hermeswebui/workspace",
+  "model": "gpt-5.5",
+  "created_at": 1781474200.6393044,
+  "updated_at": 1781474204.3440173,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "hello",
+      "timestamp": 1781474204
+    },
+    {
+      "role": "assistant",
+      "content": "⚠️ All AI providers are currently unavailable for this request. Please try again in 1-2 minutes.",
+      "reasoning": "⚠️ All AI providers are currently unavailable for this request. Please try again in 1-2 minutes.",
+      "finish_reason": "stop",
+      "timestamp": 1781474204
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

@@ -1,0 +1,8 @@
+ terminal: "grep "timeout=" /home/rohit/agentharn..."
+💻 terminal: "sed -i 's/timeout=10,/timeout=120,/' ..."
+💻 terminal: "grep "timeout=" /home/rohit/agentharn..."
+💻 terminal: "pkill -f python && nohup python /home..."
+💻 terminal: "sed -i 's/timeout=10/timeout=120/g' /..."
+💻 terminal: "systemctl restart mcp-gateway"
+💻 terminal: "ps aux | grep mcp-gateway"
+💻 terminal: "ps aux | grep python"

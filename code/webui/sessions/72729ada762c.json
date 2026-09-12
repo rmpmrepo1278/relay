@@ -1,0 +1,39 @@
+{
+  "session_id": "72729ada762c",
+  "title": "We have lama CPP and ik_lama.cpp as out inference engine? Is thi",
+  "workspace": "/home/rohit/workspace",
+  "model": "agentharness-proxy",
+  "messages": [
+    {
+      "role": "user",
+      "content": "We have lama CPP and ik_lama.cpp as out inference engine? Is this worth exploring to see if it offers better, faster tps for our models? Any other?"
+    },
+    {
+      "role": "user",
+      "content": "https://unsloth.ai/docs/new/studio/chat#code-execution - worth exploring to see if it offers better faster tps? Any others?"
+    },
+    {
+      "role": "assistant",
+      "content": "**No response received:** HTTP 500: Failed to generate or parse plan: 'content'\n\n*Verify your API key is valid and the selected model is available for your account.*",
+      "timestamp": 1777149676,
+      "_error": true
+    }
+  ],
+  "tool_calls": [],
+  "created_at": 1777149521.532602,
+  "updated_at": 1777149676.4992993,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null
+}

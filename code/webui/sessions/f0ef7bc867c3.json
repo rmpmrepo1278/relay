@@ -1,0 +1,35 @@
+{
+  "session_id": "f0ef7bc867c3",
+  "title": "Untitled",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778081289.3037405,
+  "updated_at": 1778081353.0191932,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Reply with just: OK"
+    },
+    {
+      "role": "assistant",
+      "content": "**No response received:** Connection error.\n\n*Verify your API key is valid and the selected model is available for your account.*",
+      "timestamp": 1778081353,
+      "_error": true
+    }
+  ],
+  "tool_calls": []
+}

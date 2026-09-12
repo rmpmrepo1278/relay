@@ -1,0 +1,38 @@
+{
+  "session_id": "fc166b2b0576",
+  "title": "Five Word Technical Greeting — via laguna · poolside/laguna-m.1:free",
+  "workspace": "/workspace",
+  "model": "agentharness-proxy",
+  "created_at": 1778091032.8741562,
+  "updated_at": 1778091057.4642334,
+  "pinned": false,
+  "archived": false,
+  "project_id": null,
+  "profile": "default",
+  "input_tokens": 11753,
+  "output_tokens": 14,
+  "estimated_cost": null,
+  "personality": null,
+  "active_stream_id": null,
+  "pending_user_message": null,
+  "pending_attachments": [],
+  "pending_started_at": null,
+  "compression_anchor_visible_idx": null,
+  "compression_anchor_message_key": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Say hi in 5 words",
+      "timestamp": 1778091057
+    },
+    {
+      "role": "assistant",
+      "content": "Hey Rohit! Homelab running strong. 🔧\n\n— via owl · openrouter/owl-alpha",
+      "reasoning": "Hey Rohit! Homelab running strong. 🔧\n\n— via owl · openrouter/owl-alpha",
+      "finish_reason": "stop",
+      "timestamp": 1778091057
+    }
+  ],
+  "tool_calls": [],
+  "llm_title_generated": true
+}

@@ -1,0 +1,109 @@
+{
+  "skills": [
+    {
+      "id": "b3fe918d",
+      "name": "skill_gene_container_crash_paperless",
+      "description": "Proven fix for paperless using gene_container_crash. Context: Test record",
+      "tags": [
+        "test",
+        "gene_container_crash"
+      ],
+      "source_gene": "gene_container_crash",
+      "file": "/home/rohit/.hermes/skill_library/b3fe918d_skill_gene_container_crash_paperless.json",
+      "success_count": 1,
+      "created": "2026-06-17T18:15:51.834574"
+    },
+    {
+      "id": "427c8a9d",
+      "name": "skill_gene_container_crash_paperless",
+      "description": "Proven fix for paperless using gene_container_crash. Context: Test record",
+      "tags": [
+        "test",
+        "gene_container_crash"
+      ],
+      "source_gene": "gene_container_crash",
+      "file": "/home/rohit/.hermes/skill_library/427c8a9d_skill_gene_container_crash_paperless.json",
+      "success_count": 1,
+      "created": "2026-06-18T12:01:39.391606"
+    },
+    {
+      "id": "d789a444",
+      "name": "skill_gene_container_crash_paperless",
+      "description": "Proven fix for paperless using gene_container_crash. Context: Test record",
+      "tags": [
+        "test",
+        "gene_container_crash"
+      ],
+      "source_gene": "gene_container_crash",
+      "file": "/home/rohit/.hermes/skill_library/d789a444_skill_gene_container_crash_paperless.json",
+      "success_count": 1,
+      "created": "2026-06-19T12:31:14.358259"
+    },
+    {
+      "id": "8a70766c",
+      "name": "skill_gene_container_crash_paperless",
+      "description": "Proven fix for paperless using gene_container_crash. Context: Test record",
+      "tags": [
+        "test",
+        "gene_container_crash"
+      ],
+      "source_gene": "gene_container_crash",
+      "file": "/home/rohit/.hermes/skill_library/8a70766c_skill_gene_container_crash_paperless.json",
+      "success_count": 1,
+      "created": "2026-06-24T13:31:32.075923"
+    },
+    {
+      "id": "ca7a46db",
+      "name": "skill_gene_container_crash_paperless",
+      "description": "Proven fix for paperless using gene_container_crash. Context: Test record",
+      "tags": [
+        "test",
+        "gene_container_crash"
+      ],
+      "source_gene": "gene_container_crash",
+      "file": "/home/rohit/.hermes/skill_library/ca7a46db_skill_gene_container_crash_paperless.json",
+      "success_count": 1,
+      "created": "2026-06-25T10:01:31.793428"
+    },
+    {
+      "id": "8358dece",
+      "name": "skill_gene_memory_pressure_unknown",
+      "description": "Proven fix for unknown using gene_memory_pressure. Context: status=completed",
+      "tags": [
+        "autonomous_fixer",
+        "gene_memory_pressure"
+      ],
+      "source_gene": "gene_memory_pressure",
+      "file": "/home/rohit/.hermes/skill_library/8358dece_skill_gene_memory_pressure_unknown.json",
+      "success_count": 1,
+      "created": "2026-06-25T10:01:31.794952"
+    },
+    {
+      "id": "35733f58",
+      "name": "skill_gene_container_crash_paperless",
+      "description": "Proven fix for paperless using gene_container_crash. Context: Test record",
+      "tags": [
+        "test",
+        "gene_container_crash"
+      ],
+      "source_gene": "gene_container_crash",
+      "file": "/home/rohit/.hermes/skill_library/35733f58_skill_gene_container_crash_paperless.json",
+      "success_count": 1,
+      "created": "2026-06-29T20:31:00.361369"
+    },
+    {
+      "id": "34c36ea1",
+      "name": "skill_gene_memory_pressure_unknown",
+      "description": "Proven fix for unknown using gene_memory_pressure. Context: status=completed",
+      "tags": [
+        "autonomous_fixer",
+        "gene_memory_pressure"
+      ],
+      "source_gene": "gene_memory_pressure",
+      "file": "/home/rohit/.hermes/skill_library/34c36ea1_skill_gene_memory_pressure_unknown.json",
+      "success_count": 1,
+      "created": "2026-06-29T20:31:00.362945"
+    }
+  ],
+  "version": 1
+}
