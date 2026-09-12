@@ -142,3 +142,32 @@ Interests: self_hosting, ai_agents, llm_inference
   • Litelm: LiteLLM Without the Bloat
     https://github.com/kennethwolters/litelm
     (79 points on HN)
+
+## Curiosity — 20:17 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • Nomad - Wikipedia
+    https://en.m.wikipedia.org/wiki/Nomad
+🌱 **Adjacent to ai agents:** mcp protocol
+  • Releases · UKGovernmentBEIS/inspect_ai · GitHub
+    https://github.com/UKGovernmentBEIS/inspect_ai/releases
+  • inspect_ai/examples at main - GitHub
+    https://github.com/UKGovernmentBEIS/inspect_ai/tree/main/examples
+🔀 **Intersection:** monitoring × llm inference
+  • A Guide to LLM Inference Performance Monitoring | Symbl.ai
+    https://symbl.ai/developers/blog/a-guide-to-llm-inference-performance-monitoring/
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐220668
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26684
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21748
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • The EPA is planning to scrap public review rules for data center pollution
+    https://capitalbnews.org/data-centers-permit-rules-epa/
+    (381 points on HN)
