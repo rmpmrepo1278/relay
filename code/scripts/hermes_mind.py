@@ -4,6 +4,7 @@ hermes_mind.py v4 — Hermes autonomous brain: 3-tier repair, deps, git rollback
 predictive patterns, auto-retirement, Telegram control, weekly self-audit.
 """
 import json, subprocess, sqlite3, yaml, os
+import urllib.request
 from pathlib import Path
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
@@ -22,7 +23,7 @@ SOUL_FILE = HERMES_HOME / "SOUL.md"
 DEPS_FILE = HERMES_HOME / "config" / "service_deps.yaml"
 RETIRED_FILE = HERMES_HOME / "state" / "retired_containers.json"
 TELEGRAM_APPROVALS = HERMES_HOME / "state" / "telegram_approvals.json"
-OLLAMA_ENDPOINT = "http://127.0.0.1:11434"
+OLLAMA_ENDPOINT = "http://127.0.0.1:11434"  # REMOVED 2026-09-05 (ollama decommissioned). Tier-2 log analysis now uses the hop gateway below.
 
 MEMORY_SQL = """
 CREATE TABLE IF NOT EXISTS actions (
@@ -151,19 +152,29 @@ def restart_with_deps(target, depth=0):
 # ───── TIER 2: LOG ANALYSIS VIA OLLAMA (feature 1) ────────────────
 
 def ollama_analyze(target):
+    # TIER-2 log analysis. Repointed Sep 13 2026: ollama was removed 2026-09-05;
+    # now calls the hop gateway (haiku-4.5 == magnitude Qwen3.6-35B, thinking disabled).
     logs = get_container_logs(target)
     if not logs or len(logs) < 20:
         return None  # not enough data
     try:
-        prompt = f"Container {target} is unhealthy. Logs:\n{logs[-1000:]}\n\nWhat is the likely root cause? Reply in one sentence."
-        r = subprocess.run(
-            ["curl", "-s", f"{OLLAMA_ENDPOINT}/api/generate",
-             "-d", json.dumps({"model": "qwen2.5:7b", "prompt": prompt, "stream": False})],
-            capture_output=True, text=True, timeout=60
+        tail = "\n".join(logs[-60:])[-4000:]
+        prompt = f"Container {target} is unhealthy. Logs:\n{tail}\n\nWhat is the likely root cause? Reply in one sentence."
+        body = json.dumps({
+            "model": "haiku-4.5",
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 200,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }).encode()
+        req = urllib.request.Request(
+            "http://127.0.0.1:8083/v1/chat/completions", data=body,
+            headers={"Content-Type": "application/json"},
         )
-        data = json.loads(r.stdout)
-        return data.get("response", "unknown")[:200]
-    except: return None
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            data = json.loads(resp.read())
+        return (data["choices"][0]["message"].get("content") or "unknown")[:200]
+    except Exception:
+        return None
 
 # ───── TIER 3: CONFIG FIX WITH GIT BACKUP (feature 1) ─────────────
 
