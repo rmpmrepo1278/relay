@@ -409,6 +409,20 @@ def run_check() -> dict:
             record_failure("magnitude", error=f"generation probe: {gen_detail}"[:120])
     except Exception:
         pass
+    # Open-circuit alert: notify once per OPEN transition (persist last state).
+    try:
+        from circuit_breaker import get_all_circuits
+        mag_state = next(
+            (c.get("state") for c in get_all_circuits() if c.get("name") == "magnitude"),
+            None)
+        prev = state.get("magnitude_circuit_state")
+        if mag_state == "OPEN" and prev != "OPEN":
+            send_alert("🔴 magnitude circuit OPEN — generation probe failing persistently", "infra")
+        if mag_state and mag_state != prev:
+            state["magnitude_circuit_state"] = mag_state
+            save_state(state)
+    except Exception:
+        pass
     if not gen_ok:
         state["consecutive_empty"] = state.get("consecutive_empty", 0) + 1
         save_state(state)

@@ -26,13 +26,22 @@ import json
 import os
 import re
 import urllib.request
+from pathlib import Path
 from typing import Optional
 
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
 BRIDGE_URL = os.environ.get("TELEGRAM_BRIDGE_URL", "http://localhost:9199")
-BRIDGE_AUTH = os.environ.get("BRIDGE_AUTH_KEY", "default-key-change-me")
+_BRIDGE_AUTH = os.environ.get("BRIDGE_AUTH_KEY")
+if not _BRIDGE_AUTH:
+    _dotenv = Path("/home/rohit/.hermes/.env")
+    if _dotenv.exists():
+        for _l in _dotenv.read_text().splitlines():
+            if _l.startswith("BRIDGE_AUTH_KEY="):
+                _BRIDGE_AUTH = _l.partition("=")[2]
+                break
+BRIDGE_AUTH = _BRIDGE_AUTH or ""  # fail closed: no key -> no auth header
 DEFAULT_CHAT_ID = os.environ.get("TELEGRAM_HOME_CHANNEL", "-1003976074764")
 DEFAULT_THREAD_ID = os.environ.get("TELEGRAM_HOME_THREAD")
 
@@ -116,6 +125,14 @@ def send_telegram(
         Dict with status and response/error details
     """
     text = _verify_message(text)
+    # Circuit-breaker gate: if the telegram_bridge circuit is OPEN, fail fast
+    # instead of piling more sends onto a failing bridge (wired Sep 12 2026).
+    try:
+        from circuit_breaker import allow_request
+        if not allow_request("telegram_bridge"):
+            return {"status": "skipped", "reason": "telegram_bridge circuit OPEN (fail-fast)"}
+    except Exception:
+        pass
     payload = {
         "text": text,
         "chat_id": chat_id or DEFAULT_CHAT_ID,

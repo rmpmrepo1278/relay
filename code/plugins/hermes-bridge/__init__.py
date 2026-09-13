@@ -7,7 +7,9 @@ import os
 import urllib.request
 
 BRIDGE_URL = os.environ.get("HERMES_BRIDGE_URL", "http://127.0.0.1:9199/cmd")
-BRIDGE_AUTH = os.environ.get("BRIDGE_AUTH_KEY", "homelab-bridge-secure-key-2026")
+# Key injected via ~/.hermes/.env (loaded by the agent process). No default:
+# fail closed rather than carry a known secret in code.
+BRIDGE_AUTH = os.environ.get("BRIDGE_AUTH_KEY", "")
 TIMEOUT = 120
 
 

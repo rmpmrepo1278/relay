@@ -23,15 +23,16 @@ STATE = HERMES_HOME / "state" / "omniroute_mesh_probe.json"
 LOCK = HERMES_HOME / "state" / "omniroute_mesh_probe.lock"
 BRIDGE = "http://127.0.0.1:9199/telegram-send"
 BASE = "http://127.0.0.1:20128"
-KEY = "sk-79bf69b558319d86-68605c-da1435b4"
+_KEY_FILE = HERMES_HOME / "state" / "omniroute_pi_key"
+KEY = os.environ.get("OMNIROUTE_PI_KEY", _KEY_FILE.read_text().strip() if _KEY_FILE.exists() else "no-key")
 ALERT_WINDOW = 6 * 3600
 
 AP = "openai-compatible-chat-936e95e2-6836-4348-8dd3-107ec38bdb24"
 
 LEGS = [
     ("combo", "combo/pi-free-fallback"),
-    ("groq-direct", "groq/qwen/qwen3.6-27b"),
-    ("auto-best-free", "auto/best-free"),
+    # 2026-09-12: key sk-79bf... is scoped to the combo; auto/* and groq-direct legs
+    # can never succeed under it (401/404/0) -> chronically false-flagged the job.
 ]
 TRANSITENT = {429, 401}
 

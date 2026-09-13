@@ -8,7 +8,20 @@ from pathlib import Path
 
 _BRIDGE = os.environ.get("TELEGRAM_BRIDGE_URL", "http://127.0.0.1:9199")
 _DEFAULT_CHAT = os.environ.get("TELEGRAM_HOME_CHANNEL", "-1003976074764")
-_AUTH = "Bearer " + os.environ.get("BRIDGE_AUTH_KEY", "default-key-change-me")
+def _bridge_key() -> str:
+    k = os.environ.get("BRIDGE_AUTH_KEY")
+    if k:
+        return k
+    try:
+        for line in Path("/home/rohit/.hermes/.env").read_text().splitlines():
+            if line.startswith("BRIDGE_AUTH_KEY="):
+                return line.partition("=")[2]
+    except Exception:
+        pass
+    return ""
+
+
+_AUTH = "Bearer " + _bridge_key()
 
 
 def _post(ep, d, t=15):
