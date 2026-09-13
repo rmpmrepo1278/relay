@@ -1,0 +1,187 @@
+#!/usr/bin/env bash
+# collaborator — cross-agent coordination for Relay/Hermes/OpenCode sessions.
+#
+# All sessions share ~/.hermes/collaborator-memory. This script gives every
+# agent a tiny claim registry so no two agents edit the same subsystem at the
+# same time (telegram adapters, omniroute combos, config.yaml, docker state...).
+#
+# Subcommands:
+#   sync                     pull --rebase --autostash (do BEFORE any work)
+#   status                   show active claims + working_state
+#   claim AREA NOTE          claim a work area (owned for max 4h or until done)
+#   heartbeat AREA [NOTE]    refresh claim timestamp (still mine, not stale)
+#   done AREA [NOTE]         release a claim (record completion note)
+#   log AREA MESSAGE         append to a per-area log while keeping control
+#
+# Exit codes: 0 ok, 1 usage/error, 2 area claimed by someone else.
+set -euo pipefail
+
+REPO="${COLLABORATOR_REPO:-$HOME/.hermes/collaborator-memory}"
+STATE_FILE="$REPO/state/coordination.json"
+PROTO="state/coordination.json"
+
+# Who am I? Prefer explicit env, else last agent app, else hostname.
+OWNER="${COLLABORATOR_OWNER:-}"
+if [ -z "$OWNER" ]; then
+  OWNER="${ARGOS_AGENT_NAME:-}"
+fi
+if [ -z "$OWNER" ]; then
+  OWNER="$(hostname -s 2>/dev/null || echo unknown)"
+fi
+OWNER="${OWNER}-opencode"
+
+now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
+
+die() { echo "collaborator: $*" >&2; exit 1; }
+
+cmd_sync() {
+  ( cd "$REPO" && git pull --rebase --autostash )
+  echo "collaborator: synced $REPO"
+}
+
+cmd_status() {
+  [ -f "$STATE_FILE" ] || { echo "no active claims"; return 0; }
+  python3 - "$STATE_FILE" <<'PYEOF'
+import json, sys, datetime
+p = sys.argv[1]
+try:
+    data = json.load(open(p))
+except Exception as e:
+    print(f"(unreadable: {e})")
+    sys.exit(0)
+claims = data.get("claims", {})
+if not claims:
+    print("no active claims")
+else:
+    now = datetime.datetime.now(datetime.timezone.utc)
+    print(f"{'AREA':30s} {'OWNER':28s} {'AGE':>8s}  NOTE")
+    for area, c in sorted(claims.items()):
+        try:
+            ts = datetime.datetime.fromisoformat(c["updated_at"].replace("Z", "+00:00"))
+            age = now - ts
+            ages = f"{int(age.total_seconds()//60)}m"
+            stale = " STALE" if age > datetime.timedelta(hours=4) else ""
+        except Exception:
+            ages, stale = "?", ""
+        print(f"{area:30s} {c.get('owner','?'):28s} {ages:>8s}  {c.get('note','')}{stale}")
+state = data.get("working_state") or {}
+if state.get("device"):
+    print(f"\nworking_state: {state.get('device')} updated {state.get('updated_at','?')}")
+    for pr in state.get("priorities", [])[:5]:
+        print(f"  priority: {pr.get('priority','?')} {pr.get('title','')}")
+PYEOF
+}
+
+_ensure_state() {
+  mkdir -p "$(dirname "$STATE_FILE")"
+  [ -f "$STATE_FILE" ] || echo '{"claims":{}}' > "$STATE_FILE"
+}
+
+_write_claim() {
+  python3 - "$STATE_FILE" "$OWNER" "$1" "$2" "$3" <<'PYEOF'
+import json, os, sys, datetime
+p, owner, area, note, ts = sys.argv[1:6]
+data = json.load(open(p))
+data.setdefault("claims", {})
+data["claims"][area] = {"owner": owner, "updated_at": ts, "note": note}
+json.dump(data, open(p, "w"), indent=2, sort_keys=True)
+PYEOF
+}
+
+_stale_ok() {
+  # returns 0 if the claim owner differs AND the claim is stale (>4h)
+  python3 - "$STATE_FILE" "$OWNER" "$1" <<'PYEOF'
+import json, sys, datetime
+p, owner, area = sys.argv[1:4]
+data = json.load(open(p))
+c = data.get("claims", {}).get(area)
+if not c or c.get("owner") == owner:
+    sys.exit(0)
+try:
+    ts = datetime.datetime.fromisoformat(c["updated_at"].replace("Z", "+00:00"))
+    stale = (datetime.datetime.now(datetime.timezone.utc) - ts) > datetime.timedelta(hours=4)
+except Exception:
+    stale = False
+sys.exit(1 if stale else 2)
+PYEOF
+  return $?
+}
+
+cmd_claim() {
+  local area="$1"; shift
+  local note="$*"
+  _ensure_state
+  if [ -f "$STATE_FILE" ]; then
+    if grep -q "\"$area\"" "$STATE_FILE"; then
+      if _stale_ok "$area"; then
+        echo "collaborator: taking over STALE claim on '$area'"
+      else
+        local other
+        other=$(python3 - "$STATE_FILE" "$area" <<'PYEOF'
+import json, sys
+p, area = sys.argv[1:3]
+data = json.load(open(p))
+c = data.get("claims", {}).get(area, {})
+print(f"{c.get('owner','?')}: {c.get('note','')} (updated {c.get('updated_at','?')})")
+PYEOF
+)
+        echo "collaborator: area '$area' already claimed by $other" >&2
+        exit 2
+      fi
+    fi
+  fi
+  _write_claim "$area" "$note" "$(now)"
+  ( cd "$REPO" && git add state/coordination.json >/dev/null 2>&1 && git commit -m "coordination: claim $area ($OWNER)" >/dev/null 2>&1 && git push >/dev/null 2>&1 ) || true
+  echo "collaborator: claimed '$area' (owner=$OWNER)"
+}
+
+cmd_done() {
+  local area="$1"; shift
+  local note="$*"
+  _ensure_state
+  python3 - "$STATE_FILE" "$area" <<'PYEOF'
+import json, sys
+p, area = sys.argv[1:3]
+data = json.load(open(p))
+c = data.get("claims", {}).pop(area, None)
+if c:
+    data.setdefault("history", []).append({**c, "released_at": __import__('datetime').datetime.now(datetime.timezone.utc).isoformat(), "note2": ""})
+json.dump(data, open(p, "w"), indent=2, sort_keys=True)
+PYEOF
+  ( cd "$REPO" && git add state/coordination.json >/dev/null 2>&1 && git commit -m "coordination: done $area${note:+ ($note)}" >/dev/null 2>&1 && git push >/dev/null 2>&1 ) || true
+  echo "collaborator: released '$area'"
+}
+
+cmd_log() {
+  local area="$1"; shift
+  local msg="$*"
+  _ensure_state
+  python3 - "$STATE_FILE" "$area" "$OWNER" "$msg" "$(now)" <<'PYEOF'
+import json, sys
+p, area, owner, msg, ts = sys.argv[1:6]
+data = json.load(open(p))
+data.setdefault("log", []).insert(0, {"area": area, "owner": owner, "at": ts, "msg": msg})
+data["log"] = data["log"][:100]
+json.dump(data, open(p, "w"), indent=2, sort_keys=True)
+PYEOF
+  ( cd "$REPO" && git add state/coordination.json >/dev/null 2>&1 && git commit -m "coordination: log $area" >/dev/null 2>&1 && git push >/dev/null 2>&1 ) || true
+  echo "collaborator: logged '$area': $msg"
+}
+
+USAGE="usage: collaborator {sync|status|claim AREA NOTE|heartbeat AREA [NOTE]|done AREA [NOTE]|log AREA MSG}"
+[ $# -ge 1 ] || die "$USAGE"
+case "$1" in
+  sync) cmd_sync ;;
+  status) cmd_status ;;
+  claim) [ $# -ge 2 ] || die "$USAGE"; cmd_claim "${@:2}" ;;
+  heartbeat)
+    [ $# -ge 2 ] || die "$USAGE"
+    _ensure_state
+    _write_claim "$2" "${3:-still working}" "$(now)"
+    ( cd "$REPO" && git add state/coordination.json >/dev/null 2>&1 && git commit -m "coordination: heartbeat $2" >/dev/null 2>&1 && git push >/dev/null 2>&1 ) || true
+    echo "collaborator: heartbeat '$2'"
+    ;;
+  done) [ $# -ge 2 ] || die "$USAGE"; cmd_done "${@:2}" ;;
+  log) [ $# -ge 2 ] || die "$USAGE"; cmd_log "${@:2}" ;;
+  *) die "$USAGE" ;;
+esac

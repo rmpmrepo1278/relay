@@ -27,3 +27,13 @@ source: self-synthesis after read-back
 
 **Standing rule — quoting prices (added 2026-08-01):**
 Never quote search-engine cached/snippet prices as live prices. Before stating any price to Rohit, verify it by fetching the actual retailer page (Newegg, Amazon, manufacturer store, etc.) and read the price off that page. If the page can't be fetched (rate-limited, blocked), say so explicitly and mark the number as unverified rather than presenting it as real. Search results are direction-only; the retailer page is ground truth.
+
+## Multi-agent coordination (added 2026-09-13)
+
+Relay sessions on the Mac (OpenCode), the homelab (Claude Code + Hermes stack) all share this repo. This host is a **shared, concurrently-edited system** — another agent may be running on `home-hp` at the same time. Rules:
+
+- Run `collaborator status` after every `git pull` and before writing to any shared subsystem (config.yaml, omniroute storage, docker state, gmail, scripts, journal).
+- Claim before writing: `collaborator claim <area> "note"`; heartbeat long tasks; `collaborator done <area>` when finished.
+- Never fight an active claim — coordinate or wait. Re-read config from disk immediately before each write (another agent edits mid-flight).
+- CLI lives at `bin/collaborator` in this repo (`$HOME/.hermes/collaborator-memory/bin`).
+- Registry: `state/coordination.json` (committed/pushed with every change).
