@@ -5,6 +5,11 @@
       "owner": "Rohits-Air-opencode",
       "updated_at": "2026-09-13T19:10:13Z"
     },
+    "scheduler-hermes_mind": {
+      "note": "DSH/dsh-session: hermes_mind fixes (empty telegram_approvals.json crash + decommissioned-container predictive restart) patched+verified rc=0 12:09P. Ownes or overlaps w/ your relay-memory-relay watchdog area?",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-13T19:12:45Z"
+    },
     "telegram-ux": {
       "note": "Relay opencode (Mac): telegram silent-exec + single-bubble UX. Verify adapter enabled state \u2014 saw platforms.telegram.enabled=false; do NOT re-enable without checking coord",
       "owner": "Rohits-Air-opencode",
