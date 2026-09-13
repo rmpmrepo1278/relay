@@ -341,7 +341,7 @@ Job("homelab_reporter", p(f"{h}/scripts/homelab_reporter.py"),
             healthchecks_uuid=HC_UUID_BACKUP_VOLUMES),
         Job("paperless_backup", s(f"{h}/scripts/paperless_backup.sh"),
             Schedule(minute="30", hour="3"), timeout=5400, description="Paperless pg_dump + data daily, media Sundays", tags=["backup"],
-            circuit="healthchecks"),
+            healthchecks_uuid=HC_UUID_PAPERLESS_BACKUP, circuit="healthchecks"),
         Job("trip_countdown", p(f"{h}/scripts/trip_planner.py countdown"),
             Schedule(minute="0", hour="2"), timeout=30, tags=["personal"]),
 
