@@ -97,3 +97,22 @@ Interests: self_hosting, ai_agents, llm_inference
   • I made a build visualizer to understand Bun's compile times
     https://lalitm.com/post/buildprof/
     (85 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** monitoring × llm inference
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐221706
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26706
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21831
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • I fixed a tractor using John Deere's self-repair service. Farmers aren't sold
+    https://www.wired.com/story/i-fixed-a-tractor-john-deere-self-repair-service/
+    (110 points on HN)
