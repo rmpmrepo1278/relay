@@ -106,6 +106,8 @@ def _load_feedback() -> dict:
 def _calibration_bucket(action: str) -> str:
     """Map an action or specialist agent name to a calibration bucket key."""
     # Specialist agent names (from agent_orchestrator.DISPATCH_TABLE)
+    if "homelab" in action:
+        return "homelab"
     if "infra" in action:
         return "infra"
     if "career" in action:

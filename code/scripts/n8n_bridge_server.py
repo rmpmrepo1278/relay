@@ -16,7 +16,7 @@ import hashlib
 from pathlib import Path
 from datetime import datetime
 
-PORT = 9199
+PORT = int(os.environ.get("PORT", "9199"))
 # HERMES_HOME is env-overridable: the n8n-bridge container mounts ~/.hermes at
 # /opt/data and sets HERMES_HOME=/opt/data (its $HOME points at the mount root,
 # so Path.home() would wrongly resolve to /opt/data/.hermes). On the host the
@@ -1428,7 +1428,7 @@ def _telegram_poller():
                         _tg_chat_ctx = {"chat_id": chat_id, "thread_id": thread_id}
 
                         # Route command through existing router
-                        result = _route_telegram_command(text)
+                        result = _route_telegram_command(text, thread_id=thread_id)
 
                         # Send the response back to Telegram
                         if result and "text" in result:
@@ -2841,12 +2841,24 @@ def _run_jobs_pipeline(text=None) -> dict:
     return {"text": body[:4000]}
 
 
-def _route_telegram_command(text):
+def _route_telegram_command(text, thread_id=None):
+    """Route a Telegram command, optionally scoped to a forum topic (thread_id)."""
     text = (text or "").strip()
     if not text:
         return {"text": _help_text()}
     cmd = _first_word(text)
     rest = _rest(text)
+
+    # Map thread_id -> agent for topic-scoped commands
+    agent_for_thread = {}
+    try:
+        tmap = json.loads((HERMES_HOME / "agentbus" / "topic_map.json").read_text())
+        agent_for_thread = {v: k for k, v in tmap.items()}
+    except Exception:
+        pass
+
+    current_agent = agent_for_thread.get(thread_id) if thread_id else None
+
     m = {
         "/help": lambda: {"text": _help_text()},
         "/status": lambda: _call("/system-health"),
@@ -2878,7 +2890,7 @@ def _route_telegram_command(text):
          "/proactive": lambda: _call("/proactive", args=rest),
          "/cap": lambda: _call("/cap", args=rest),
          "/cost": lambda: _call("/cost", args=rest),
- 
+
         "/jobs-latest": lambda: _call("/jobs-latest", args=rest),
         "/providers-status": lambda: _call("/providers-status", args=rest),
         "/provider-status": lambda: _call("/providers-status", args=rest),
@@ -2905,10 +2917,25 @@ def _route_telegram_command(text):
         "/claude-load-session": lambda: _call("/claude-load-session", args=rest) if rest else {"text": "Usage: /claude-load-session <topic>"},
         "/claude-resume-session": lambda: _call("/claude-resume-session", args=rest) if rest else {"text": "Usage: /claude-resume-session <topic>"},
     }
+
+    # ─── Agent-specific commands ───
+    agent_cmds = {
+        "/homelab": lambda: _agent_cmd("homelab", rest),
+        "/finlay": lambda: _agent_cmd("finlay", rest),
+        "/housekeep": lambda: _agent_cmd("housekeep", rest),
+        "/calendula": lambda: _agent_cmd("calendula", rest),
+        "/connector": lambda: _agent_cmd("connector", rest),
+        "/jenny": lambda: _agent_cmd("jenny", rest),
+    }
+    m.update(agent_cmds)
+
     handler_fn = m.get(cmd)
     if not handler_fn:
         if not cmd.startswith("/"):
-            # Sidecar agent path: plain (non-command) text goes to the local model.
+            # Topic-scoped plain text → route to that agent
+            if current_agent:
+                return _agent_cmd(current_agent, text)
+            # Fallback: sidecar agent path
             _low = text.lower()
             if "jobs pipeline" in _low or "job pipeline" in _low:
                 return _run_jobs_pipeline(text)
@@ -2919,6 +2946,71 @@ def _route_telegram_command(text):
     except Exception as e:
         return {"text": f"⚠️ error: {e}"}
     return {"text": _fmt(result)}
+
+
+def _agent_cmd(agent: str, args: str) -> dict:
+    """Invoke an agent with the given args via the orchestrator or direct script."""
+    args = (args or "").strip()
+    try:
+        sys.path.insert(0, str(HERMES_HOME / "scripts"))
+        if agent == "homelab":
+            from homelab_agent import homelab_agent as _agent_fn
+            task = {"content": args or "check", "type": args.split()[0] if args else "check"}
+            result = _agent_fn(task)
+            if result.get("status") == "completed":
+                health = result.get("health", {})
+                overall = health.get("overall", "?")
+                lines = [f"🏗️ *Homelab* — {overall}"]
+                for name, check in health.get("checks", {}).items():
+                    status = check.get("status", "?")
+                    if status not in ("healthy", "not_configured", "current"):
+                        lines.append(f"  {name}: *{status}*")
+                return {"text": "\n".join(lines)}
+            return {"text": f"Homelab: {result.get('status', '?')}"}
+
+        elif agent == "jenny":
+            # Force a brief
+            from jenny_brief import main as _jenny_main
+            import io
+            old_argv = sys.argv
+            sys.argv = ["jenny_brief.py", "--now"]
+            old_stdout = sys.stdout
+            sys.stdout = io.StringIO()
+            try:
+                _jenny_main()
+                output = sys.stdout.getvalue()
+            finally:
+                sys.argv = old_argv
+                sys.stdout = old_stdout
+            return {"text": f"📋 Jenny brief triggered:\n{output}"}
+
+        else:
+            # finlay, housekeep, calendula, connector — use their scripts
+            script_map = {
+                "finlay": "finlay",
+                "housekeep": "housekeep",
+                "calendula": "calendula",
+                "connector": "connector",
+            }
+            script_name = script_map.get(agent)
+            if not script_name:
+                return {"text": f"Unknown agent: {agent}"}
+            # Invoke via agentbus task (async) or direct subprocess
+            import subprocess
+            cmd = args.split()[0] if args else "check"
+            r = subprocess.run(
+                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), cmd] + (args.split()[1:] if len(args.split()) > 1 else []),
+                capture_output=True, text=True, timeout=30,
+                env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
+            )
+            out = (r.stdout or "").strip()
+            err = (r.stderr or "").strip()
+            if r.returncode != 0:
+                return {"text": f"❌ {agent} {cmd} failed: {err or out}"}
+            return {"text": f"✅ {agent} {cmd}:\n{out[:3000]}"}
+
+    except Exception as e:
+        return {"text": f"⚠️ {agent} error: {e}"}
 
 
 def _route_recall(query: str) -> dict:

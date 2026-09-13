@@ -3,7 +3,8 @@
 agent_orchestrator.py — Multi-agent task decomposition for Hermes.
 
 Decomposes a plan into sub-tasks handled by specialist sub-agents:
-  - infra_analyst:  Docker, systemd, health checks, self-heal
+  - homelab:        Homelab infrastructure admin (Docker, systemd, backups, disk, updates, self-heal)
+  - infra_analyst:  Legacy infra analyst
   - career_agent:   Job search, application tracking, opportunity scoring
   - knowledge_miner:  Research, paper reading, knowledge graph indexing
   - wellness_watcher:  Calendar stress patterns, sleep, break reminders
@@ -28,6 +29,8 @@ from pathlib import Path
 from typing import Any
 
 HERMES_HOME = Path.home() / ".hermes"
+# Ensure homelab_agent is importable
+sys.path.insert(0, str(HERMES_HOME / "scripts"))
 STATE_DIR = HERMES_HOME / "state"
 LOG_DIR = HERMES_HOME / "logs"
 
@@ -70,10 +73,17 @@ def _crg_check(task: dict) -> str | None:
 # ─── Specialist sub-agent definitions ────────────────────────────────────────
 
 SPECIALISTS = {
-    "infra_analyst": {
-        "description": "Diagnose and fix homelab infrastructure issues",
-        "triggers": ["docker", "container", "service", "health", "backup", "disk", "memory", "uptime"],
+    "homelab": {
+        "description": "Homelab infrastructure admin: Docker, systemd, backups, disk, updates, self-heal",
+        "triggers": ["docker", "container", "service", "health", "backup", "disk", "memory", "uptime",
+                     "update", "apt", "kopia", "restart", "heal", "homelab", "infrastructure"],
         "priority": 10,
+        "handler": "homelab_agent",
+    },
+    "infra_analyst": {
+        "description": "Diagnose and fix homelab infrastructure issues (legacy)",
+        "triggers": ["docker", "container", "service", "health", "backup", "disk", "memory", "uptime"],
+        "priority": 8,
         "handler": "infra_agent",
     },
     "career_agent": {
@@ -124,7 +134,7 @@ def decompose_plan(plan: dict) -> list[dict]:
 
     # If the plan already has a clear specialist (via goal_domain), assign directly
     domain_map = {
-        "infra": "infra_analyst",
+        "infra": "homelab",
         "career": "career_agent",
         "knowledge": "knowledge_miner",
         "meta": None,  # meta goals need decomposition
@@ -324,7 +334,17 @@ def wellness_agent(task: dict) -> dict:
     return result
 
 
+def homelab_agent(task: dict) -> dict:
+    """Wrapper that delegates to homelab_agent.py script."""
+    try:
+        from homelab_agent import homelab_agent as _homelab_agent
+        return _homelab_agent(task)
+    except Exception as e:
+        return {"assignee": "homelab", "task": task.get("content", ""), "status": "error", "error": str(e)}
+
+
 DISPATCH_TABLE = {
+    "homelab": homelab_agent,
     "infra_analyst": infra_agent,
     "career_agent": career_agent,
     "knowledge_miner": knowledge_agent,
