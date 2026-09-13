@@ -31,3 +31,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • Nvidia is the central bank of AI
     https://www.economist.com/interactive/briefing/2026/09/03/nvidia-is-the-central-bank-of-ai
     (452 points on HN)
+
+## Curiosity — 12:17 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** k3s
+  • YouTube
+    https://www.youtube.com/
+  • YouTube - YouTube
+    https://www.youtube.com/youtube
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Governance and Lifecycle actions for agents available in Microsoft 365 ...
+    https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-actions?view=o365-worldwide
+  • Agents FAQ for Microsoft 365 | Microsoft Learn
+    https://learn.microsoft.com/en-us/microsoft-365/copilot/agent-essentials/m365-agents-faq
+🔀 **Intersection:** ai agents × self hosting
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐222442
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26716
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21897
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
