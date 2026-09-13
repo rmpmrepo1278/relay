@@ -14,22 +14,22 @@ Answer "how many tokens/requests do the free cloud LLMs give" and then build a m
 - Gemini (AI Studio): ~1M tokens/day, 15 RPM, ~1,000-1,500 RPD continuous. Best sustained free tier.
 - Cerebras: ~1M tokens/day, ~30 RPM.
 - Groq: ~6k tokens/min, ~1,000 RPD, 30 RPM (token-limited, not/day).
-- OpenRouter: `:free` models, 20 RPM / 50 RPD (→1,000/day with $10 top-up).
+- OpenRouter: `:free` models, 20 RPM / 50 RPD (->1,000/day with $10 top-up).
 - NVIDIA NIM: ~1,000 RPD.
 - SambaNova: $5 trial credits (likely spent).
 - freemodel-dev: dead ("Insufficient balance", 401).
 - Mistral (not wired): ~1B tokens/month experiment tier.
 
 ### Bottom line
-Combined theoretical ~7M tokens/day, but request caps (RPD 50–1,500) are the real ceiling. Practical sustained: ~2k–6k requests/day; Xkiro + Gemini + Groq do the heavy lifting. Bounded more by requests/day than tokens.
+Combined theoretical ~7M tokens/day, but request caps (RPD 50-1,500) are the real ceiling. Practical sustained: ~2k-6k requests/day; Xkiro + Gemini + Groq do the heavy lifting. Bounded more by requests/day than tokens.
 
 ## Quota tracker — deployed
-`/home/rohit/scripts/omniroute-quota-tracker.py` (stdlib-only, cron every 15 min → `/home/rohit/logs/omniroute-quota-tracker.log`).
+`/home/rohit/scripts/omniroute-quota-tracker.py` (stdlib-only, cron every 15 min -> `/home/rohit/logs/omniroute-quota-tracker.log`).
 
 Cron: `*/15 * * * * /home/rohit/scripts/omniroute-quota-tracker.py >> /home/rohit/logs/omniroute-quota-tracker.log 2>&1`
 
 ### What it does
-1. Aggregates real usages from OmniRoute `call_logs` (storage.sqlite) per provider/day, last 7 days → requests/ok/err/tokens_in/tokens_out/duration.
+1. Aggregates real usages from OmniRoute `call_logs` (storage.sqlite) per provider/day, last 7 days -> requests/ok/err/tokens_in/tokens_out/duration.
 2. Polls live usage endpoints: Xkiro `/v1/usage`, apinex `/v1/balance`.
 3. Upserts history into `/home/rohit/.omniroute/tracker/usage.sqlite`:
    - `daily_usage(day, provider, requests, ok_requests, err_requests, tokens_in, tokens_out, duration_ms)`
@@ -59,11 +59,11 @@ Journal prev: relay-omniroute-free-capacity-2026-09-08.md. Next: relay-omniroute
 - 1,513 total calls, 19.86M input tokens, 409k output tokens — **0 billable tokens paid**.
 - Live polls: Xkiro 80,904/5,000,000 tok/day used (98.4% left) + $5 wallet; apinex balance $0.0003 (spent $0.10).
 - Top winners: openrouter 389k out / apinex deepseek 16.5k / local gemma 1k / xkiro 1.08k.
-- Error mix today: 123×429, 103×413 (groq input ceiling), 30×502 (transient), 22×402 (quota), 30×401 (freemodel dead).
+- Error mix today: 123x429, 103x413 (groq input ceiling), 30x502 (transient), 22x402 (quota), 30x401 (freemodel dead).
 
 ### Re: circuit-breaker follow-up — already built-in
 Proposed a custom circuit-breaker tracker. **It already exists in OmniRoute v3.8.49** (FSE-04 Resilience layer, `src/shared/utils/circuitBreaker.ts`):
-- CLOSED → DEGRADED (~3 fails) → OPEN (5 fails) → HALF_OPEN → CLOSED.
+- CLOSED -> DEGRADED (~3 fails) -> OPEN (5 fails) -> HALF_OPEN -> CLOSED.
 - cooldowns: `rate_limit` 60,000 ms; `quota_exhausted` 3,600,000 ms.
 - exponential backoff (16x max), 3 escalation cycles before backoff ramps.
 - smart 429 classification `classify429FromError` distinguishes rate-limit vs quota-exhausted (avoids the "individual quota reached / 164h reset" misclassify bug referenced in source).
@@ -84,7 +84,7 @@ Fix (idempotent, re-run after omniroute npm upgrade):
   - Adds isEmptyLegResponse() to src/shared/utils/circuitBreaker.ts
   - Extends isFailure in src/sse/handlers/chat.ts and chatHelpers.ts:
     isFailure: (e) => !isLocalStreamLifecycleError(e) && !isEmptyLegResponse(e)
-A zero-token 200 (empty `content|choices|data` body) now counts as a failure → trips the circuit breaker, stops dead-leg loops. omniroute restarted (active).
+A zero-token 200 (empty `content|choices|data` body) now counts as a failure -> trips the circuit breaker, stops dead-leg loops. omniroute restarted (active).
 - Claude env cap: installed /etc/profile.d/claude.sh (CLAUDE_CODE_MAX_OUTPUT_TOKENS=32768, CLAUDE_CODE_REQUEST_TIMEOUT_MS=300000), sourced by ~/.bashrc.
 
 Current audit totals (tracker run @ 19:47Z): openrouter 83 req / 11.27M in / 78.8k out tok, xkiro 788k/5M day used, apinex $0.0003. Claude process still alive (PID 3363715, idle on pts/0 — a hung session can't be cleanly resumed; restart it so the patch picks up).
@@ -101,24 +101,23 @@ The `pi-free-fallback` combo had all 14 legs rate-limited (429) simultaneously d
 - Existing `gemini-main` provider connection had depleted Google AI Studio credits (403)
 
 ### Fix: Wired native Gemini provider
-Added 6 new Gemini API keys and configured the native Gemini provider in OmniRoute:
+Added new Gemini API keys and configured the native Gemini provider in OmniRoute:
 
-1. **New API keys added to `/home/rohit/.omniroute/.env`**: `GOOGLE_API_KEY_1` through `GOOGLE_API_KEY_5`
+1. **New API keys added to `/home/rohit/.omniroute/.env`**: `GOOGLE_API_KEY_1` through `GOOGLE_API_KEY_5` (rotated 2026-09-13)
 2. **6 new `provider_connections` entries** in OmniRoute SQLite DB (`gemini-2` through `gemini-6`)
-3. **Disabled AQ-prefixed keys** (gemini-4/5/6) — they return 403 "Requests blocked" for generativelanguage.googleapis.com
+3. **Disabled restricted keys** — they return 403 "Requests blocked" for generativelanguage.googleapis.com
 4. **Updated `pi-free-fallback` combo** to include native Gemini models:
    - `gemini/gemini-3-flash-preview` (works, ~780ms latency)
    - Removed deprecated `gemini/gemini-2.5-flash` (returns 404 "no longer available to new users")
 5. **Reset circuit breaker** for Gemini provider
 
 ### Working configuration
-- `gemini-main` and `gemini-2` use `REDACTED_GOOGLE_API_KEYhjuOCxszl05FFinFVmHUH2buR9DFI4U8` (active)
-- `gemini-3` (AQ key, restricted) deleted
-- `gemini-4/5/6` (AQ keys, restricted) deactivated
+- `gemini-main` and `gemini-2` use **rotated key** (active)
+- Restricted keys deleted/deactivated
 - `pi-free-fallback` combo now has 15 models total (14 original + 1 Gemini native)
-- Model name mapping: `gemini-3-flash` → `gemini/gemini-3-flash-preview`, `gemini-2.5-flash` → `gemini/gemini-3-flash-preview`, `gemini-2.5-pro` → `gemini/gemini-3.1-pro-preview`
+- Model name mapping: `gemini-3-flash` -> `gemini/gemini-3-flash-preview`, `gemini-2.5-flash` -> `gemini/gemini-3-flash-preview`, `gemini-2.5-pro` -> `gemini/gemini-3.1-pro-preview`
 
 ### Notes
-- AQ-prefixed API keys (`AQ.Ab8RN6L...`) are from a restricted Google project and return 403 on generativelanguage.googleapis.com
-- AIza-prefixed keys (`REDACTED_GOOGLE_API_KEYhjuOC...`, `REDACTED_GOOGLE_API_KEY55wNM...`) work correctly
+- **Restricted keys** (AQ-prefixed) are from a restricted Google project and return 403 on generativelanguage.googleapis.com
+- **Working keys** (AIza-prefixed) function correctly
 - The `gemini-3.1-pro-preview` model is rate-limited (429) and currently cooling down — may need separate quota management
