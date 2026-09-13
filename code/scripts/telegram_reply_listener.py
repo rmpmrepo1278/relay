@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -225,6 +226,28 @@ def process_update(update: dict) -> dict:
             return {"status": "command", "cmd": text.split()[0]}
         except Exception as e:
             return {"status": "command-error", "error": str(e)[:80]}
+
+    # ── PA Tier-3: "confirm <id>" executes an action-loop proposal (no SSH) ──
+    cm = re.match(r"^confirm\s+(\d+)\s*$", (text or "").strip(), re.IGNORECASE)
+    if cm:
+        try:
+            if not _from_allowed_chat(update):
+                return {"status": "skip-not-allowed-chat"}
+            aid = int(cm.group(1))
+            import subprocess
+            r = subprocess.run(
+                [sys.executable, str(Path(__file__).resolve().parent / "action_loop.py"),
+                 "confirm", str(aid)],
+                capture_output=True, text=True, timeout=120)
+            out = (r.stdout or r.stderr or "").strip()[-400:]
+            try:
+                from telegram_bridge import send_telegram
+                send_telegram(f"Action #{aid} confirm: {out}", chat_id=int(msg["chat"]["id"]))
+            except Exception:
+                pass
+            return {"status": "action-confirmed", "id": aid, "rc": r.returncode, "out": out[-80:]}
+        except Exception as e:
+            return {"status": "confirm-error", "error": str(e)[:80]}
 
     vote = parse_vote(text)
     if not vote:

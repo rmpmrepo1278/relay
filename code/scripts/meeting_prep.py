@@ -27,10 +27,10 @@ PREPS_FILE = DATA / "meeting_preps.json"
 
 
 def _events() -> list[dict]:
-    data = read_json(CACHE_FILE, {"events": [], "items": []})
-    if isinstance(data, list):
-        return data
-    return data.get("events") or data.get("items") or []
+    # calendar cache is written as {today: [...], upcoming: [...]}; delegate
+    # to the shared agent_kits helper so meeting prep sees real events.
+    from agent_kits import calendar_events
+    return calendar_events()
 
 
 def _context_matches(needle: str, limit: int = 3) -> list[str]:
@@ -58,7 +58,12 @@ def upcoming(mins: int = 15) -> list[dict]:
     out = []
     for e in _events():
         start = e.get("start", {})
-        dt_str = start.get("dateTime") or start.get("date") or ""
+        # calendar cache stores start as an ISO string ("2026-09-15T11:00:00-07:00");
+        # Google-fetched events may use {dateTime}/{date}. Accept both.
+        if isinstance(start, str):
+            dt_str = start
+        else:
+            dt_str = start.get("dateTime") or start.get("date") or ""
         try:
             dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
         except ValueError:
@@ -104,8 +109,9 @@ def past_meetings(mins: int = 90) -> list[dict]:
     for e in _events():
         start = e.get("start", {})
         end = e.get("end", {})
-        dt_str = start.get("dateTime") or start.get("date") or ""
-        end_str = end.get("dateTime") or end.get("date") or ""
+        st0 = start if isinstance(start, str) else (start.get("dateTime") or start.get("date") or "")
+        en0 = end if isinstance(end, str) else (end.get("dateTime") or end.get("date") or "")
+        dt_str, end_str = st0, en0
         try:
             dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
             end_dt = datetime.fromisoformat(end_str.replace("Z", "+00:00")) if end_str else dt + timedelta(minutes=30)
@@ -131,8 +137,8 @@ def conflict_scan() -> list[dict]:
     for e in _events():
         start = e.get("start", {})
         end = e.get("end", {})
-        s = start.get("dateTime") or start.get("date") or ""
-        en = end.get("dateTime") or ""
+        s = start if isinstance(start, str) else (start.get("dateTime") or start.get("date") or "")
+        en = end if isinstance(end, str) else (end.get("dateTime") or "")
         try:
             sdt = datetime.fromisoformat(s.replace("Z", "+00:00"))
         except ValueError:

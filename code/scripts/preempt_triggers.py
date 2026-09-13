@@ -61,10 +61,10 @@ def write_json(p: Path, obj) -> None:
 
 
 def events() -> list[dict]:
-    data = read_json(CACHE_FILE, {"events": [], "items": []})
-    if isinstance(data, list):
-        return data
-    return data.get("events") or data.get("items") or []
+    # calendar cache is written as {today: [...], upcoming: [...]}; delegate
+    # to the shared agent_kits helper (also keeps one canonical parser).
+    from agent_kits import calendar_events
+    return calendar_events()
 
 
 def send(text: str) -> dict:
@@ -127,7 +127,7 @@ def trigger_due(events: list, sent: dict):
     return None
 
 
-def trigger_weather():
+def trigger_weather(sent: dict):
     lat = os.environ.get("PREEMPT_WEATHER_LAT")
     lon = os.environ.get("PREEMPT_WEATHER_LON")
     if not lat or not lon:
@@ -135,6 +135,7 @@ def trigger_weather():
     today = now().date().isoformat()
     if read_json(SENT_FILE, {}).get("weather") == today:
         return None
+    sent["weather"] = today  # dedup: one weather line per day
     try:
         r = subprocess.run(
             ["curl", "-fsS", "--max-time", "12",
@@ -166,7 +167,7 @@ def main() -> int:
         except Exception:
             evs = []
     msgs = []
-    for fn in (lambda: trigger_trip(evs, sent), lambda: trigger_due(evs, sent), trigger_weather):
+    for fn in (lambda: trigger_trip(evs, sent), lambda: trigger_due(evs, sent), lambda: trigger_weather(sent)):
         try:
             m = fn()
             if m:

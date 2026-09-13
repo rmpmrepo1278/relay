@@ -212,3 +212,25 @@ def load_commitments() -> list[dict]:
             "updated": rec.get("updated_at") or rec.get("updated") or created,
         })
     return out
+
+
+def calendar_events() -> list[dict]:
+    """Flatten state/calendar_events.json (today + upcoming) into one list.
+
+    Real format written by calendar_intelligence.cache_events():
+        {"cached_at": ..., "today": [...], "upcoming": [...]}
+    (older format used "events"/"items" keys). Returns normalized dicts with
+    title/summary, start (ISO string), end, location. Never raises.
+    """
+    data = read_json(STATE / "calendar_events.json", {})
+    out = []
+    if isinstance(data, dict):
+        for key in ("today", "upcoming", "events", "items"):
+            chunk = data.get(key) or []
+            if isinstance(chunk, list):
+                for e in chunk:
+                    if isinstance(e, dict):
+                        out.append(e)
+    elif isinstance(data, list):
+        out = [e for e in data if isinstance(e, dict)]
+    return out
