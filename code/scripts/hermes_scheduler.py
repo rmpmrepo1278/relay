@@ -641,7 +641,7 @@ class Scheduler:
             r = subprocess.run(["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", f"http://localhost:8004/ping/{uuid}{endpoint}",
                            "-H", "Host: 100.122.58.40:8004"],
                            capture_output=True, timeout=5)
-            ok = r.stdout.strip() == "200"
+            ok = r.stdout.decode(errors="replace").strip() == "200"
             self._record_circuit_name("healthchecks", ok, error="" if ok else f"hc ping http={r.stdout.strip()}")
         except Exception as e:
             self._record_circuit_name("healthchecks", False, error=str(e)[:120])
