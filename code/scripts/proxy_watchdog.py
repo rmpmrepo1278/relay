@@ -400,6 +400,15 @@ def run_check() -> dict:
 
     # Generation probe: hop may answer /health but serve empty content.
     gen_ok, gen_detail = generation_probe()
+    # Circuit-breaker telemetry: the generation probe exercises hop -> magnitude.
+    try:
+        from circuit_breaker import record_success, record_failure
+        if gen_ok:
+            record_success("magnitude")
+        else:
+            record_failure("magnitude", error=f"generation probe: {gen_detail}"[:120])
+    except Exception:
+        pass
     if not gen_ok:
         state["consecutive_empty"] = state.get("consecutive_empty", 0) + 1
         save_state(state)
