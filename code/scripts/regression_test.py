@@ -27,8 +27,9 @@ def _post(ep, d, t=15):
 
 
 def _send_tg(text, cid=None):
+    import time as _t
     ok, p = _post("/telegram-send", {
-        "text": text,
+        "text": f"{text} [{_t.strftime('%m%d%H%M%S')}]",
         "chat_id": cid or _DEFAULT_CHAT,
         "parse_mode": "HTML",
     })
@@ -38,6 +39,10 @@ def _send_tg(text, cid=None):
     # "response" payload when the send was accepted but throttled; otherwise
     # {"status":"ok","response":{...}} where response=Telegram's payload.
     if p.get("throttled"):
+        return True, p
+    # Deduped = bridge accepted an identical recent message (reachability + auth
+    # OK); unique per-run timestamp makes this rare, but never a false FAIL.
+    if p.get("deduped"):
         return True, p
     resp = p.get("response", {}) if isinstance(p, dict) else {}
     tg_ok = resp.get("ok") is True
