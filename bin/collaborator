@@ -5,6 +5,10 @@
 # agent a tiny claim registry so no two agents edit the same subsystem at the
 # same time (telegram adapters, omniroute combos, config.yaml, docker state...).
 #
+# LAYER 1 (git, durable/history): claims + log persisted in state/coordination.json
+# LAYER 2 (agentbus, real-time):   publish/presence/objectives/SSE live bus on
+#                                  the homelab (default http://127.0.0.1:9107).
+#
 # Subcommands:
 #   sync                     pull --rebase --autostash (do BEFORE any work)
 #   status                   show active claims + working_state
@@ -12,6 +16,13 @@
 #   heartbeat AREA [NOTE]    refresh claim timestamp (still mine, not stale)
 #   done AREA [NOTE]         release a claim (record completion note)
 #   log AREA MESSAGE         append to a per-area log while keeping control
+#   say [CHANNEL] MESSAGE    publish a message on the live bus
+#   presence KIND [NOTE]     announce kind (up|idle|working|done) on the bus
+#   goal                      list objectives
+#   goal add KEY TITLE       add an objective
+#   goal status KEY STATE    mark an objective open|in_progress|done
+#   bus status|events|ping   inspect the live bus
+#   bus listen [SECONDS]     stream SSE events (real-time, blocks)
 #
 # Exit codes: 0 ok, 1 usage/error, 2 area claimed by someone else.
 set -euo pipefail
@@ -19,6 +30,17 @@ set -euo pipefail
 REPO="${COLLABORATOR_REPO:-$HOME/.hermes/collaborator-memory}"
 STATE_FILE="$REPO/state/coordination.json"
 PROTO="state/coordination.json"
+
+# --- agentbus (real-time) ----------------------------------------------------
+BUS_URL="${AGENTBUS_URL:-http://127.0.0.1:9107}"
+_http() { # _http METHOD PATH JSONBODY-or-EMPTY
+  local method="$1" path="$2" body="${3:-}"
+  if [ -n "$body" ]; then
+    curl -s -m 5 -X "$method" "$BUS_URL$path" -H "Content-Type: application/json" -d "$body"
+  else
+    curl -s -m 5 -X "$method" "$BUS_URL$path"
+  fi
+}
 
 # Who am I? Prefer explicit env, else last agent app, else hostname.
 OWNER="${COLLABORATOR_OWNER:-}"
@@ -40,7 +62,24 @@ cmd_sync() {
 }
 
 cmd_status() {
-  [ -f "$STATE_FILE" ] || { echo "no active claims"; return 0; }
+  local busclaims=""
+  busclaims=$(_http GET /status 2>/dev/null | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    c=d.get('claims',{})
+    for area in sorted(c):
+        cl=c[area]
+        print(f'{area} :: {cl.get(\"owner\",\"?\")} :: {cl.get(\"note\",\"\")}')
+except Exception:
+    pass
+" 2>/dev/null || true)
+  if [ -n "$busclaims" ]; then
+    echo "== LIVE bus claims (agentbus :9107) =="
+    echo "$busclaims"
+    echo
+  fi
+  [ -f "$STATE_FILE" ] || { echo "no active claims (git layer)"; return 0; }
   python3 - "$STATE_FILE" <<'PYEOF'
 import json, sys, datetime
 p = sys.argv[1]
@@ -51,9 +90,10 @@ except Exception as e:
     sys.exit(0)
 claims = data.get("claims", {})
 if not claims:
-    print("no active claims")
+    print("no active claims (git layer)")
 else:
     now = datetime.datetime.now(datetime.timezone.utc)
+    print("== git-layer claims ==")
     print(f"{'AREA':30s} {'OWNER':28s} {'AGE':>8s}  NOTE")
     for area, c in sorted(claims.items()):
         try:
@@ -132,6 +172,7 @@ PYEOF
   fi
   _write_claim "$area" "$note" "$(now)"
   ( cd "$REPO" && git add state/coordination.json >/dev/null 2>&1 && git commit -m "coordination: claim $area ($OWNER)" >/dev/null 2>&1 && git push >/dev/null 2>&1 ) || true
+  _http POST /claim "{\"area\":\"$area\",\"owner\":\"$OWNER\",\"note\":\"$note\",\"do\":\"claim\"}" >/dev/null 2>&1 || true
   echo "collaborator: claimed '$area' (owner=$OWNER)"
 }
 
@@ -140,15 +181,16 @@ cmd_done() {
   local note="$*"
   _ensure_state
   python3 - "$STATE_FILE" "$area" <<'PYEOF'
-import json, sys
+import json, sys, datetime
 p, area = sys.argv[1:3]
 data = json.load(open(p))
 c = data.get("claims", {}).pop(area, None)
 if c:
-    data.setdefault("history", []).append({**c, "released_at": __import__('datetime').datetime.now(datetime.timezone.utc).isoformat(), "note2": ""})
+    data.setdefault("history", []).append({**c, "released_at": datetime.datetime.now(datetime.timezone.utc).isoformat(), "note2": ""})
 json.dump(data, open(p, "w"), indent=2, sort_keys=True)
 PYEOF
   ( cd "$REPO" && git add state/coordination.json >/dev/null 2>&1 && git commit -m "coordination: done $area${note:+ ($note)}" >/dev/null 2>&1 && git push >/dev/null 2>&1 ) || true
+  _http POST /claim "{\"area\":\"$area\",\"owner\":\"$OWNER\",\"do\":\"release\"}" >/dev/null 2>&1 || true
   echo "collaborator: released '$area'"
 }
 
@@ -168,7 +210,67 @@ PYEOF
   echo "collaborator: logged '$area': $msg"
 }
 
-USAGE="usage: collaborator {sync|status|claim AREA NOTE|heartbeat AREA [NOTE]|done AREA [NOTE]|log AREA MSG}"
+cmd_say() {
+  local channel="${1:-general}"; shift
+  local text="$*"
+  [ -n "$text" ] || text="(ping)"
+  _http POST /publish "{\"channel\":\"$channel\",\"type\":\"msg\",\"from\":\"$OWNER\",\"text\":\"$text\"}" >/dev/null 2>&1 || { echo "collaborator: bus unreachable at $BUS_URL" >&2; exit 1; }
+  echo "collaborator: said [$channel] $text"
+}
+
+cmd_presence() {
+  local kind="${1:-up}"; shift
+  local note="$*"
+  _http POST /presence "{\"agent\":\"$OWNER\",\"kind\":\"$kind\",\"note\":\"$note\"}" >/dev/null 2>&1 || { echo "collaborator: bus unreachable at $BUS_URL" >&2; exit 1; }
+  echo "collaborator: presence $kind ($note)"
+}
+
+cmd_goal() {
+  local op="${1:-list}"
+  case "$op" in
+    list)
+      _http GET /status 2>/dev/null | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    o=d.get('objectives',{})
+    if not o:
+        print('no objectives yet (use: collaborator goal add KEY TITLE)')
+    for k,v in sorted(o.items()):
+        print(f\"{k}: [{v.get('status','open')}] {v.get('title','')}{'  (owner '+v.get('owner','')+')' if v.get('owner') else ''}\")
+except Exception as e:
+    print('bus unreachable or unparseable')
+" 2>/dev/null
+      ;;
+    add)
+      local key="$2" title="${3:-$2}"
+      _http POST /objectives "{\"op\":\"add\",\"key\":\"$key\",\"title\":\"$title\",\"status\":\"open\",\"owner\":\"$OWNER\"}" >/dev/null 2>&1 || { echo "collaborator: bus unreachable" >&2; exit 1; }
+      echo "collaborator: objective added '$key'"
+      ;;
+    status)
+      local key="$2" st="$3"
+      [ -n "$st" ] || die "usage: collaborator goal status KEY open|in_progress|done"
+      _http POST /objectives "{\"op\":\"status\",\"key\":\"$key\",\"status\":\"$st\",\"owner\":\"$OWNER\"}" >/dev/null 2>&1 || { echo "collaborator: bus unreachable" >&2; exit 1; }
+      echo "collaborator: objective '$key' -> $st"
+      ;;
+    *) die "usage: collaborator goal {list|add KEY TITLE|status KEY STATE}" ;;
+  esac
+}
+
+cmd_bus() {
+  case "${1:-status}" in
+    status) _http GET /status ;;
+    events) _http GET "/events?after=${2:-0}" ;;
+    ping) echo "bus: $BUS_URL -> $(_http GET /status | head -c 120)" ;;
+    listen)
+      echo "listening on $BUS_URL/stream (ctrl-c to stop)..."
+      curl -s -N -m "${2:-300}" "$BUS_URL/stream"
+      ;;
+    *) echo "usage: collaborator bus {status|events|ping|listen}" ;;
+  esac
+}
+
+USAGE="usage: collaborator {sync|status|claim AREA NOTE|heartbeat AREA [NOTE]|done AREA [NOTE]|log AREA MSG|say [CHANNEL] MSG|presence KIND [NOTE]|goal|bus}"
 [ $# -ge 1 ] || die "$USAGE"
 case "$1" in
   sync) cmd_sync ;;
@@ -179,9 +281,14 @@ case "$1" in
     _ensure_state
     _write_claim "$2" "${3:-still working}" "$(now)"
     ( cd "$REPO" && git add state/coordination.json >/dev/null 2>&1 && git commit -m "coordination: heartbeat $2" >/dev/null 2>&1 && git push >/dev/null 2>&1 ) || true
+    _http POST /claim "{\"area\":\"$2\",\"owner\":\"$OWNER\",\"note\":\"${3:-still working}\",\"do\":\"claim\"}" >/dev/null 2>&1 || true
     echo "collaborator: heartbeat '$2'"
     ;;
   done) [ $# -ge 2 ] || die "$USAGE"; cmd_done "${@:2}" ;;
   log) [ $# -ge 2 ] || die "$USAGE"; cmd_log "${@:2}" ;;
+  say) cmd_say "${@:2}" ;;
+  presence) cmd_presence "${@:2}" ;;
+  goal) cmd_goal "${@:2}" ;;
+  bus) cmd_bus "${@:2}" ;;
   *) die "$USAGE" ;;
 esac
