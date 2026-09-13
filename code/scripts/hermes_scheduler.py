@@ -99,6 +99,7 @@ class Job:
     tags: list[str] = field(default_factory=lambda: ["general"])
     env: dict = field(default_factory=dict)
     shell: bool = False  # use shell=True (supports &&, |, $(), ;)
+    circuit: str = ""  # circuit-breaker name; success/failure recorded per run
 
     def matches(self, dt: datetime) -> bool:
         return (self._matches_field(self.schedule.minute, dt.minute) and
@@ -197,10 +198,10 @@ def define_jobs() -> list[Job]:
             Schedule(minute="*/5"), timeout=120, description="All 5 council members cast evidence-based ballots", tags=["cognitive", "governance"]),
         # Telegram reply listener: closes the human 6th-vote loop (reply to a ballot)
         Job("tg_reply_listener", p(f"{h}/scripts/telegram_reply_listener.py"),
-            Schedule(minute="*/5"), timeout=45, description="Poll Telegram for the human 6th vote on council ballots", tags=["cognitive", "governance"]),
+            Schedule(minute="*/5"), timeout=45, description="Poll Telegram for the human 6th vote on council ballots", tags=["cognitive", "governance"], circuit="telegram_bridge"),
         # ── Agent kits: sentinel gate, voice, memory, routines, commits, mailbox ──
         Job("sentinel_gate_poll", f"python3 {h}/scripts/sentinel_gate.py --run",
-            Schedule(minute="*"), timeout=60, description="Execute approved sentinel actions; page human for pending ones", tags=["governance", "autonomy"]),
+            Schedule(minute="*"), timeout=60, description="Execute approved sentinel actions; page human for pending ones", tags=["governance", "autonomy"], circuit="telegram_bridge"),
         Job("skills_smoke", f"python3 {h}/scripts/skills_lib.py validate 3",
             Schedule(minute="10", hour="*"), timeout=90, description="Smoke-validate newest skills", tags=["skills"]),
         Job("routine_watcher", f"python3 {h}/scripts/routine_watcher.py --run",
@@ -439,11 +440,11 @@ Job("weekly_audit", p(f"{h}/scripts/weekly_audit.py"),
         # ── Telegram delivery ──
         Job("alerts_delivery", p(f"{h}/scripts/alerts_delivery.py"),
             Schedule(minute="*/3"), timeout=30,
-            description="Deliver undelivered alerts to Telegram", tags=["telegram"]),
+            description="Deliver undelivered alerts to Telegram", tags=["telegram"], circuit="telegram_bridge"),
         Job("persona_morning", p(f"{h}/scripts/persona_engine.py morning"),
-            Schedule(minute="0", hour="13"), timeout=30, description="Personality-driven morning check-in", tags=["persona", "telegram"]),
+            Schedule(minute="0", hour="13"), timeout=30, description="Personality-driven morning check-in", tags=["persona", "telegram"], circuit="telegram_bridge"),
         Job("persona_evening", p(f"{h}/scripts/persona_engine.py evening"),
-            Schedule(minute="0", hour="20"), timeout=30, description="Personality-driven evening reflection", tags=["persona", "telegram"]),
+            Schedule(minute="0", hour="20"), timeout=30, description="Personality-driven evening reflection", tags=["persona", "telegram"], circuit="telegram_bridge"),
         Job("system_doctor", p(f"{h}/scripts/system_doctor.py"),
             Schedule(minute="*/30"), timeout=120, description="Self-healing health checks", tags=["maintenance"]),
         Job("debloat", s(f"{h}/scripts/debloat.sh"),
@@ -600,6 +601,7 @@ class Scheduler:
                 returncode=proc.returncode,
             ))
             self._hc_ping(job.healthchecks_uuid, "success" if success else "fail")
+            self._record_circuit(job, success, elapsed=elapsed, error="" if success else f"rc={proc.returncode}")
             return {"job": job.name, "status": status, "elapsed": round(elapsed, 2),
                     "returncode": proc.returncode,
                     "stdout": stdout.decode(errors="replace")[-500:],
@@ -615,6 +617,7 @@ class Scheduler:
             ))
             if healthcheck_started:
                 self._hc_ping(job.healthchecks_uuid, "fail")
+            self._record_circuit(job, False, elapsed=elapsed, error="timeout")
             return {"job": job.name, "status": "timeout", "elapsed": round(elapsed, 2)}
         except Exception as e:
             elapsed = time.time() - start
@@ -625,6 +628,7 @@ class Scheduler:
             ))
             if healthcheck_started:
                 self._hc_ping(job.healthchecks_uuid, "fail")
+            self._record_circuit(job, False, error=str(e)[:120])
             return {"job": job.name, "status": "error", "error": str(e)}
         finally:
             self._running_jobs.pop(job.name, None)
@@ -634,9 +638,27 @@ class Scheduler:
             return
         try:
             endpoint = {"" : "", "start": "/start", "fail": "/fail"}.get(event, "/fail" if event in ("timeout", "error") else "")
-            subprocess.run(["curl", "-s", "-o", "/dev/null", "-w", "", f"http://localhost:8004/ping/{uuid}{endpoint}",
+            r = subprocess.run(["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", f"http://localhost:8004/ping/{uuid}{endpoint}",
                            "-H", "Host: 100.122.58.40:8004"],
                            capture_output=True, timeout=5)
+            ok = r.stdout.strip() == "200"
+            self._record_circuit_name("healthchecks", ok, error="" if ok else f"hc ping http={r.stdout.strip()}")
+        except Exception as e:
+            self._record_circuit_name("healthchecks", False, error=str(e)[:120])
+
+    def _record_circuit(self, job: Job, success: bool, elapsed: float = 0.0, error: str = ""):
+        if not job.circuit:
+            return
+        self._record_circuit_name(job.circuit, success, elapsed, error)
+
+    def _record_circuit_name(self, name: str, success: bool, elapsed: float = 0.0, error: str = ""):
+        # Circuit bookkeeping must never break a job run.
+        try:
+            from circuit_breaker import record_success, record_failure
+            if success:
+                record_success(name, response_ms=int(elapsed * 1000))
+            else:
+                record_failure(name, error=error)
         except Exception:
             pass
 
