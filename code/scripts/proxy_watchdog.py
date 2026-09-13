@@ -193,7 +193,7 @@ def generation_probe(timeout: int = 60) -> tuple[bool, str]:
     body = json.dumps({
         "model": PROBE_MODEL,
         "messages": [{"role": "user", "content": "Reply with exactly: OK"}],
-        "max_tokens": 8,
+        "max_tokens": 64,
     }).encode()
     req = urllib.request.Request(
         f"http://localhost:{PROXY_PORT}/v1/chat/completions",
@@ -204,8 +204,10 @@ def generation_probe(timeout: int = 60) -> tuple[bool, str]:
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             data = json.loads(resp.read())
-        content = (((data.get("choices") or [{}])[0].get("message") or {}).get("content") or "").strip()
-        if content:
+        message = (((data.get("choices") or [{}])[0].get("message") or {}))
+        content = (message.get("content") or "").strip()
+        reasoning = (message.get("reasoning_content") or "").strip()
+        if content or reasoning:
             return True, data.get("model", "?")
         return False, "empty content"
     except Exception as e:

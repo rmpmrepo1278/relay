@@ -7,7 +7,7 @@ import os
 import urllib.request
 
 BRIDGE_URL = os.environ.get("HERMES_BRIDGE_URL", "http://127.0.0.1:9199/cmd")
-BRIDGE_AUTH = os.environ.get("BRIDGE_AUTH_KEY", "default-key-change-me")
+BRIDGE_AUTH = os.environ.get("BRIDGE_AUTH_KEY", "homelab-bridge-secure-key-2026")
 TIMEOUT = 120
 
 
