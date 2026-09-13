@@ -330,7 +330,7 @@ Job("homelab_reporter", p(f"{h}/scripts/homelab_reporter.py"),
 
         # ── Evening ──
         Job("evening_briefing", p(f"{h}/hermes-agent/scripts/evening_briefing.py"),
-            Schedule(minute="0", hour="20"), timeout=60, description="Evening briefing", tags=["daily"]),
+            Schedule(minute="0", hour="20"), timeout=60, description="Evening briefing (DISABLED 2026-09-12: script missing)", tags=["daily"], enabled=False),
 
         # ── Nightly (2-3am) ──
         Job("backup_databases", p(f"{h}/scripts/disaster_recovery.py backup"),
@@ -360,17 +360,23 @@ Job("homelab_reporter", p(f"{h}/scripts/homelab_reporter.py"),
 
         # ── Weekly (Sunday) ──
         Job("weekly_review", p(f"{h}/hermes-agent/scripts/weekly_review.py"),
-            Schedule(minute="0", hour="17", day_of_week="5"), timeout=180, description="Weekly review", tags=["weekly"]),
+            Schedule(minute="0", hour="17", day_of_week="5"), timeout=180, description="Weekly review (DISABLED 2026-09-12: script missing)", tags=["weekly"], enabled=False),
                 # ── Maintenance ──
-        Job("docker_build_prune", s("docker buildx prune -a -f"),
+        Job("docker_build_prune", s("docker builder prune -a -f"),
             Schedule(minute="30", hour="3", day_of_week="0"), timeout=120, description="Prune Docker build cache weekly", tags=["maintenance"]),
         Job("postgres_backup", s("docker exec -e PGPASSWORD=metronix-homelab metronix-full-postgres pg_dumpall -U metronix > /home/rohit/.hermes/backups/postgres_$(date +%Y%m%d).sql"),
             Schedule(minute="0", hour="13", day_of_month="1"), timeout=300, description="Monthly PostgreSQL dump backup", tags=["backup"]),
 
 Job("weekly_audit", p(f"{h}/scripts/weekly_audit.py"),
             Schedule(minute="0", hour="13", day_of_week="0"), timeout=180, description="Weekly audit", tags=["weekly"]),
-        Job("upgrade_claude", "sudo npm install -g @anthropic-ai/claude-code@latest",
-            Schedule(minute="0", hour="14", day_of_week="6"), timeout=120, description="Claude upgrade", tags=["maintenance"]),
+        Job("weekly_health", s("python3 /home/rohit/.hermes/scripts/weekly_health_digest.py"),
+            Schedule(minute="0", hour="8", day_of_week="0"), timeout=300, description="Weekly health digest to Telegram", tags=["maintenance"], circuit="telegram_bridge"),
+        Job("volume_restore_test", s("bash /home/rohit/.hermes/scripts/volume_restore_test.sh"),
+            Schedule(minute="30", hour="5", day_of_week="0"), timeout=600, description="Prove volume backups restorable", tags=["maintenance"]),
+        Job("dr_runbook_check", s("bash /home/rohit/.hermes/scripts/dr_runbook_check.sh"),
+            Schedule(minute="0", hour="6", day_of_week="0"), timeout=300, description="Verify DR runbook preconditions", tags=["maintenance"]),
+        Job("upgrade_claude", "npm install -g @anthropic-ai/claude-code@latest",
+            Schedule(minute="0", hour="14", day_of_week="6"), timeout=120, description="Claude upgrade (user-level npm-global; sudo secure_path lacks npm)", tags=["maintenance"]),
         Job("cert_renew", f"docker run --rm -v /home/rohit/services/traefik/certs:/certs -e DUCKDNS_TOKEN=$(cat /home/rohit/.duckdns_token 2>/dev/null) goacme/lego:v3.7.0 --path /certs --email rohitmishra1278@gmail.com --dns duckdns --domains '*.chagulihome.duckdns.org' renew --days 30",
             Schedule(minute="0", hour="4", day_of_week="0"), timeout=120, description="SSL cert renewal", tags=["security"], shell=True),
 
@@ -441,6 +447,10 @@ Job("weekly_audit", p(f"{h}/scripts/weekly_audit.py"),
         Job("alerts_delivery", p(f"{h}/scripts/alerts_delivery.py"),
             Schedule(minute="*/3"), timeout=30,
             description="Deliver undelivered alerts to Telegram", tags=["telegram"], circuit="telegram_bridge"),
+        Job("morning_brief_pa", s("python3 /home/rohit/.hermes/scripts/personal_brief.py morning"),
+            Schedule(minute="5", hour="7"), timeout=250, description="PA Tier-1 prioritized morning brief (calendar/tasks/email via agent)", tags=["pa", "telegram"], circuit="telegram_bridge"),
+        Job("evening_brief_pa", s("python3 /home/rohit/.hermes/scripts/personal_brief.py evening"),
+            Schedule(minute="5", hour="20"), timeout=250, description="PA Tier-1 evening wrap-up brief", tags=["pa", "telegram"], circuit="telegram_bridge"),
         Job("persona_morning", p(f"{h}/scripts/persona_engine.py morning"),
             Schedule(minute="0", hour="13"), timeout=30, description="Personality-driven morning check-in", tags=["persona", "telegram"], circuit="telegram_bridge"),
         Job("persona_evening", p(f"{h}/scripts/persona_engine.py evening"),

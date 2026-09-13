@@ -68,6 +68,17 @@ def extract_body(text: str, name: str) -> str:
 def norm(s: str) -> str:
     s = re.sub(r'auto-generated \d{4}-\d{2}-\d{2}', 'auto-generated YYYY-MM-DD', s)
     s = re.sub(r'uptime up [^.]+', 'uptime up ...', s)
+    # Container uptime ticks ("Up 11 hours" -> "Up 12 hours") are volatile.
+    s = re.sub(r'\bUp \d+ (?:second|minute|hour|day|week)s?\b', 'Up X', s, flags=re.I)
+    # Disk usage % and used/total sizes change constantly in STORAGE_LIVE.
+    s = re.sub(
+        r'\| /dev/\S+ \| \d+% \| [\d.]+[A-Za-z]*/[\d.]+[A-Za-z]* \|',
+        '| /dev/... | N% | N/N |', s)
+    # SYSTEM_STATS / SYSTEMD_LIVE: dates, "since ..." stamps, sizes and percents.
+    s = re.sub(r'\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?)?', 'DATE', s)
+    s = re.sub(r'since [^,;()]+', 'since ...', s)
+    s = re.sub(r'\d+(?:\.\d+)?[GMKT]i?B', 'NSIZE', s)
+    s = re.sub(r'\d+%', 'N%', s)
     return s
 
 
@@ -108,8 +119,15 @@ def check_dead_scheduler_jobs(targets_doc: list[str]) -> list[tuple[str, str]]:
     # Find every Job("name", ...) with a script path
     # Handles: p(f"{h}/scripts/x.py ..."), s("/home/..."), p("literal")
     job_pat = re.compile(r'Job\("([^"]+)",\s*(?:p|s)\(\s*f?["\']?([^"\')]+)')
+    # Jobs defined with enabled=False are intentionally disabled (e.g. scripts
+    # removed from the stack); they must not be flagged as dead references.
+    disabled_jobs = set(re.findall(
+        r'Job\("([^"]+)"(?:(?!Job\().)*?enabled\s*=\s*False',
+        sched_text, re.DOTALL))
     for m in job_pat.finditer(sched_text):
         job_name = m.group(1)
+        if job_name in disabled_jobs:
+            continue
         script_expr = m.group(2)
         # Resolve f-string variables
         script_path = script_expr.replace("{h}", h).replace("{a}", a).strip()
@@ -222,10 +240,16 @@ def check_memory_limits_documented(targets_doc: list[str]) -> list[tuple[str, st
 def main() -> int:
     quiet = "--quiet" in sys.argv
     as_json = "--json" in sys.argv
-    text_root = sync.CLAUDE_MD.read_text()
+    # Root ~/CLAUDE.md was retired into AgentChaguli/ (see claude_md_sync.py);
+    # read only if present, else treat as empty (missing-file checks handle it).
+    text_root = ""
+    if sync.CLAUDE_MD.exists():
+        text_root = sync.CLAUDE_MD.read_text()
 
     # All doc files to check (for auto-gen freshness)
-    doc_targets = [sync.CLAUDE_MD, AGENTCHAGULI_CLAUDE_MD]
+    # Root ~/CLAUDE.md retired into AgentChaguli/ (see claude_md_sync.py);
+    # only the surviving target is checked.
+    doc_targets = [AGENTCHAGULI_CLAUDE_MD]
     doc_paths = [str(p) for p in doc_targets]
 
     results = []  # (name, ok, detail)
@@ -255,19 +279,23 @@ def main() -> int:
         "CLAUDE.md claims Kopia backups working" if not kopia_ok else "present",
     ))
 
-    # ── Grafana: discover actual port from container, verify accessible ──
-    g_port = 3001
-    g_container = sync.run("docker port grafana 2>/dev/null | head -1")
-    if g_container:
-        # Parse "3000/tcp -> 127.0.0.1:3001" → host port 3001
-        m = re.search(r':(\d+)\s*$', g_container)
+    # ── Grafana/Loki: probe only if the container is actually deployed ──
+    # (monitoring stack removed 2026-07-06; hardcoded probes false-failed every run)
+    if sync.run("docker inspect grafana >/dev/null 2>&1 && echo yes"):
+        g_port = 3001
+        m = re.search(r':(\d+)\s*$', sync.run("docker port grafana 2>/dev/null | head -1") or "")
         if m:
             g_port = int(m.group(1))
-    g = port_check(g_port)
-    results.append((f"grafana:{g_port}", g == 200, f"http {g} (CLAUDE.md lists Grafana on :{g_port})"))
+        g = port_check(g_port)
+        results.append((f"grafana:{g_port}", g == 200, f"http {g} (Grafana deployed)"))
+    else:
+        results.append(("grafana:3001", True, "not deployed (monitoring stack removed 2026-07-06)"))
 
-    l = port_check(3100)
-    results.append(("loki:3100", l in (200, 404), f"http {l} (CLAUDE.md lists Loki)"))
+    if sync.run("docker inspect loki >/dev/null 2>&1 && echo yes"):
+        l = port_check(3100)
+        results.append(("loki:3100", l in (200, 404), f"http {l} (Loki deployed)"))
+    else:
+        results.append(("loki:3100", True, "not deployed (monitoring stack removed 2026-07-06)"))
 
     # ── 3. Structural drift ──
     for name, detail in check_dead_scheduler_jobs(doc_paths):

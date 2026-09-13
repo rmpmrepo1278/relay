@@ -56,7 +56,8 @@ def gen_system_stats() -> str:
     containers = run("docker ps -q 2>/dev/null | wc -l") or "0"
     user_svcs = run("systemctl --user list-units --type=service --state=running --no-legend 2>/dev/null | wc -l") or "0"
     sys_svcs = run("systemctl list-units --type=service --state=running --no-legend 2>/dev/null | wc -l") or "0"
-    disk = run("df -h / | awk 'NR==2{print $5\" used (\"$3\"/\"$2\")'")
+    disk = run("df -h / | awk 'NR==2{print $5 \" used (\" $3 \"/\" $2 \")\"}'")
+
     uptime = run("uptime -p 2>/dev/null") or "unknown"
     return (
         f"**Live state (auto-generated {datetime.now():%Y-%m-%d}):** "
