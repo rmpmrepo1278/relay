@@ -74,3 +74,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐21897
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • Incus: Anatomy and function | Kenhub
+    https://www.kenhub.com/en/library/anatomy/incus
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agent overview in Microsoft 365 admin center - Microsoft 365 admin
+    https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-365-overview?view=o365-worldwide
+  • Agents built by Microsoft | Microsoft Support
+    https://support.microsoft.com/en-us/microsoft-365-copilot/agents-built-by-microsoft
+🔀 **Intersection:** llm inference × ai agents
+⭐ **Trending on GitHub:**
+  • xai-org/grok-build ⭐26720
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21907
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+  • yc-software/qm ⭐14890
+    Multiplayer agent harness for work.
+    https://github.com/yc-software/qm
+🎲 **Serendipity:**
+  • TailTalk: A modern async user space AppleTalk stack with Rust and Tokio
+    https://github.com/FeralFirmware/TailTalk/
+    (63 points on HN)
