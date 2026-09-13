@@ -1,0 +1,9 @@
+{
+  "claims": {
+    "telegram-ux": {
+      "note": "Relay opencode (Mac): telegram silent-exec + single-bubble UX. Verify adapter enabled state \u2014 saw platforms.telegram.enabled=false; do NOT re-enable without checking coord",
+      "owner": "Rohits-Air-opencode",
+      "updated_at": "2026-09-13T19:10:08Z"
+    }
+  }
+}
