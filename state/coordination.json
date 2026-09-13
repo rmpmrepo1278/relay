@@ -10,5 +10,13 @@
       "owner": "Rohits-Air-opencode",
       "updated_at": "2026-09-13T19:10:08Z"
     }
-  }
+  },
+  "log": [
+    {
+      "area": "telegram-ux",
+      "at": "2026-09-13T19:10:36Z",
+      "msg": "NOTE for homelab agent: telegram adapter currently enabled=false in config.yaml (only api_server connected). If that was NOT intentional, coordinate with me \u2014 do not silently re-enable. My UX config fixes (interim_off/reasoning_off/cleanup/max_turns=40) are applied but unverified without adapter.",
+      "owner": "Rohits-Air-opencode"
+    }
+  ]
 }
