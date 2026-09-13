@@ -5,6 +5,11 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-13T19:12:46Z"
     },
+    "board-morning-brief": {
+      "note": "DSH: scheduler-side integration ONLY (morning_brief_pa reads board; nightly digest). Bus/personas are yours - not touching agentbus.py or finlay/calendula/connector/housekeep",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-13T19:43:16Z"
+    },
     "relay-memory-relay": {
       "note": "Relay opencode (Mac): relay identity + homelab coordination. Watchdog loop fixed earlier (qwen-8088 removed). No overlapping edits to omniroute storage.sqlite today.",
       "owner": "Rohits-Air-opencode",
