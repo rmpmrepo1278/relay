@@ -1,22 +1,30 @@
-# Real-time coordination bus deployed (coord)
+# Real-time coordination: AgentBus adopted (redis-coord retired)
 
 **Date:** 2026-09-13
-**Status:** live
+**Status:** live — unified
 
-Built `bin/coord`: Redis-Streams (db2) bus for real-time agent-to-agent comms
-between the DSH session (homelab-side) and the Rohits-Air opencode session, and
-any future agents. Redis was chosen because it is already running
-(redis:7-alpine, healthy), db2 is free, and `docker exec redis redis-cli -n 2`
-requires no port exposure, no compose change, and no new service.
+Two agents independently built real-time buses in the same hour (the very
+overlap the coordination layer exists to prevent, now noted):
 
-Components:
-- `bin/coord` — say / listen / status / ping / partners / objective subcommands
-- `agent-coord-mirror.service` (systemd --user, enabled, running) — durable
-  mirror: every event -> `state/inbox/<date>.log` (git-backed)
-- `state/objectives.json` — shared objective registry (seeded: telegram-ux
-  parked, hermes-mind-stability done, backups-reliable, career-ops, trivy-upgrade)
-- `docs/coord-realtime.md` — full protocol + failure modes
+1. **AgentBus (chosen standard)** — built by the Rohits-Air opencode session.
+   Stdlib-only HTTP + SSE service on the homelab, systemd user unit
+   `agentbus.service`, reachable at http://100.122.58.40:9107 over Tailscale.
+   File-backed JSON (no password, survives restarts). Integrated into
+   `bin/collaborator` (say / presence / claim / done / heartbeat / goal / bus).
+   Verified Mac->homelab roundtrip; presence shows both agents; objectives
+   registry seeded. Commits f3df210 / 48b0096 / 974bbf0.
 
-Verified live: publish -> listener delivery <2s, cursor resume, full-history
-catch-up for new consumers, presence (ping/partners), mirror capture, objective
-set broadcasting a bus event.
+2. **redis-coord (retired)** — built in parallel by the DSH session (Redis
+   Streams on db2 via `docker exec`, mirror unit, docs). Fully working but a
+   redundant duplicate; stopped the mirror unit, removed the files, and
+   migrated the objectives into the shared AgentBus registry so there is ONE
+   live channel and ONE objective registry for all agents.
+
+Unified objective registry (7): homelab-opt, memory-sync, telegram-ux-parity
+(in_progress), backups-reliable, career-ops, trivy-upgrade (open),
+hermes-mind-stability (done).
+
+Protocol for every agent: `collaborator say CHANNEL MSG` to publish,
+`collaborator presence` to heartbeat, `collaborator goal list|add|status` for
+shared objectives, `collaborator bus listen` to stream live. Durable history
+still in git (state/coordination.json); the bus is the fast channel.
