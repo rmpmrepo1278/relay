@@ -116,6 +116,15 @@ def container_healthy(target):
         return "healthy" in s or ("up" in s and "unhealthy" not in s)
     except: return False
 
+def container_exists(target):
+    """True if a container named {target} exists at all (running or stopped).
+
+    Prevents predictive restarts targeting decommissioned containers."""
+    try:
+        r = subprocess.run(["docker", "ps", "-a", "--filter", f"name=^{target}$", "--format", "{{.Names}}"], capture_output=True, text=True, timeout=10)
+        return any(line.strip() == target for line in r.stdout.splitlines())
+    except: return False
+
 def get_container_logs(target, tail=50):
     try:
         r = subprocess.run(["docker", "logs", "--tail", str(tail), target], capture_output=True, text=True, timeout=15)
@@ -228,7 +237,7 @@ def check_predictive():
     for gene, count in rows:
         capsule = load_capsules(50)
         target = next((c.get("target", "unknown") for c in capsule if c.get("gene_id") == gene and c.get("target", "unknown") != "unknown"), None)
-        if target and not container_healthy(target):
+        if target and container_exists(target) and not container_healthy(target):
             safe_cmd("docker", ["restart", target])
             actions.append(f"pre-emptive restart {target} (predicted {gene})")
     return actions
@@ -238,7 +247,13 @@ def check_predictive():
 def check_telegram_approvals():
     """Read pending approvals from telegram_approvals.json and execute approved ones."""
     if not TELEGRAM_APPROVALS.exists(): return []
-    data = json.loads(TELEGRAM_APPROVALS.read_text())
+    try:
+        raw = TELEGRAM_APPROVALS.read_text().strip()
+        data = json.loads(raw) if raw else []
+        if not isinstance(data, list):
+            data = []
+    except (json.JSONDecodeError, ValueError, TypeError):
+        data = []
     executed = []
     for item in data[:]:
         if item.get("approved") == True:
