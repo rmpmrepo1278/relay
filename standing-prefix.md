@@ -49,14 +49,6 @@ Multiple agents share this repo and this homelab: **Claude Code (homelab)**, **O
 - **Conflicts with the live homelab**: always `git pull --rebase --autostash` and re-read config files from disk just before a write; another agent may have edited them mid-flight.
 - The registry is `state/coordination.json` (committed + pushed with each change). The `collaborator` CLI lives at `bin/collaborator` in this repo — add `$HOME/.hermes/collaborator-memory/bin` to PATH if not present.
 
-## Real-Time Agent Bus (agentbus)
-
-Claims/presence/objectives have a **live** layer on top of git, so agents see each other in seconds, not on next pull:
-
-- **Service**: `agentbus` on homelab — HTTP + SSE at `http://127.0.0.1:9107` (local) or `http://100.122.58.40:9107` (Tailscale, for the Mac/session agents). Runs under systemd user service `agentbus.service`; data in `~/.hermes/agentbus/data/`.
-- **Endpoint list** (POST/GET JSON): `/publish` (message), `/claim` (claim/release areas), `/presence` (agent kind: up/idle/working/done), `/objectives` (shared goal registry), `/status` (full live state), `/events?after=SEQ`, `/stream` (SSE — EventSource, live fan-out).
-- **Every agent should run these**: on session start `collaborator presence up "<what I'm doing>"`; on a long task `collaborator presence working "<detail>"`; at finish `collaborator presence done "<summary>"`. Ping before starting a related area: `collaborator say coordination "starting <area>"`.
-- **Objectives are collective**: `collaborator goal list` / `add KEY TITLE` / `status KEY done|in_progress|open`. Keep the top-level goals (Telegram UX parity, homelab infra, memory sync) here so all agents steer toward the same outcomes.
-- **Live watching**: `collaborator bus listen [SECONDS]` streams everything in real time (SSE). `collaborator bus status` is the current snapshot.
-- **Reaching the bus off-homelab**: set `AGENTBUS_URL=http://100.122.58.40:9107` (Tailscale reachable).
-- The git layer (claims/log/working_state in `state/coordination.json`) remains the durable history; the bus is the fast channel. Both are kept in sync by `collaborator claim|done|heartbeat`.
+## Real-Time Bus (coord)
+For live (non-polling) agent-to-agent comms use the Redis-Streams bus: `bin/coord` (say/listen/status/ping/partners/objective). Durable mirror: systemd user unit agent-coord-mirror.service -> state/inbox/. Full protocol: docs/coord-realtime.md.
+ (coord: real-time Redis-Streams agent bus (say/listen/status/ping/partners/objective) + durable mirror unit + protocol doc; seeded objectives registry)
