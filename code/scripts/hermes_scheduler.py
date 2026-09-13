@@ -355,8 +355,8 @@ Job("homelab_reporter", p(f"{h}/scripts/homelab_reporter.py"),
             healthchecks_uuid=HC_UUID_CVE_SCAN),
 
         # ── Code graph update (every 4h) ──
-        Job("crg_update", "cd /home/rohit/.hermes/collaborator-memory && code-review-graph update 2>/dev/null; cd /home/rohit/projects/career-ops && code-review-graph update 2>/dev/null",
-            Schedule(minute="15", hour="*/4"), timeout=300, description="Update code-review-graph knowledge graph", tags=["maintenance"], shell=True),
+        Job("crg_update", "cd /home/rohit/.hermes/collaborator-memory && /home/rohit/.local/bin/code-review-graph update 2>/dev/null; cd /home/rohit/projects/career-ops && /home/rohit/.local/bin/code-review-graph update 2>/dev/null",
+            Schedule(minute="15", hour="*/4"), timeout=300, description="Update code-review-graph knowledge graph (abs-path CLI: systemd PATH lacks ~/.local/bin)", tags=["maintenance"], shell=True),
 
         # ── Weekly (Sunday) ──
         Job("weekly_review", p(f"{h}/hermes-agent/scripts/weekly_review.py"),
