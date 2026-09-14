@@ -34,11 +34,6 @@
       "note": "verify bus integration",
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-13T19:25:00Z"
-    },
-    "vault": {
-      "note": "DSH: Databases, collaborator memory, journal hygiene, dedup",
-      "owner": "home-hp-opencode",
-      "updated_at": "2026-09-13T22:41:39Z"
     }
   },
   "history": [
@@ -48,6 +43,13 @@
       "owner": "home-hp-opencode",
       "released_at": "2026-09-14T16:01:22.400557+00:00",
       "updated_at": "2026-09-13T22:41:37Z"
+    },
+    {
+      "note": "DSH: Databases, collaborator memory, journal hygiene, dedup",
+      "note2": "",
+      "owner": "home-hp-opencode",
+      "released_at": "2026-09-14T16:01:24.070331+00:00",
+      "updated_at": "2026-09-13T22:41:39Z"
     }
   ],
   "log": [
