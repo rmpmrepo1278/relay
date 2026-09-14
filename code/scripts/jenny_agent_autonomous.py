@@ -52,23 +52,87 @@ class JennyAgent(AutonomousAgent):
             return datetime.now(timezone.utc) - ts < timedelta(hours=ttl_hours)
         except Exception:
             return False
-    
+
     def _mark_handled(self, key: str):
         handled = self.state.setdefault("handled", {})
         handled[key] = datetime.now(timezone.utc).isoformat()
-        # Keep recent only
         cutoff = datetime.now(timezone.utc) - timedelta(days=7)
         self.state["handled"] = {
             k: v for k, v in handled.items()
             if self._parse_ts(v) and self._parse_ts(v) >= cutoff
         }
-    
+
     @staticmethod
     def _parse_ts(iso: str):
         try:
             return datetime.fromisoformat(iso)
         except Exception:
             return None
+
+    def _looks_like_greeting(self, title: str) -> bool:
+        """True when the user's message is Jenny-chat, not a delegation order."""
+        low = title.lower().strip()
+        words = len(low.split())
+        chat_tokens = ["hi", "hey", "hello", "yo", "how are you", "what's up", "whats up",
+                       "sup", "thanks", "thank you", "good job", "well done", "great work",
+                       "who are you", "what do you do", "good morning", "good evening",
+                       "nice", "awesome", "cool", "good"]
+        if any(tok in low for tok in chat_tokens) and words <= 8:
+            return True
+        if "jenny" in low and words <= 3:
+            return True
+        return False
+
+    def _mark_task_ended(self, key: str, status: str, proof: str = ""):
+        """Set a bus task to a terminal state (done/failed) via POST JSON."""
+        import urllib.request
+        payload = json.dumps({"op": "set", "key": key, "status": status,
+                              "owner": "jenny", "proof": proof}).encode()
+        req = urllib.request.Request("http://127.0.0.1:9107/task", data=payload,
+                                     method="POST",
+                                     headers={"Content-Type": "application/json"})
+        try:
+            urllib.request.urlopen(req, timeout=4).read()
+        except Exception:
+            pass
+
+    def _friendly_reply(self, title: str) -> str:
+        """A warm Chief-of-Staff response for small-talk from Rohit."""
+        low = title.lower()
+        if any(tok in low for tok in ["how are you", "how's it going", "how's going"]):
+            return ("👋 All good, Rohit! Team's healthy — 10 agents reporting, "
+                    "Jenny coordinating. Anything you want me to delegate?")
+        if any(tok in low for tok in ["what do you do", "what can you do", "who are you", "what are you"]):
+            return ("👋 I'm Jenny — your Chief of Staff. I coordinate the homelab team, "
+                    "run daily org briefs, and you can /delegate tasks to specialists "
+                    "or /jenny me directly. Try /team to see everyone.")
+        if any(tok in low for tok in ["thanks", "thank you", "good job", "well done", "nice work"]):
+            return "😊 Anytime, Rohit! Happy to help — the team's got your back."
+        if "jenny" in low or "hi" in low or "hey" in low or "hello" in low:
+            return ("👋 Hey Rohit! Jenny here — Chief of Staff. "
+                    "Team's running smooth: /team to see status, "
+                    "or just tell me what you need handled and I'll delegate it.")
+        return ("👋 Hey Rohit! Ready when you are. "
+                "Give me a task like \"follow up on the electricity bill\" and I'll route it "
+                "to the right specialist — or /team for the roster.")
+
+    def _route_directive(self, title: str) -> str:
+        low = title.lower()
+        table = [
+            ("inference",   ["model", "llm", "provider", "inference", "haiku", "benchmark"]),
+            ("finlay",      ["finance", "bill", "bank", "payment", "subscription", "budget", "expense"]),
+            ("housekeep",   ["filter", "clean", "appliance", "clog", "vacuum", "air"]),
+            ("calendula",   ["calendar", "appointment", "medication", "refill", "doctor", "vaccine"]),
+            ("connector",   ["birthday", "anniversary", "contact", "gift", "friend", "family"]),
+            ("baseplate",   ["container", "deploy", "docker", "systemd", "uptime", "homelab", "backup"]),
+            ("vault",       ["memory", "backup", "journal", "knowledge", "data", "sync"]),
+            ("courier",     ["notify", "telegram", "digest", "topic", "broadcast"]),
+            ("homelab",     ["disk", "network", "update", "restart", "health check"]),
+        ]
+        for agent, keys in table:
+            if any(k in low for k in keys):
+                return agent
+        return "homelab"  # safe default for infra-oriented team
     
     # ─── OBSERVE ─────────────────────────────────────────────────────────────
     
@@ -90,7 +154,10 @@ class JennyAgent(AutonomousAgent):
         try:
             with urllib.request.urlopen("http://127.0.0.1:9107/board", timeout=5) as resp:
                 board = json.loads(resp.read().decode())
-                signals["board"] = board.get("tasks", {})
+                tasks = board.get("tasks", {})
+                if isinstance(tasks, dict):
+                    tasks = {tk: {**tv, "key": tk} for tk, tv in tasks.items()}
+                signals["board"] = tasks
         except Exception as e:
             signals["board"] = {"error": str(e)}
         
@@ -141,8 +208,25 @@ class JennyAgent(AutonomousAgent):
         """Generate insights from org signals (deduplicated by handled keys)."""
         insights = []
         
-        # Cross-agent coordination needs (dedup: only NEW ready tasks)
+        # User directives for Jenny (from bridge /jenny <instruction>)
         ready = signals.get("ready_tasks", [])
+        for task in ready:
+            owner = task.get("owner", "unknown")
+            area = task.get("area", "unknown")
+            if (owner in ("rohit", "user", "me") and area == "jenny"):
+                key = f"directive:{task.get('key') or task.get('title')}"
+                if self._is_handled(key):
+                    continue
+                insights.append({
+                    "type": "user_directive",
+                    "content": f"Rohit directive: {task.get('title')}",
+                    "action_suggested": "user_directive",
+                    "severity": "high",
+                    "source_task": task,
+                    "dedup_key": key,
+                })
+
+        # Cross-agent coordination needs (dedup: only NEW ready tasks)
         for task in ready:
             owner = task.get("owner", "unknown")
             area = task.get("area", "unknown")
@@ -272,6 +356,28 @@ class JennyAgent(AutonomousAgent):
                     "confidence": 0.7,
                     "dedup_key": insight.get("dedup_key"),
                 })
+            elif action == "user_directive":
+                title = insight.get("source_task", {}).get("title", "")
+                if self._looks_like_greeting(title):
+                    plans.append({
+                        "action": "reply_chat",
+                        "content": title,
+                        "priority": 6,
+                        "confidence": 0.95,
+                        "dedup_key": insight.get("dedup_key"),
+                        "source_task": insight.get("source_task", {}),
+                    })
+                else:
+                    agent = self._route_directive(title)
+                    plans.append({
+                        "action": "delegate",
+                        "target": agent,
+                        "content": title,
+                        "priority": 8,
+                        "confidence": 0.7,
+                        "dedup_key": insight.get("dedup_key"),
+                        "source_task": insight.get("source_task", {}),
+                    })
             elif action == "onboard":
                 plans.append({
                     "action": "initiate_onboarding",
@@ -328,11 +434,31 @@ class JennyAgent(AutonomousAgent):
                     target = plan.get("target")
                     content = plan.get("content", "")
                     result = self.delegate_to_agent(target, content, priority=7)
+                    if isinstance(plan, dict) and plan.get("source_task"):
+                        src = plan["source_task"]
+                        key = src.get("key")
+                        if key:
+                            self._mark_task_ended(key, "done", f"delegated_to:{target}")
+                        self.send_to_own_topic(
+                            f"📤 Delegated to *{target}*: {content[:80]}...")
                     results.append({"action": "delegate", "status": "ok", "detail": result})
                     if dedup_key:
                         self._mark_handled(dedup_key)
                     sent += 1
                 
+                elif action == "reply_chat":
+                    content = plan.get("content", "")
+                    greeting = self._friendly_reply(content)
+                    self.send_to_own_topic(greeting)
+                    if isinstance(plan, dict) and plan.get("source_task"):
+                        key = plan["source_task"].get("key")
+                        if key:
+                            self._mark_task_ended(key, "done", "replied_to_rohit")
+                    results.append({"action": "reply_chat", "status": "ok"})
+                    if dedup_key:
+                        self._mark_handled(dedup_key)
+                    sent += 1
+
                 elif action == "initiate_onboarding":
                     content = plan.get("content", "")
                     self.send_to_own_topic(f"🎯 Onboarding initiated: {content}")
