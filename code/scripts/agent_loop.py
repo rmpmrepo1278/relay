@@ -211,6 +211,35 @@ def decide_action():
         return "check", "malformed LLM decision — fallback"
 
 
+def _translate_title_to_args(title: str) -> list | None:
+    """Use the domain LLM to map a natural-language directive to the subcommand
+    the <NAME>.py domain script actually accepts. Returns args list or None.
+
+    This is the bridge between intelligent delegation (LLM-written titles) and
+    rigid domain scripts (which only accept `check`, `report`, `add ...`)."""
+    pb = playbook_lines()[:1500]
+    prompt = (
+        f"You are the autonomous '{NAME}' homelab agent. Your playbook priorities:\n"
+        f"{pb}\n\n"
+        f"The {NAME}.py domain script accepts subcommands like `check`, `report`, "
+        f"`add KIND NAME VALUE [DUE]`, or a domain-specific command. Convert "
+        f"this directive into the EXACT bare subcommand + args on a single line."
+        f" If it cannot be mapped, output only `help`.\n\n"
+        f"Directive: {title}\nCommand:"
+    )
+    text = hop_ask(prompt, max_tokens=40)
+    if not text:
+        return None
+    candidate = text.strip().splitlines()[0].strip()
+    if not candidate or candidate.lower() == "help":
+        return None
+    try:
+        args = shlex.split(candidate)
+    except Exception:
+        args = [candidate]
+    return args if args else None
+
+
 def consume_assigned_tasks(max_tasks=2):
     """Claim + execute bus tasks delegated to this agent (area == NAME).
 
@@ -243,8 +272,35 @@ def consume_assigned_tasks(max_tasks=2):
             args = ["check"]
         log(f"consuming assigned task [{key}] {title}")
         rc, out = execute_domain(args, timeout=300)
+        # Natural-language fallback: titles from the orchestrator/LLM often
+        # aren't literal subcommands ("Analyze audit logs..."). On failure,
+        # ask the domain LLM to translate the title into the subcommand the
+        # script accepts, then retry once.
+        if rc != 0:
+            translated = _translate_title_to_args(title)
+            if translated:
+                log(f"  -> LLM retranslated to: {translated}")
+                rc, out = execute_domain(translated, timeout=300)
         proof = out[-500:]
-        final = "done" if rc == 0 else "failed"
+        if rc == 0:
+            final = "done"
+        else:
+            # Escalate to human attention instead of a hard `failed`:
+            # mark the source done (so it stops re-failing) and post a new
+            # ready task on jenny for human/specialist input. This stops the
+            # failure spiral where an unparseable title is endlessly recreated.
+            final = "done"
+            proof = ("deferred_human: " + proof)[:500]
+            human_title = ("\u2753 %s couldn't execute: %s \u2014 needs input"
+                           % (NAME, title.strip()[:40]))[:160]
+            bus("/task", method="POST", payload={
+                "op": "add", "area": "jenny",
+                "title": human_title, "owner": "rohit",
+                "status": "ready", "priority": "normal",
+                "note": "human-attention: %s delegated %s \u2014 %s"
+                        % (NAME, key, title.strip()[:140]),
+            })
+            log("  -> escalated to human-attention task on jenny")
         bus("/task", method="POST", payload={"op": "set", "key": key,
                                              "status": final, "owner": NAME, "proof": proof})
         append_reflection({"action": ["bus_task:" + key] + args, "reason": f"delegated task '{title}'",
