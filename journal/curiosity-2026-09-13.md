@@ -101,3 +101,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • TailTalk: A modern async user space AppleTalk stack with Rust and Tokio
     https://github.com/FeralFirmware/TailTalk/
     (63 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agents built by Microsoft | Microsoft Support
+    https://support.microsoft.com/en-us/microsoft-365-copilot/agents-built-by-microsoft
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (research):**
+  • Autonomous Research for Open-Ended Problems: A Case Study on Telecom Ticket Retr
+    http://arxiv.org/abs/2609.13073v1
+  • MAxBench: A Multinomial Concept Recovery Benchmark
+    http://arxiv.org/abs/2609.13072v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐222790
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26724
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐21920
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Data collected by cars and sold to third parties
+    https://www.theverge.com/column/994172/your-car-is-selling-your-data
+    (328 points on HN)
