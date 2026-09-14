@@ -40,6 +40,11 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-14T18:40:32Z"
     },
+    "memory-learning": {
+      "note": "DSH: memory-learning \u2014 part of full transformative build, coordinated with other agent",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-14T18:40:38Z"
+    },
     "relay-memory-relay": {
       "note": "Relay opencode (Mac): relay identity + homelab coordination. Watchdog loop fixed earlier (qwen-8088 removed). No overlapping edits to omniroute storage.sqlite today.",
       "owner": "Rohits-Air-opencode",
