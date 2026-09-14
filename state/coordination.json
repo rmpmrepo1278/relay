@@ -10,11 +10,6 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-13T19:43:16Z"
     },
-    "courier": {
-      "note": "DSH: Telegram + Gmail send path, digest formatting, notification routing",
-      "owner": "home-hp-opencode",
-      "updated_at": "2026-09-13T22:41:40Z"
-    },
     "relay-memory-relay": {
       "note": "Relay opencode (Mac): relay identity + homelab coordination. Watchdog loop fixed earlier (qwen-8088 removed). No overlapping edits to omniroute storage.sqlite today.",
       "owner": "Rohits-Air-opencode",
@@ -50,6 +45,13 @@
       "owner": "home-hp-opencode",
       "released_at": "2026-09-14T16:01:24.070331+00:00",
       "updated_at": "2026-09-13T22:41:39Z"
+    },
+    {
+      "note": "DSH: Telegram + Gmail send path, digest formatting, notification routing",
+      "note2": "",
+      "owner": "home-hp-opencode",
+      "released_at": "2026-09-14T16:01:25.529827+00:00",
+      "updated_at": "2026-09-13T22:41:40Z"
     }
   ],
   "log": [
