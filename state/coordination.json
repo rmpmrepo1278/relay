@@ -20,6 +20,11 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-14T18:39:39Z"
     },
+    "cost-dashboard": {
+      "note": "DSH: cost-dashboard \u2014 part of full transformative build, coordinated with other agent",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-14T18:40:45Z"
+    },
     "cost-routing": {
       "note": "DSH: cost-routing \u2014 part of full transformative build, coordinated with other agent",
       "owner": "home-hp-opencode",
