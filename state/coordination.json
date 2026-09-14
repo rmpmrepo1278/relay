@@ -29,6 +29,11 @@
       "note": "verify bus integration",
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-13T19:25:00Z"
+    },
+    "topic-gc": {
+      "note": "DSH: single source for topics + topic_gc.py weekly GC",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-14T18:39:36Z"
     }
   },
   "history": [
