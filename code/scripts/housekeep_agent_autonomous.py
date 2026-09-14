@@ -17,7 +17,7 @@ class HousekeepAgent(AutonomousAgent):
         super().__init__(
             name="housekeep",
             domain="home",
-            topic_id=10122,  # personal topic
+            topic_id=10024,  # Home Lab topic,  # personal topic
             cycle_interval_minutes=60,
         )
         self.store_path = os.path.expanduser("~/.hermes/agents/housekeep/store.json")

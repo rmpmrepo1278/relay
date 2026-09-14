@@ -17,7 +17,7 @@ class CalendulaAgent(AutonomousAgent):
         super().__init__(
             name="calendula",
             domain="schedule_health",
-            topic_id=10122,
+            topic_id=10028,  # schedule/health topic,
             cycle_interval_minutes=60,
         )
         self.store_path = os.path.expanduser("~/.hermes/agents/calendula/store.json")
@@ -73,36 +73,33 @@ class CalendulaAgent(AutonomousAgent):
     def connect(self, signals: dict) -> list:
         insights = []
         for item in signals.get("appointments_due", []):
-            yield_insight = {
+            insights.append({
                 "type": "appointment_due",
                 "content": f"Appointment: {item['name']} in {item['days']} day(s)",
                 "action_suggested": "flag_board",
                 "severity": "high",
                 "item": item,
-            }
-            yield yield_insight
+            })
         
         for item in signals.get("meds_due", []):
-            yield_insight = {
+            insights.append({
                 "type": "med_renewal",
                 "content": f"Med renewal: {item['name']} in {item['days']} day(s)",
                 "action_suggested": "flag_board",
                 "severity": "high",
                 "item": item,
-            }
-            yield yield_insight
+            })
         
         for item in signals.get("ids_expiring", []):
-            yield_insight = {
+            insights.append({
                 "type": "id_expiring",
                 "content": f"ID expiring: {item['name']} in {item['days']} day(s)",
                 "action_suggested": "flag_board",
                 "severity": "medium",
                 "item": item,
-            }
-            yield yield_insight
+            })
         
-        return []
+        return insights
 
     def anticipate(self, signals, insights):
         return []
@@ -119,12 +116,12 @@ class CalendulaAgent(AutonomousAgent):
             })
         return plans
 
-    def act(self, plans, signals):
+    def act(self, plans, signals) -> list:
         results = []
         for plan in plans:
             if plan["action"] == "flag_board":
                 item = plan["item"]
-                import urllib.request, urllib.parse, json
+                import urllib.request, json
                 try:
                     payload = {
                         "op": "add",
@@ -136,18 +133,17 @@ class CalendulaAgent(AutonomousAgent):
                         "due": item.get("date", ""),
                         "note": item.get("name", ""),
                     }
-                    data = json.dumps(payload).encode()
                     req = urllib.request.Request("http://127.0.0.1:9107/task", data=json.dumps(payload).encode(), method="POST",
                                                  headers={"Content-Type": "application/json"})
-                    import urllib.request
                     urllib.request.urlopen(req, timeout=5)
                     
                     if hasattr(self, "send_to_own_topic"):
                         self.send_to_own_topic(f"📅 {item['name']} due")
                     
-                    yield {"action": "flag_board", "status": "ok", "item": item.get("name")}
+                    results.append({"action": "flag_board", "status": "ok", "item": item.get("name")})
                 except Exception as e:
-                    yield {"action": "flag_board", "status": "error", "error": str(e)}
+                    results.append({"action": "flag_board", "status": "error", "error": str(e)})
+        return results
 
 
 if __name__ == "__main__":

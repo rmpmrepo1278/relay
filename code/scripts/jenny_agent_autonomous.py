@@ -23,7 +23,7 @@ class JennyAgent(AutonomousAgent):
         super().__init__(
             name="jenny",
             domain="coordination",
-            topic_id=10000,  # Jenny topic
+            topic_id=10128,  # Coordination topic
             cycle_interval_minutes=30,
         )
         self.org_roster = self._load_roster()

@@ -17,7 +17,7 @@ class ConnectorAgent(AutonomousAgent):
         super().__init__(
             name="connector",
             domain="people",
-            topic_id=10122,
+            topic_id=10025,  # Memos topic,
             cycle_interval_minutes=60,
         )
         self.store_path = os.path.expanduser("~/.hermes/agents/connector/store.json")
@@ -86,37 +86,37 @@ class ConnectorAgent(AutonomousAgent):
             "timestamp": datetime.now().isoformat(),
         }
     
-    def connect(self, signals: dict):
+    def connect(self, signals: dict) -> list:
         insights = []
         for item in signals.get("birthdays_due", []):
-            yield {
+            insights.append({
                 "type": "birthday_due",
                 "content": f"Birthday: {item['name']} in {item['days']} day(s) ({item['occurrence']})",
                 "action_suggested": "flag_board",
                 "severity": "high",
                 "item": item,
-            }
+            })
         
         for item in signals.get("anniversaries_due", []):
-            yield {
+            insights.append({
                 "type": "anniversary_due",
                 "content": f"Anniversary: {item['name']} in {item['days']} day(s) ({item['occurrence']})",
                 "action_suggested": "flag_board",
                 "severity": "high",
                 "item": item,
-            }
+            })
         
         for item in signals.get("followups_due", []):
             gap = item.get("gap", "?")
-            yield {
+            insights.append({
                 "type": "followup_due",
                 "content": f"Follow up with {item['name']} (gap: {gap}d)",
                 "action_suggested": "flag_board",
                 "severity": "medium",
                 "item": item,
-            }
+            })
         
-        return []
+        return insights
 
     def anticipate(self, signals, insights):
         return []
@@ -133,7 +133,7 @@ class ConnectorAgent(AutonomousAgent):
             })
         return plans
 
-    def act(self, plans, signals):
+    def act(self, plans, signals) -> list:
         results = []
         for plan in plans:
             if plan["action"] == "flag_board":
@@ -149,18 +149,17 @@ class ConnectorAgent(AutonomousAgent):
                         "owner": "connector",
                         "note": item.get("name", ""),
                     }
-                    data = json.dumps(payload).encode()
                     req = urllib.request.Request("http://127.0.0.1:9107/task", data=json.dumps(payload).encode(), method="POST",
                                                  headers={"Content-Type": "application/json"})
-                    import urllib.request
                     urllib.request.urlopen(req, timeout=5)
                     
                     if hasattr(self, "send_to_own_topic"):
                         self.send_to_own_topic(f"👥 {item['name']} due")
                     
-                    yield {"action": "flag_board", "status": "ok", "item": item.get("name")}
+                    results.append({"action": "flag_board", "status": "ok", "item": item.get("name")})
                 except Exception as e:
-                    yield {"action": "flag_board", "status": "error", "error": str(e)}
+                    results.append({"action": "flag_board", "status": "error", "error": str(e)})
+        return results
 
 
 if __name__ == "__main__":
