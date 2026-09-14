@@ -75,3 +75,35 @@ Interests: self_hosting, ai_agents, llm_inference
   • A 386 PC for Your RP2350
     https://github.com/rh1tech/frank-386
     (186 points on HN)
+
+## Curiosity — 13:31 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • At Home | Home Decor, Furniture, & Halloween Decor
+    https://www.athome.com/
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=180257648bc06e140f4a40b08a206fda
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agents hub - Start here for agentic computing at Microsoft
+    https://learn.microsoft.com/en-us/agents/
+🔀 **Intersection:** ai agents × monitoring
+📄 **arXiv (ai agents):**
+  • Rethinking Heterogeneous System Disaggregation for Subquadratic Attention
+    http://arxiv.org/abs/2609.13134v1
+  • A Hybrid LSTM-XGBoost Framework for Multi-Horizon Stock Return Prediction Across
+    http://arxiv.org/abs/2609.13125v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐223859
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26739
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22004
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Microsoft patches Windows and Excel – breaks audio, remote access, and paste
+    https://www.theregister.com/os-platforms/2026/09/14/microsoft-patches-windows-and-excel-breaks-audio-remote-access-and-paste/5296085
+    (125 points on HN)
