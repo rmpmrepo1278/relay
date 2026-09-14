@@ -51,10 +51,37 @@ def _mark_seen(state: dict, msg_id: str, kind: str, snippet: str):
     state["last_scan"] = datetime.now(timezone.utc).isoformat()
 
 
+def _get_service():
+    """Build a Gmail service from the existing OAuth token, using the scopes
+    the token was granted (gmail.readonly/send/compose). Avoids gmail_reader,
+    whose SCOPES include gmail.labels that this token does not carry."""
+    import json as _json
+    from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
+    from googleapiclient.discovery import build
+
+    token_file = Path.home() / ".hermes" / "gmail" / "token.json"
+    client_file = Path.home() / ".hermes" / "gmail" / "credentials.json"
+    if not token_file.exists():
+        raise FileNotFoundError("no gmail token at %s" % token_file)
+    info = _json.loads(token_file.read_text())
+    scopes = info.get("scopes") or [
+        "https://www.googleapis.com/auth/gmail.readonly",
+    ]
+    creds = Credentials.from_authorized_user_info(info, scopes)
+    if not creds.valid:
+        if creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            from google_auth_oauthlib.flow import InstalledAppFlow
+            flow = InstalledAppFlow.from_client_secrets_file(str(client_file), scopes)
+            creds = flow.run_local_server(port=0)
+    return build("gmail", "v1", credentials=creds)
+
+
 def _fetch() -> list[dict]:
     """Return recent unread messages [{id, from_, subject, snippet, body}]."""
     import base64
-    from gmail_reader import _get_service
     try:
         svc = _get_service()
     except Exception as e:

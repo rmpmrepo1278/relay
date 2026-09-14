@@ -2951,7 +2951,8 @@ def _route_telegram_command(text, thread_id=None):
         "/skip": lambda: _call("/skip", args=rest) if rest else {"text": "❌ Usage: /skip <proposal_id>"},
         "/proposals": lambda: _call("/proposals"),
         "/claude": lambda: _claude_delegate(rest, category="infra") if rest else {"text": "Usage: /claude <task>\nDelegates to Claude Code (headless). Results sent to Infra topic."},
-        "/delegate": lambda: _claude_delegate(rest, category="infra") if rest else {"text": "Usage: /delegate <task>\nAlias for /claude."},
+        "/delegate": lambda: _delegate_to_agent(rest) if rest else {"text": "Usage: /delegate <agent> <task>\nAgents: jenny, homelab, baseplate, vault, courier, inference, finlay, housekeep, calendula, connector"},
+        "/team": lambda: _team_status(),
         "/habit": lambda: _call("/habit", args=rest) if rest else {"text": "Usage: /habit checkoff <id> <value> | /habit prompts | /habit summaries"},
         "/habits": lambda: _call("/habit", args="streaks"),
         "/memory": lambda: _call("/memory", args=rest) if rest else {"text": "Usage: /memory scan | /memory notify"},
@@ -2968,11 +2969,6 @@ def _route_telegram_command(text, thread_id=None):
         "/homelab": lambda: _agent_cmd("homelab", rest),
         "/personal": lambda: _agent_cmd("personal", rest),
         "/jenny": lambda: _agent_cmd("jenny", rest),
-        "/agentbus": lambda: _agent_cmd("agentbus", rest),
-        "/baseplate": lambda: _agent_cmd("baseplate", rest),
-        "/vault": lambda: _agent_cmd("vault", rest),
-        "/courier": lambda: _agent_cmd("courier", rest),
-        "/inference": lambda: _agent_cmd("inference", rest),
     }
     m.update(agent_cmds)
 
@@ -2993,6 +2989,103 @@ def _route_telegram_command(text, thread_id=None):
     except Exception as e:
         return {"text": f"⚠️ error: {e}"}
     return {"text": _fmt(result)}
+
+
+def _bus_req(method: str, path: str, payload: dict = None) -> dict:
+    """Small agentbus client for /task + /board so the bridge can enqueue work."""
+    url = "http://127.0.0.1:9107" + path
+    data = json.dumps(payload).encode() if payload is not None else None
+    req = urllib.request.Request(url, data=data, method=method,
+                                 headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=6) as r:
+            return json.loads(r.read().decode())
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+TEAM_AGENTS = ["jenny", "homelab", "baseplate", "vault", "courier", "inference",
+               "finlay", "housekeep", "calendula", "connector"]
+
+
+def _jenny_directive(text: str) -> dict:
+    """Task Jenny (Chief of Staff): enqueue a directive for her next cycle."""
+    text = (text or "").strip()
+    if not text:
+        return {"text": "Usage: /jenny <instruction>\nTasks Jenny to coordinate/delegate across the team.\nExample: /jenny check container health and follow up on backups"}
+    import hashlib, time as _t
+    key = f"jenny-{int(_t.time())}-{hashlib.md5(text.encode()).hexdigest()[:6]}"
+    res = _bus_req("POST", "/task", {
+        "op": "add", "key": key, "title": text, "area": "jenny", "owner": "rohit",
+        "priority": "high", "note": "directive from Rohit via bridge",
+        "status": "ready", "due": "",
+    })
+    if not res.get("ok"):
+        return {"text": f"❌ Failed to task Jenny: {res.get('error', 'bus unreachable')}"}
+    return {"text": f"📥 Tasked Jenny (Coordination):\n\"{text}\"\nShe'll pick it up on her next cycle (~30 min) or via the brief."}
+
+
+def _team_status() -> dict:
+    """/team — roster, presence age, and open board tasks per agent."""
+    import datetime as _dt
+    import time as _t
+    status = _bus_req("GET", "/status")
+    board = _bus_req("GET", "/board")
+    p = status.get("presence", {}) if isinstance(status, dict) else {}
+    if not isinstance(p, dict):
+        p = {}
+    tasks = board.get("tasks", board if isinstance(board, dict) else {}) if isinstance(board, dict) else {}
+    if isinstance(tasks, list):
+        tasks = {t.get("key", i): t for i, t in enumerate(tasks)}
+    now = _t.time()
+
+    lines = ["👥 *Agent Roster*"]
+    for agent in TEAM_AGENTS:
+        pr = p.get(agent, {})
+        if isinstance(pr, dict) and pr.get("ts"):
+            ts = pr.get("ts")
+            try:
+                age = int(max(0, now - float(ts)) // 60)
+            except Exception:
+                age = None
+            kind = pr.get("kind", "")
+            suffix = f" ({age}m ago)" if age is not None else ""
+            lines.append(f"  • {agent}: {kind}{suffix}")
+        else:
+            lines.append(f"  • {agent}: ⚪ not reporting")
+    open_tasks = [t for t in tasks.values() if isinstance(t, dict) and t.get("status") not in ("done", "cancelled")]
+    if open_tasks:
+        from collections import Counter as _C
+        counts = _C(t.get("area", "?") for t in open_tasks)
+        lines.append("\n📋 *Open tasks*: " + ", ".join(f"{a}={c}" for a, c in counts.most_common()))
+    else:
+        lines.append("\n📋 *Open tasks*: none")
+    return {"text": "\n".join(lines)}
+
+
+def _delegate_to_agent(args: str) -> dict:
+    """/delegate <agent> <task> — enqueue a task directly on the bus for an agent.
+    Backward-compatible: if the first token isn't a known agent, fall back to
+    delegating the whole string to Claude Code (old /delegate behavior)."""
+    args = (args or "").strip()
+    if not args:
+        return {"text": "Usage: /delegate <agent> <task>\nAgents: jenny, homelab, baseplate, vault, courier, inference, finlay, housekeep, calendula, connector\nLegacy: /delegate <task> delegates to Claude Code."}
+    parts = args.split(None, 1)
+    agent = parts[0].lower().strip().strip("/").replace("--member", "")
+    task = parts[1].strip() if len(parts) > 1 else ""
+    valid = set(TEAM_AGENTS)
+    if agent in valid and task:
+        import hashlib, time as _t
+        key = f"{agent}-{int(_t.time())}-{hashlib.md5(task.encode()).hexdigest()[:6]}"
+        res = _bus_req("POST", "/task", {
+            "op": "add", "key": key, "title": task, "area": agent, "owner": "rohit",
+            "priority": "normal", "note": "direct delegation via bridge", "status": "ready", "due": "",
+        })
+        if not res.get("ok"):
+            return {"text": f"❌ Failed to delegate: {res.get('error', 'bus unreachable')}"}
+        return {"text": f"📤 Delegated to *{agent}*:\n\"{task}\"\n(next cycle ~5 min)"}
+    # Legacy: /delegate <task> → Claude Code
+    return _claude_delegate(args, category="infra")
 
 
 def _agent_cmd(agent: str, args: str) -> dict:
@@ -3016,6 +3109,9 @@ def _agent_cmd(agent: str, args: str) -> dict:
             return {"text": f"Homelab: {result.get('status', '?')}"}
 
         elif agent == "jenny":
+            if args:
+                # Task Jenny with a directive → she coordinates/delegates across the team
+                return _jenny_directive(args)
             # Force a brief
             import io
             sys.path.insert(0, str(HERMES_HOME / "agentbus"))
@@ -3051,7 +3147,7 @@ def _agent_cmd(agent: str, args: str) -> dict:
                 return {"text": f"Unknown personal agent: {subagent}. Use: finlay, housekeep, calendula, connector"}
             import subprocess
             r = subprocess.run(
-                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py")] + (subargs.split() if subargs else []),
+                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), subagent] + (subargs.split() if subargs else []),
                 capture_output=True, text=True, timeout=30,
                 env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
             )
@@ -3061,45 +3157,6 @@ def _agent_cmd(agent: str, args: str) -> dict:
                 return {"text": f"❌ {subagent} {subargs} failed: {err or out}"}
             return {"text": f"✅ {subagent} {subargs}:\n{out[:3000]}"}
 
-        elif agent in ("baseplate","vault","courier","inference"):
-            import subprocess
-            cmd = args.split()[0] if args else "check"
-            r = subprocess.run(
-                ["python3", str(HERMES_HOME / "agents" / f"{agent}.py"), cmd] + (args.split()[1:] if len(args.split()) > 1 else []),
-                capture_output=True, text=True, timeout=30,
-                env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
-            )
-            out = (r.stdout or "").strip()
-            err = (r.stderr or "").strip()
-            if r.returncode != 0:
-                return {"text": f"❌ {agent} {cmd} failed: {err or out}"}
-            return {"text": f"✅ {agent} {cmd}:\n{out[:3000]}"}
-        elif agent == "agentbus":
-            cmd = (args or "status").strip().split()[0].lower() if args else "status"
-            if cmd in ("presence","status"):
-                import urllib.request, json
-                try:
-                    d=json.loads(urllib.request.urlopen("http://127.0.0.1:9107/status", timeout=5).read().decode())
-                    pres=d.get("presence",{})
-                    lines=[f"Presence ({len(pres)} agents):"]
-                    for k,v in pres.items():
-                        lines.append(f"  {k}: {v.get('kind')} - {v.get('note')}")
-                    return {"text": "\n".join(lines)}
-                except Exception as e:
-                    return {"text": f"AgentBus error: {e}"}
-            elif cmd in ("board","tasks"):
-                import urllib.request, json
-                try:
-                    d=json.loads(urllib.request.urlopen("http://127.0.0.1:9107/status", timeout=5).read().decode())
-                    tasks=d.get("tasks",{})
-                    lines=[f"Board: {len(tasks)} tasks"]
-                    for k,v in list(tasks.items())[:10]:
-                        lines.append(f"  {k}: {v.get('title')} [{v.get('status')}]")
-                    return {"text": "\n".join(lines)}
-                except Exception as e:
-                    return {"text": f"Board error: {e}"}
-            else:
-                return {"text": f"AgentBus: unknown {cmd}. Try: presence, board"}
         else:
             # finlay, housekeep, calendula, connector — use their scripts
             script_map = {
