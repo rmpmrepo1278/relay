@@ -137,8 +137,14 @@ Return STRICT JSON:
  "summary": "15 words max",
  "action": "what should be done (or '')",
  "agent": "agent from roster to delegate to (or '')"}
-Rules: invoices/bills->finlay, hardware/homelab->baseplate, appointments->calendula,
-relationships/contacts->connector. If unsure, informational/action=''.
+Rules:
+- actionable ONLY if there is an explicit ask, request, deadline, or pending
+  decision that needs a human or team action. Marketing, promos, deals, credit
+  card offers, special rates, and "review an offer" pitches are IGNORE unless
+  they come from a known personal contact and request a real decision.
+- informational = FYI only (newsletters, not urgent).
+- invoices/bills->finlay, hardware/homelab->baseplate, appointments->calendula,
+  relationships/contacts->connector. If unsure, informational/action=''.
 """ % (msg.get("from", "?")[:150], msg.get("subject", "")[:150],
        msg.get("snippet", "")[:300], msg.get("body", "")[:600])
     text = jenny_llm.hop_ask(prompt, max_tokens=180)

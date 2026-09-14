@@ -133,35 +133,64 @@ def _render(sig: dict) -> str:
     return "\n".join(out)
 
 
+ROSTER = ["jenny", "homelab", "baseplate", "vault", "courier", "inference",
+          "finlay", "housekeep", "calendula", "connector"]
+
+
 def synthesize(sig: dict) -> list:
     """LLM: from the whole picture, name 1-3 initiatives. Strict JSON list."""
     ctx = _render(sig)[:LLM_MAX]
-    prompt = """You are Jenny, Chief of Staff, holding your periodic Officer's Review.
+    prompt = """You are Jenny, Chief of Staff of a HOMELAB AGENT TEAM. These are
+SOFTWARE agents that monitor a home server. IMPORTANT DOMAIN VOCABULARY:
+- "board" = the agentbus TASK QUEUE (list of work items assigned to agents).
+  It is NOT a physical circuit board. "pending"/"ready" are QUEUED TASKS.
+- "presence" = each agent's heartbeat report (up/idle/working/done).
+- "inference" = LLM serving performance (tokens/sec / latency).
+- "gmail" = Rohit's inbox, already classified by you in a prior step.
+- Each agent monitors a domain: baseplate=infra/deploy, housekeep=appliances,
+  finlay=bills/finance, calendula=health/calendar, connector=contacts,
+  courier=notifications, vault=memory/backup, inference=LLM serving,
+  homelab=server diagnostics.
 
-SITUATION:
+SITUATION FROM YOUR REVIEW:
 %s
 
 Find the 1-3 things that matter most across these sources — connecting the
-pieces (e.g. a homelab degradation + a drained board may mean one root cause; a
+pieces (e.g. a homelab degradation + a drained queue may mean one root cause; a
 Gmail item may need a specialist). For each, propose an initiative.
 
 Return STRICT JSON — a list:
 [{"title": "short initiative title",
-  "owner": "agent from roster (jenny|homelab|baseplate|vault|courier|inference|finlay|housekeep|calendula|connector)",
+  "owner": "one of the roster agents exactly as listed",
   "first_step": "one concrete first action for that agent",
   "priority": "high|normal|low",
-  "why": "one line citing the signal(s) that drove this"}]
+  "why": "one line citing the actual signal(s) from the situation above"}]
 
 Rules:
-- No trivial safety/maintenance noise; prioritize cross-source insight.
-- Nothing about the model's own spawn/retire unless clearly warranted.
+- owner MUST be one of: %s. Pick the best fit; never invent agents.
+- first_step must be concrete and actionable for that specific agent's domain.
+- No trivial maintenance noise. Prioritize cross-source insight or anything
+  degrading (inference latency > 5s, gateway unreachable, missing agents).
 - If nothing is worth acting on, return [].
-""" % ctx
+""" % (ctx, ", ".join(ROSTER))
     text = jenny_llm.hop_ask(prompt, max_tokens=500)
     parsed = _parse_json_list(text) if text else None
     if parsed:
-        return parsed
+        return _validate(parsed)
     return _fallback(sig)
+
+
+def _validate(initiatives: list) -> list:
+    """Drop initiatives with unknown owners or empty titles (LLM safety)."""
+    out = []
+    for ini in initiatives:
+        owner = str(ini.get("owner", "")).strip().lower()
+        title = str(ini.get("title", "")).strip()
+        if owner not in ROSTER or not title:
+            continue
+        ini["owner"] = owner
+        out.append(ini)
+    return out
 
 
 def _parse_json_list(text: str) -> list | None:
