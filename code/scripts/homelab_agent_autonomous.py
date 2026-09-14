@@ -170,7 +170,8 @@ class HomelabAgent(AutonomousAgent):
                 elif name == "systemd" and check.get("failed"):
                     detail = f" — failed: {', '.join(check['failed'])}"
                 elif name == "disk" and check.get("issues"):
-                    detail = f" — {', '.join(f'{i[\"mount\"]} {i[\"usage_pct\"]}%' for i in check['issues'])}"
+                    parts = [f'{i["mount"]} {i["usage_pct"]}%' for i in check["issues"]]
+                    detail = " — " + ", ".join(parts)
                 elif name == "backups":
                     detail = f" — age: {check.get('age_h', '?')}h"
                 elif name == "updates":
