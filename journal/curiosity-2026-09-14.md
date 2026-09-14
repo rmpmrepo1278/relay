@@ -107,3 +107,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • Microsoft patches Windows and Excel – breaks audio, remote access, and paste
     https://www.theregister.com/os-platforms/2026/09/14/microsoft-patches-windows-and-excel-breaks-audio-remote-access-and-paste/5296085
     (125 points on HN)
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** incus
+  • Incus - Wikipedia
+    https://en.m.wikipedia.org/wiki/Incus
+🔀 **Intersection:** self hosting × ai agents
+📄 **arXiv (llm inference):**
+  • A Ranking Approach for Measuring Calibration
+    http://arxiv.org/abs/2609.13100v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐223950
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26743
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22008
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Microsoft patches Windows and Excel – breaks audio, remote access, and paste
+    https://www.theregister.com/os-platforms/2026/09/14/microsoft-patches-windows-and-excel-breaks-audio-remote-access-and-paste/5296085
+    (181 points on HN)
