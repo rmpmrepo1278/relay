@@ -15,6 +15,11 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-14T18:39:37Z"
     },
+    "checks-python": {
+      "note": "DSH: convert vault/baseplate shell checks to Python functions",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-14T18:39:39Z"
+    },
     "relay-memory-relay": {
       "note": "Relay opencode (Mac): relay identity + homelab coordination. Watchdog loop fixed earlier (qwen-8088 removed). No overlapping edits to omniroute storage.sqlite today.",
       "owner": "Rohits-Air-opencode",
