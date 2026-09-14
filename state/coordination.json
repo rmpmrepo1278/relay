@@ -10,11 +10,6 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-14T16:01:26Z"
     },
-    "e2e-testing": {
-      "note": "DSH: comprehensive end-to-end testing of all 8 agents + Jenny + bus + Telegram + homelab + inference",
-      "owner": "home-hp-opencode",
-      "updated_at": "2026-09-14T17:39:23Z"
-    },
     "relay-memory-relay": {
       "note": "Relay opencode (Mac): relay identity + homelab coordination. Watchdog loop fixed earlier (qwen-8088 removed). No overlapping edits to omniroute storage.sqlite today.",
       "owner": "Rohits-Air-opencode",
@@ -64,6 +59,13 @@
       "owner": "home-hp-opencode",
       "released_at": "2026-09-14T16:16:23.548511+00:00",
       "updated_at": "2026-09-14T16:13:27Z"
+    },
+    {
+      "note": "DSH: comprehensive end-to-end testing of all 8 agents + Jenny + bus + Telegram + homelab + inference",
+      "note2": "",
+      "owner": "home-hp-opencode",
+      "released_at": "2026-09-14T17:41:25.936586+00:00",
+      "updated_at": "2026-09-14T17:39:23Z"
     }
   ],
   "log": [
