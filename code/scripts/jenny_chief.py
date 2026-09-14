@@ -137,9 +137,10 @@ class JennyChief(JennyAgent):
                 self.delegate_to_agent(step.get("agent"), step.get("task"),
                                        priority=PRIO.get(step.get("priority", "normal"), 5))
             plan = " → ".join("%s:%s" % (s.get("agent", "?"), s.get("task", "")[:30]) for s in steps)
+            obj_title = task.get("title") or "coordinated task"
             self._create_objective(
                 "coordinate:%s" % (key or datetime.now().strftime("%s")),
-                title or "coordinated task", plan, owner="jenny")
+                obj_title, plan, owner="jenny")
             self._mark_task_ended(key, "done", "coordinated:%s" % plan)
             self.send_to_own_topic(reply or "🧩 Multi-agent plan queued: %s" % plan)
             return {"kind": "coordinate", "status": "ok", "plan": plan}
