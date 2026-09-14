@@ -484,18 +484,23 @@ def _message_category(text):
 
 
 def _send_telegram_api(chat_id, text, parse_mode="", message_thread_id=None):
-    payload = {"chat_id": chat_id, "text": text}
+    payload = {"chat_id": str(chat_id), "text": text}
     if parse_mode:
         payload["parse_mode"] = parse_mode
     if message_thread_id is not None:
         payload["message_thread_id"] = int(message_thread_id)
+    data = json.dumps(payload).encode()
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
-        data=json.dumps(payload).encode(),
+        data=data,
         headers={"Content-Type": "application/json"}
     )
-    resp = urllib.request.urlopen(req, timeout=10)
-    return json.loads(resp.read())
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        print(f"[_send_telegram_api] error: {e}", file=sys.stderr)
+        return {"ok": False, "error": str(e)}
 
 
 def _topic_for_category(category):
@@ -1392,7 +1397,18 @@ def _telegram_send_text(chat_id: int, text: str, message_thread_id: int | None =
     payload = {"chat_id": str(chat_id), "text": text, "parse_mode": "Markdown"}
     if message_thread_id:
         payload["message_thread_id"] = str(message_thread_id)
-    _send_telegram_api(chat_id, text, parse_mode="Markdown", message_thread_id=message_thread_id)
+    data = json.dumps(payload).encode()
+    req = urllib.request.Request(
+        f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+        data=data,
+        headers={"Content-Type": "application/json"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        print(f"[telegram_send_text] error: {e}", file=sys.stderr)
+        return {"ok": False, "error": str(e)}
 
 
 def _telegram_poller():
@@ -2958,7 +2974,7 @@ def _agent_cmd(agent: str, args: str) -> dict:
             task = {"content": args or "check", "type": args.split()[0] if args else "check"}
             result = _agent_fn(task)
             if result.get("status") == "completed":
-                health = result.get("health", {})
+                health = result.get("health") or result.get("report", {})
                 overall = health.get("overall", "?")
                 lines = [f"🏗️ *Homelab* — {overall}"]
                 for name, check in health.get("checks", {}).items():
@@ -2970,8 +2986,9 @@ def _agent_cmd(agent: str, args: str) -> dict:
 
         elif agent == "jenny":
             # Force a brief
-            from jenny_brief import main as _jenny_main
             import io
+            sys.path.insert(0, str(HERMES_HOME / "agentbus"))
+            from jenny_brief import main as _jenny_main
             old_argv = sys.argv
             sys.argv = ["jenny_brief.py", "--now"]
             old_stdout = sys.stdout
