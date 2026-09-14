@@ -50,6 +50,11 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-14T18:40:38Z"
     },
+    "offline-test": {
+      "note": "DSH: offline-test \u2014 part of full transformative build, coordinated with other agent",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-14T18:40:43Z"
+    },
     "personality-showcase": {
       "note": "DSH: personality-showcase \u2014 part of full transformative build, coordinated with other agent",
       "owner": "home-hp-opencode",
