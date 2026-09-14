@@ -2968,6 +2968,11 @@ def _route_telegram_command(text, thread_id=None):
         "/homelab": lambda: _agent_cmd("homelab", rest),
         "/personal": lambda: _agent_cmd("personal", rest),
         "/jenny": lambda: _agent_cmd("jenny", rest),
+        "/agentbus": lambda: _agent_cmd("agentbus", rest),
+        "/baseplate": lambda: _agent_cmd("baseplate", rest),
+        "/vault": lambda: _agent_cmd("vault", rest),
+        "/courier": lambda: _agent_cmd("courier", rest),
+        "/inference": lambda: _agent_cmd("inference", rest),
     }
     m.update(agent_cmds)
 
@@ -3046,7 +3051,7 @@ def _agent_cmd(agent: str, args: str) -> dict:
                 return {"text": f"Unknown personal agent: {subagent}. Use: finlay, housekeep, calendula, connector"}
             import subprocess
             r = subprocess.run(
-                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), subagent] + (subargs.split() if subargs else []),
+                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py")] + (subargs.split() if subargs else []),
                 capture_output=True, text=True, timeout=30,
                 env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
             )
@@ -3056,6 +3061,45 @@ def _agent_cmd(agent: str, args: str) -> dict:
                 return {"text": f"❌ {subagent} {subargs} failed: {err or out}"}
             return {"text": f"✅ {subagent} {subargs}:\n{out[:3000]}"}
 
+        elif agent in ("baseplate","vault","courier","inference"):
+            import subprocess
+            cmd = args.split()[0] if args else "check"
+            r = subprocess.run(
+                ["python3", str(HERMES_HOME / "agents" / f"{agent}.py"), cmd] + (args.split()[1:] if len(args.split()) > 1 else []),
+                capture_output=True, text=True, timeout=30,
+                env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
+            )
+            out = (r.stdout or "").strip()
+            err = (r.stderr or "").strip()
+            if r.returncode != 0:
+                return {"text": f"❌ {agent} {cmd} failed: {err or out}"}
+            return {"text": f"✅ {agent} {cmd}:\n{out[:3000]}"}
+        elif agent == "agentbus":
+            cmd = (args or "status").strip().split()[0].lower() if args else "status"
+            if cmd in ("presence","status"):
+                import urllib.request, json
+                try:
+                    d=json.loads(urllib.request.urlopen("http://127.0.0.1:9107/status", timeout=5).read().decode())
+                    pres=d.get("presence",{})
+                    lines=[f"Presence ({len(pres)} agents):"]
+                    for k,v in pres.items():
+                        lines.append(f"  {k}: {v.get('kind')} - {v.get('note')}")
+                    return {"text": "\n".join(lines)}
+                except Exception as e:
+                    return {"text": f"AgentBus error: {e}"}
+            elif cmd in ("board","tasks"):
+                import urllib.request, json
+                try:
+                    d=json.loads(urllib.request.urlopen("http://127.0.0.1:9107/status", timeout=5).read().decode())
+                    tasks=d.get("tasks",{})
+                    lines=[f"Board: {len(tasks)} tasks"]
+                    for k,v in list(tasks.items())[:10]:
+                        lines.append(f"  {k}: {v.get('title')} [{v.get('status')}]")
+                    return {"text": "\n".join(lines)}
+                except Exception as e:
+                    return {"text": f"Board error: {e}"}
+            else:
+                return {"text": f"AgentBus: unknown {cmd}. Try: presence, board"}
         else:
             # finlay, housekeep, calendula, connector — use their scripts
             script_map = {
