@@ -76,8 +76,9 @@ class HomelabAgent(AutonomousAgent):
     def _check_systemd(self) -> dict:
         try:
             services = ["agentbus", "agentbus-monitor", "hermes-mind-loop", "hermes-scheduler", "n8n-bridge", "tdai-gateway"]
-            r = subprocess.run(f"systemctl --user is-active {' '.join(services)}", shell=True, capture_output=True, text=True, timeout=10)
-            failed = [s for s in services if s not in r.stdout]
+            r = subprocess.run(f"systemctl --user --no-legend --plain list-units --type=service --state=failed --no-pager", shell=True, capture_output=True, text=True, timeout=10)
+            failed = [line.split()[0] for line in r.stdout.splitlines() if line.strip()]
+            failed = [s for s in failed if s in services]
             return {"status": "degraded" if failed else "healthy", "failed": failed}
         except Exception as e:
             return {"status": "error", "error": str(e)}
@@ -179,7 +180,7 @@ class HomelabAgent(AutonomousAgent):
                 
                 insights.append({
                     "type": "infra_alert",
-                    "content": f"Infrastructure {name}: {status}{detail}",
+                    "content": f"Infrastructure {name}: {status.replace('_', ' ')}{detail}",
                     "action_suggested": "heal" if status in ("down", "error", "stale", "degraded", "warning") else "maintain",
                     "severity": "high" if status in ("down", "error") else "medium",
                     "domain": name,

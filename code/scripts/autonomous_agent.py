@@ -77,7 +77,7 @@ except ImportError:
     _HAS_ORCHESTRATOR = False
 
 try:
-    from n8n_bridge_server import _send_telegram_api, _topic_for_category
+    from n8n_bridge_server import _send_telegram_api, _topic_for_category, _md_escape
     _HAS_TELEGRAM = True
 except ImportError:
     _HAS_TELEGRAM = False
@@ -249,6 +249,11 @@ class AutonomousAgent(ABC):
         
         try:
             tid = thread_id or self.topic_id
+            if parse_mode == "Markdown" and _HAS_TELEGRAM:
+                try:
+                    text = _md_escape(text)
+                except Exception:
+                    pass
             result = _send_telegram_api(
                 self.telegram_chat_id,
                 text,
