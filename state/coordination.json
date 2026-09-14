@@ -5,11 +5,6 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-13T19:12:46Z"
     },
-    "baseplate": {
-      "note": "DSH: Docker health, autoheal, backups, disk, updates, traefik/authentik",
-      "owner": "home-hp-opencode",
-      "updated_at": "2026-09-13T22:41:37Z"
-    },
     "board-morning-brief": {
       "note": "DSH: scheduler-side integration ONLY (morning_brief_pa reads board; nightly digest). Bus/personas are yours - not touching agentbus.py or finlay/calendula/connector/housekeep",
       "owner": "home-hp-opencode",
@@ -46,6 +41,15 @@
       "updated_at": "2026-09-13T22:41:39Z"
     }
   },
+  "history": [
+    {
+      "note": "DSH: Docker health, autoheal, backups, disk, updates, traefik/authentik",
+      "note2": "",
+      "owner": "home-hp-opencode",
+      "released_at": "2026-09-14T16:01:22.400557+00:00",
+      "updated_at": "2026-09-13T22:41:37Z"
+    }
+  ],
   "log": [
     {
       "area": "telegram-ux",
