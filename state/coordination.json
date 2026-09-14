@@ -44,6 +44,11 @@
       "note": "DSH: single source for topics + topic_gc.py weekly GC",
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-14T18:39:36Z"
+    },
+    "voice-signatures": {
+      "note": "DSH: personality voice signatures in Telegram",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-14T18:39:40Z"
     }
   },
   "history": [
