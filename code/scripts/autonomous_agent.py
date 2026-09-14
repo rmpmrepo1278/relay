@@ -358,6 +358,23 @@ class AutonomousAgent(ABC):
         except Exception as e:
             _log(self.name, f"Bus publish error: {e}", "WARN")
             return False
+
+    def report_presence(self, kind: str = "up", note: str = "") -> bool:
+        """Publish agent presence heartbeat to agentbus."""
+        try:
+            import urllib.request
+            payload = {"agent": self.name, "kind": kind, "note": note or f"{self.name} autonomous daemon"}
+            data_bytes = json.dumps(payload).encode()
+            req = urllib.request.Request(
+                "http://127.0.0.1:9107/presence",
+                data=data_bytes,
+                headers={"Content-Type": "application/json"}
+            )
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                return json.loads(resp.read().decode()).get("ok", False)
+        except Exception as e:
+            _log(self.name, f"Presence heartbeat error: {e}", "WARN")
+            return False
     
     # ─── Main cycle ──────────────────────────────────────────────────────────
     
@@ -365,6 +382,9 @@ class AutonomousAgent(ABC):
         """Run one complete mind loop cycle."""
         self.cycle_count += 1
         _log(self.name, f"Starting cycle #{self.cycle_count}")
+        
+        # Presence heartbeat
+        self.report_presence()
         
         # 1. OBSERVE
         signals = self.observe()
