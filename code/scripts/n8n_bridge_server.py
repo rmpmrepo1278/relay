@@ -587,6 +587,35 @@ def handle_telegram_send(data):
         return {"status": "error", "message": str(e)}
 
 
+@handler("/telegram-webhook")
+def handle_telegram_webhook(data):
+    """
+    Receive Telegram updates via webhook (avoids getUpdates 409 conflict).
+    Expected payload: Telegram Update object from Bot API.
+    """
+    # Telegram sends Update object with message/edited_message/channel_post etc.
+    msg = data.get("message") or data.get("edited_message") or data.get("channel_post") or data.get("edited_channel_post")
+    if not msg:
+        return {"status": "ok", "ignored": "no message in update"}
+
+    text = msg.get("text", "").strip()
+    if not text:
+        return {"status": "ok", "ignored": "empty text"}
+
+    chat = msg.get("chat", {})
+    chat_id = chat.get("id", TELEGRAM_CHAT)
+    thread_id = msg.get("message_thread_id")
+
+    # Route command through existing router
+    result = _route_telegram_command(text, thread_id=thread_id)
+
+    # Send response back to Telegram
+    if result and "text" in result:
+        _telegram_send_text(chat_id, result["text"][:4096], message_thread_id=thread_id)
+
+    return {"status": "ok", "processed": True}
+
+
 # ─── Proposal queue: /send <id> + /skip <id> for Telegram-confirm authoring ──
 
 def _save_proposal(pid: str, proposal: dict) -> None:
@@ -2937,10 +2966,7 @@ def _route_telegram_command(text, thread_id=None):
     # ─── Agent-specific commands ───
     agent_cmds = {
         "/homelab": lambda: _agent_cmd("homelab", rest),
-        "/finlay": lambda: _agent_cmd("finlay", rest),
-        "/housekeep": lambda: _agent_cmd("housekeep", rest),
-        "/calendula": lambda: _agent_cmd("calendula", rest),
-        "/connector": lambda: _agent_cmd("connector", rest),
+        "/personal": lambda: _agent_cmd("personal", rest),
         "/jenny": lambda: _agent_cmd("jenny", rest),
     }
     m.update(agent_cmds)
@@ -3000,6 +3026,35 @@ def _agent_cmd(agent: str, args: str) -> dict:
                 sys.argv = old_argv
                 sys.stdout = old_stdout
             return {"text": f"📋 Jenny brief triggered:\n{output}"}
+
+        elif agent == "personal":
+            # Personal agents: finlay, housekeep, calendula, connector
+            # Usage: /personal finlay check, /personal housekeep check, etc.
+            subparts = args.split()
+            if not subparts:
+                return {"text": "Usage: /personal <finlay|housekeep|calendula|connector> <check|report|...>"}
+            subagent = subparts[0]
+            subargs = " ".join(subparts[1:]) if len(subparts) > 1 else "check"
+            script_map = {
+                "finlay": "finlay",
+                "housekeep": "housekeep",
+                "calendula": "calendula",
+                "connector": "connector",
+            }
+            script_name = script_map.get(subagent)
+            if not script_name:
+                return {"text": f"Unknown personal agent: {subagent}. Use: finlay, housekeep, calendula, connector"}
+            import subprocess
+            r = subprocess.run(
+                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), subagent] + (subargs.split() if subargs else []),
+                capture_output=True, text=True, timeout=30,
+                env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
+            )
+            out = (r.stdout or "").strip()
+            err = (r.stderr or "").strip()
+            if r.returncode != 0:
+                return {"text": f"❌ {subagent} {subargs} failed: {err or out}"}
+            return {"text": f"✅ {subagent} {subargs}:\n{out[:3000]}"}
 
         else:
             # finlay, housekeep, calendula, connector — use their scripts
