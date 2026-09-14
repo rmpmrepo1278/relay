@@ -1,9 +1,9 @@
 {
   "generated_by": "auto_pipeline.py",
   "agent": "hermes",
-  "generated_at": "2026-09-14T14:45:13.441626+00:00",
+  "generated_at": "2026-09-14T14:58:57.181738+00:00",
   "source_count": 2,
-  "new_count": 1,
+  "new_count": 0,
   "total_count": 1,
   "jobs": [
     {
@@ -11,12 +11,11 @@
       "company": "New Relic",
       "location": "Remote",
       "url": "https://job-boards.greenhouse.io/newrelic/jobs/5396456008?gh_src=hlczvs1p8us",
-      "job_id": "5396456008",
       "score": 80,
-      "fetched": "2026-09-14T14:44:09.574830+00:00",
-      "source": "greenhouse_pieplie",
-      "raw": "generic:greenhouse_job",
-      "hash": "eda3c212bb087913"
+      "fetched": "2026-09-14T14:58:02.507519+00:00",
+      "raw": "generic:greenhouse_newrelic",
+      "hash": "eda3c212bb087913",
+      "source": "greenhouse_newrelic"
     }
   ]
 }
