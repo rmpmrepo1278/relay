@@ -35,6 +35,11 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-14T18:40:36Z"
     },
+    "import-gmail": {
+      "note": "DSH: import-gmail \u2014 part of full transformative build, coordinated with other agent",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-14T18:40:40Z"
+    },
     "inbox-zero": {
       "note": "DSH: inbox-zero \u2014 part of full transformative build, coordinated with other agent",
       "owner": "home-hp-opencode",
