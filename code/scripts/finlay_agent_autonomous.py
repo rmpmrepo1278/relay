@@ -17,7 +17,7 @@ class FinlayAgent(AutonomousAgent):
         super().__init__(
             name="finlay",
             domain="finance",
-            topic_id=10023,  # Finances topic,  # personal topic
+            topic_id=10122,  # Finances topic,  # personal topic
             cycle_interval_minutes=60,
         )
         self.store_path = os.path.expanduser("~/.hermes/agents/finlay/store.json")

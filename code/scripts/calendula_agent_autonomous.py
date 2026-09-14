@@ -17,7 +17,7 @@ class CalendulaAgent(AutonomousAgent):
         super().__init__(
             name="calendula",
             domain="schedule_health",
-            topic_id=10028,  # schedule/health topic,
+            topic_id=10122,  # schedule/health topic,
             cycle_interval_minutes=60,
         )
         self.store_path = os.path.expanduser("~/.hermes/agents/calendula/store.json")

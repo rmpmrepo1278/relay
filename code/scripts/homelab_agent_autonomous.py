@@ -20,7 +20,7 @@ class HomelabAgent(AutonomousAgent):
         super().__init__(
             name="homelab",
             domain="infrastructure",
-            topic_id=10024,
+            topic_id=10026,
             cycle_interval_minutes=15,  # More frequent for infra
         )
     

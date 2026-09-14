@@ -17,7 +17,7 @@ class ConnectorAgent(AutonomousAgent):
         super().__init__(
             name="connector",
             domain="people",
-            topic_id=10025,  # Memos topic,
+            topic_id=10122,  # Memos topic,
             cycle_interval_minutes=60,
         )
         self.store_path = os.path.expanduser("~/.hermes/agents/connector/store.json")
