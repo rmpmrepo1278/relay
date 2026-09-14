@@ -70,6 +70,11 @@
       "owner": "home-hp-opencode",
       "updated_at": "2026-09-14T18:39:36Z"
     },
+    "unified-auth": {
+      "note": "DSH: unified-auth \u2014 part of full transformative build, coordinated with other agent",
+      "owner": "home-hp-opencode",
+      "updated_at": "2026-09-14T18:40:39Z"
+    },
     "voice-signatures": {
       "note": "DSH: personality voice signatures in Telegram",
       "owner": "home-hp-opencode",
