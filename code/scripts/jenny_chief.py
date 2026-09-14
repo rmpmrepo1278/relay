@@ -97,7 +97,15 @@ class JennyChief(JennyAgent):
         kind = intent.get("intent")
         reply = intent.get("reply") or ""
         key = task.get("key")
+        title = task.get("title", "")
         status = "ok"
+
+        # Human-attention escalations (❓ prefix) are for Jenny to ACK,
+        # never re-delegate — re-delegation would loop forever.
+        if title.startswith("\u2753"):
+            self.send_to_own_topic("Seen: %s" % title[:100])
+            self._mark_task_ended(key, "done", "human-attention-acked")
+            return {"kind": "chat", "status": "ok", "reply": "seen"}
 
         if kind == "chat":
             self.send_to_own_topic(reply or self._friendly_reply(task.get("title", "")))
