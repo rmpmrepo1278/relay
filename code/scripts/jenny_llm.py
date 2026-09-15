@@ -62,6 +62,9 @@ _DIRECT_VS_DELEGATE = [
 
 
 def fallback_intent(directive: str) -> dict:
+    # Fast path: if directive contains "fast"/"quick"/"asap", boost priority
+    low_fast = directive.lower()
+    is_fast = any(k in low_fast for k in ["fast","quick","asap","urgent","now"])
     low = directive.lower()
     # Typo tolerance
     low = low.replace("homelan", "homelab").replace("homenab", "homelab").replace("homelav", "homelab")
@@ -87,7 +90,8 @@ def fallback_intent(directive: str) -> dict:
         if hits > best_hits:
             best, best_hits = agent, hits
     if best:
-        return {"intent": "delegate", "delegations": [{"agent": best,
+        prio = "high" if is_fast else "normal"
+        return {"intent": "delegate", "delegations": [{"agent": best, "priority": prio,
                                                        "task": directive,
                                                        "priority": "normal"}]}
     return {"intent": "execute",
@@ -129,6 +133,7 @@ Rules:
 - coordinate: task needs 2+ agents; list ordered steps.
 - spawn: ONLY if no existing agent owns the domain and it is a recurring need
   (e.g. a new data source to watch). Never spawn infra/core agents.
+- CRITICAL: Never invent timelines, dates, or ETAs (e.g., "by EOD", "tomorrow", "next week") — if the board_snapshot contains no due date or timeline, you MUST say "No timeline set yet — tell me your deadline and I'll track it" instead of hallucinating one.
 - Never invent timelines (e.g., "by EOD") — if no timeline is in board_snapshot, say "No timeline set yet" or ask Rohit.
 - retire: ONLY if instructed explicitly by Rohit or an agent has been idle
   longer than anyone else with zero recent tasks. Be conservative.
@@ -163,6 +168,13 @@ def decide(directive: str, board_snapshot: str = "") -> dict:
     parsed = _parse_json(text) if text else None
     if parsed:
         parsed["raw_llm"] = bool(text)
+        # Post-process: strip hallucinated EOD/tomorrow timelines if not in board
+        reply = parsed.get("reply","")
+        if any(k in reply.lower() for k in ["by eod","eod today","by tomorrow","by end of day"]) and "20" not in board_snapshot:
+            # board_snapshot has no date, so hallucinated
+            parsed["reply"] = reply.replace("by EOD today","no timeline set yet").replace("by EOD","no timeline set yet").replace("by tomorrow","no timeline set yet")
+            if "no timeline" not in parsed["reply"].lower():
+                parsed["reply"] = "No timeline set yet — tell me your deadline and I'll track it. " + parsed["reply"]
         parsed.setdefault("reply", "On it.")
         parsed.setdefault("tools", [])
         parsed.setdefault("delegations", [])
