@@ -75,7 +75,7 @@ def bus(path, method="GET", payload=None, timeout=6):
 
 
 def hop_ask(prompt, max_tokens=300):
-    """Ask the local hop gateway (haiku-4.5 → magnitude local). Returns text or None."""
+    """Ask the local hop gateway (haiku-4.5 -> cloud via OmniRoute, llama.cpp legs). Returns text or None."""
     payload = {
         "model": HOP_MODEL,
         "messages": [{"role": "user", "content": prompt}],

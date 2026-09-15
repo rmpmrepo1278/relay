@@ -2613,7 +2613,7 @@ def _claude_delegate(task: str, category: str = "infra") -> dict:
     return {"text": f"{icon} Claude Code session `{session_id[:8]}`\n\n{summary[:800]}\n\n_Sent to {category} topic._"}
 
 HOP_URL = os.environ.get("HOP_URL", "http://127.0.0.1:8083/v1/chat/completions")
-HOP_MODEL = os.environ.get("HOP_MODEL", "magnitude/gemma-4-26b-a4b-it-qat:gguf:q4")
+HOP_MODEL = os.environ.get("HOP_MODEL", "haiku-4.5")
 
 def _md_escape(text: str) -> str:
     """Lightly escape Telegram Markdown punctuation so model output sends cleanly."""
@@ -2659,7 +2659,7 @@ def _homelab_context() -> str:
         return "Homelab snapshot unavailable."
 
 
-def _magnitude_reply(text: str) -> dict:
+def _sidecar_reply(text: str) -> dict:
     """Sidecar agent reply via tokenjuice-hop. Fast-fail, one retry, live context."""
     try:
         urllib.request.urlopen(
@@ -2679,7 +2679,8 @@ def _magnitude_reply(text: str) -> dict:
         "- If the snapshot is unavailable or stale, say so instead of guessing.\n"
         "- If asked which model you run on: the 'haiku-4.5' alias on "
         "tokenjuice-hop, which routes to nvidia/minimax-m3 via OmniRoute, with "
-        "a local magnitude (Gemma) model as last-resort fallback.\n"
+        "local llama.cpp legs (qwen3-coder-30b-a3b / lfm2.5-8b) as last-resort "
+        "fallback.\n"
         "- If asked for detail beyond the snapshot, suggest the right Telegram "
         "slash command (e.g. /docker, /disk, /status, /health)."
     )
@@ -2984,7 +2985,7 @@ def _route_telegram_command(text, thread_id=None):
             _low = text.lower()
             if "jobs pipeline" in _low or "job pipeline" in _low:
                 return _run_jobs_pipeline(text)
-            return _magnitude_reply(text)
+            return _sidecar_reply(text)
         return {"text": f"Unknown command `{cmd}`. Try `/help`."}
     try:
         result = handler_fn()

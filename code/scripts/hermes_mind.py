@@ -162,7 +162,8 @@ def restart_with_deps(target, depth=0):
 
 def ollama_analyze(target):
     # TIER-2 log analysis. Repointed Sep 13 2026: ollama was removed 2026-09-05;
-    # now calls the hop gateway (haiku-4.5 == magnitude Qwen3.6-35B, thinking disabled).
+    # now calls the hop gateway (haiku-4.5 => nvidia/minimax-m3 via OmniRoute,
+    # locally backed by llama.cpp legs; thinking disabled).
     logs = get_container_logs(target)
     if not logs or len(logs) < 20:
         return None  # not enough data

@@ -14,7 +14,7 @@ Auto-heals:
   - Disable providers that hit daily limit
   - Re-enable providers after daily reset (midnight UTC)
   - Detect "port up but generation empty" via an actual completion probe
-    (auto/best-chat), then auto-restart hop, then magnitude (2026-09-11).
+    (auto/best-chat), then auto-restart hop, then the llama.cpp legs (chatllm-*).
     Plain `systemctl restart tokenjuice-hop` can strand the unit deactivating,
     so restarts escalate to SIGKILL + start if the job hangs.
 
@@ -44,9 +44,11 @@ CONFIG = HH / "config.yaml"
 PROXY_PORT = 8083
 PROXY_SERVICE = "tokenjuice-hop"
 PROXY_TIMEOUT = 30  # seconds for health checks
-# Model the probe exercises. Backed by magnitude (reliable); combo/pi-free-fallback
-# is flaky and would false-positive the recovery path.
+# Model the probe exercises. Backed by the llama.cpp legs (reliable);
+# combo/pi-free-fallback is flaky and would false-positive the recovery path.
 PROBE_MODEL = "auto/best-chat"
+# llama.cpp local legs restarted when hop is up but generates empty content.
+LOCAL_LLM_SERVICES = ("chatllm-lfm", "chatllm-coder30b")
 
 
 def _run(args: list[str], timeout: int = 20) -> bool:
@@ -215,7 +217,7 @@ def generation_probe(timeout: int = 60) -> tuple[bool, str]:
 
 
 def recover_generation() -> bool:
-    """Self-heal when hop is up but generates nothing: restart hop, then magnitude."""
+    """Self-heal when hop is up but generates nothing: restart hop, then llama.cpp legs."""
     state = load_state()
     now = time.time()
     if now - state.get("last_empty_recovery", 0) < 180:
@@ -223,7 +225,7 @@ def recover_generation() -> bool:
         return False
     state["last_empty_recovery"] = now
     save_state(state)
-    log("Generation returning empty content — restarting hop, then magnitude if needed")
+    log("Generation returning empty content — restarting hop, then llama.cpp legs")
     restart_service(PROXY_SERVICE)
     time.sleep(6)
     ok, detail = generation_probe(timeout=90)
@@ -234,19 +236,20 @@ def recover_generation() -> bool:
         save_state(state)
         send_alert(f"🔄 LLM generation was empty; hop restart recovered it ({detail})", "infra")
         return True
-    log(f"Hop restart did not fix empty generation ({detail}) — restarting magnitude")
-    restart_service("magnitude.service", user_unit=True)
+    log(f"Hop restart did not fix empty generation ({detail}) — restarting llama.cpp legs")
+    for svc in LOCAL_LLM_SERVICES:
+        restart_service(svc)
     time.sleep(20)
     ok, detail = generation_probe(timeout=90)
     if ok:
-        log(f"Recovered after magnitude restart: {detail}")
+        log(f"Recovered after llama.cpp leg restart: {detail}")
         state["empty_recoveries"] = state.get("empty_recoveries", 0) + 1
         state["consecutive_empty"] = 0
         save_state(state)
-        send_alert(f"🔄 LLM generation recovered after magnitude restart ({detail})", "infra")
+        send_alert(f"🔄 LLM generation recovered after llama.cpp restart ({detail})", "infra")
         return True
-    log(f"Magnitude restart did not fix empty generation ({detail})")
-    send_alert("🔴 LLM generates empty responses; hop + magnitude restarts did not recover", "infra")
+    log(f"llama.cpp leg restart did not fix empty generation ({detail})")
+    send_alert("🔴 LLM generates empty responses; hop + llama.cpp restarts did not recover", "infra")
     return False
 
 
@@ -400,26 +403,26 @@ def run_check() -> dict:
 
     # Generation probe: hop may answer /health but serve empty content.
     gen_ok, gen_detail = generation_probe()
-    # Circuit-breaker telemetry: the generation probe exercises hop -> magnitude.
+    # Circuit-breaker telemetry: the generation probe exercises hop -> llama.cpp legs.
     try:
         from circuit_breaker import record_success, record_failure
         if gen_ok:
-            record_success("magnitude")
+            record_success("local_llm")
         else:
-            record_failure("magnitude", error=f"generation probe: {gen_detail}"[:120])
+            record_failure("local_llm", error=f"generation probe: {gen_detail}"[:120])
     except Exception:
         pass
     # Open-circuit alert: notify once per OPEN transition (persist last state).
     try:
         from circuit_breaker import get_all_circuits
-        mag_state = next(
-            (c.get("state") for c in get_all_circuits() if c.get("name") == "magnitude"),
+        llm_state = next(
+            (c.get("state") for c in get_all_circuits() if c.get("name") == "local_llm"),
             None)
-        prev = state.get("magnitude_circuit_state")
-        if mag_state == "OPEN" and prev != "OPEN":
-            send_alert("🔴 magnitude circuit OPEN — generation probe failing persistently", "infra")
-        if mag_state and mag_state != prev:
-            state["magnitude_circuit_state"] = mag_state
+        prev = state.get("local_llm_circuit_state")
+        if llm_state == "OPEN" and prev != "OPEN":
+            send_alert("🔴 local_llm circuit OPEN — generation probe failing persistently", "infra")
+        if llm_state and llm_state != prev:
+            state["local_llm_circuit_state"] = llm_state
             save_state(state)
     except Exception:
         pass

@@ -10,7 +10,7 @@ CIRCUITS = {
     "telegram_bridge": {"failure_threshold": 5, "recovery_timeout": 60},
     "groq":            {"failure_threshold": 3, "recovery_timeout": 120},
     "openrouter":      {"failure_threshold": 3, "recovery_timeout": 300},
-    "magnitude":       {"failure_threshold": 3, "recovery_timeout": 300},
+    "local_llm":       {"failure_threshold": 3, "recovery_timeout": 300},
     "healthchecks":    {"failure_threshold": 5, "recovery_timeout": 60},
 }
 

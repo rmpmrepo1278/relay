@@ -107,7 +107,7 @@ def _ollama_embed(text: str) -> list[float] | None:
 
     DISPOSITION 2026-09-13 (Round-4b): ollama was REMOVED 2026-09-05, so the old
     localhost:11434 path always fails and this returns None. Cloud embedding models via
-    hop/magnitude (openrouter/qwen3-embedding-* etc.) return HTTP 402 (no credits) —
+    hop (openrouter/qwen3-embedding-* etc.) return HTTP 402 (no credits) —
     verified live. Retrieval therefore correctly falls back to TF-IDF/unigram overlap
     (see retrieve_similar), which is acceptable. If a free embedder ever exists on this
     stack, repoint here and keep the graceful None fallback.
