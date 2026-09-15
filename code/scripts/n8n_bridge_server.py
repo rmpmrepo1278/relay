@@ -3135,6 +3135,15 @@ def _agent_cmd(agent: str, args: str) -> dict:
             if not subparts:
                 return {"text": "Usage: /personal <finlay|housekeep|calendula|connector> <check|report|...>"}
             subagent = subparts[0]
+            # Bulk import from Gmail last 30d
+            if subagent == "import" and "gmail" in " ".join(subparts[1:]):
+                import subprocess
+                r=subprocess.run(["python3", str(p.parent / "import_gmail.py"), "--dry-run"], capture_output=True, text=True, timeout=30)
+                out=(r.stdout or "").strip()
+                err=(r.stderr or "").strip()
+                if r.returncode!=0:
+                    return {"text": f"Import gmail failed: {err or out}"}
+                return {"text": f"📥 Gmail import (30d dry-run):\n{out[:3000]}"}
             subargs = " ".join(subparts[1:]) if len(subparts) > 1 else "check"
             script_map = {
                 "finlay": "finlay",
