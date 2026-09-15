@@ -3022,7 +3022,7 @@ def _jenny_directive(text: str) -> dict:
     })
     if not res.get("ok"):
         return {"text": f"❌ Failed to task Jenny: {res.get('error', 'bus unreachable')}"}
-    return {"text": f"📥 Tasked Jenny (Coordination):\n\"{text}\"\nShe'll pick it up on her next cycle (~30 min) or via the brief."}
+    return {"text": f"📥 Tasked Jenny: \"{text}\""}
 
 
 def _team_status() -> dict:
