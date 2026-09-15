@@ -49,3 +49,21 @@ Interests: self_hosting, ai_agents, llm_inference
   • Giving up on smart rings
     https://notesbylex.com/giving-up-on-smart-rings
     (51 points on HN)
+
+## Curiosity — 13:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (llm inference):**
+  • Bellman Policy Optimization
+    http://arxiv.org/abs/2609.15987v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐225277
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26767
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22096
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
