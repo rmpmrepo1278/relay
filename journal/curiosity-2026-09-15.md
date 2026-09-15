@@ -24,3 +24,28 @@ Interests: self_hosting, ai_agents, llm_inference
   • How my e-reader lost its stripes
     https://www.serpentine.com/posts/2026/x3-stripes/
     (189 points on HN)
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=3792eb36761761810496fce377a660ae
+🔀 **Intersection:** llm inference × self hosting
+📄 **arXiv (ai agents):**
+  • The Router Within: Eliciting Native Skill Routing from a Frozen LLM
+    http://arxiv.org/abs/2609.15982v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐225251
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26763
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22094
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Giving up on smart rings
+    https://notesbylex.com/giving-up-on-smart-rings
+    (51 points on HN)
