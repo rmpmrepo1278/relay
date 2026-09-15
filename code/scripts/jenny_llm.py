@@ -57,22 +57,33 @@ _DIRECT_VS_DELEGATE = [
     ("baseplate", ["container", "docker", "deploy", "systemd", "uptime", "homelab", "infra", "server", "disk"]),
     ("vault", ["memory", "backup", "sync", "journal", "knowledge", "data", "store"]),
     ("courier", ["notify", "telegram", "digest", "topic", "broadcast", "remind"]),
-    ("inference", ["model", "llm", "provider", "inference", "benchmark", "haiku", "laguna"]),
+    ("inference", ["model", "llm", "provider", "inference", "benchmark", "haiku", "laguna", "switchyard", "router", "decision router", "nvidia nemo", "nemo", "switch yard", "youtube", "youtu.be", "video", "applicability", "review video", "open source project"]),
 ]
 
 
 def fallback_intent(directive: str) -> dict:
     low = directive.lower()
-    if any(t in low for t in ["hi", "hey", "hello", "yo", "how are you", "thanks",
-                              "thank you", "what's up", "whats up", "good job",
-                              "nice", "cool", "who are you", "jenny?"]):
+    # Typo tolerance
+    low = low.replace("homelan", "homelab").replace("homenab", "homelab").replace("homelav", "homelab")
+    # Use word boundaries for short greetings to avoid "hi" matching "this"
+    import re
+    if any(re.search(r"\b" + re.escape(t) + r"\b", low) for t in ["hi", "hey", "hello", "yo", "thanks", "thank you", "nice", "cool"] ) or any(t in low for t in ["how are you", "what's up", "whats up", "good job", "who are you", "jenny?"]):
         return {"intent": "chat",
                 "reply": "Hey Rohit! Jenny here — I'm listening live. Give me a "
                          "task or ask anything, and I'll handle or delegate it."}
+    # Prioritize homelab/baseplate when homelab/lab is mentioned, even if health also matches calendula
+    low_has_homelab = any(k in low for k in ["homelab","homelan","baseplate","infra","server"])
+    low_has_health = "health" in low
     best = None
     best_hits = 0
     for agent, keys in _DIRECT_VS_DELEGATE:
         hits = sum(1 for k in keys if k in low)
+        # Boost homelab/baseplate when homelab context is present and health is also there
+        if low_has_homelab and low_has_health and agent in ("homelab","baseplate"):
+            hits += 2
+        # Boost inference when switchyard/router present
+        if any(k in low for k in ["switchyard","switch yard","decision router"]) and agent == "inference":
+            hits += 3
         if hits > best_hits:
             best, best_hits = agent, hits
     if best:
@@ -112,11 +123,13 @@ Decide the single best action. Return STRICT JSON only, no markdown, no commenta
 }}
 
 Rules:
+- For greetings (hi/hello/hey/hola): give a brief, warm status snapshot (1-2 lines) using the board — e.g., "All 4 personal agents checked in, 2 bills due, lab healthy" — not generic "How can I help?"
 - execute: only for things you can obviously do yourself (small commands/sends).
-- delegate: one agent clearly owns this domain (bills->finlay, infra->baseplate/homelab, health->calendula).
+- delegate: one agent clearly owns this domain (bills->finlay, infra/homelab/health->baseplate/homelab (NOT calendula), health/schedule->calendula, llm/router/switchyard/model/provider->inference, youtube/video applicability->inference (analyze transcript)).
 - coordinate: task needs 2+ agents; list ordered steps.
 - spawn: ONLY if no existing agent owns the domain and it is a recurring need
   (e.g. a new data source to watch). Never spawn infra/core agents.
+- Never invent timelines (e.g., "by EOD") — if no timeline is in board_snapshot, say "No timeline set yet" or ask Rohit.
 - retire: ONLY if instructed explicitly by Rohit or an agent has been idle
   longer than anyone else with zero recent tasks. Be conservative.
 - intent must be one of the exact strings listed.
