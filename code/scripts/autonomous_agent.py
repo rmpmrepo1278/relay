@@ -480,13 +480,16 @@ def _run_cmd(cmd: str, timeout: int = 30) -> dict:
         return {"ok": False, "returncode": -1, "stdout": "", "stderr": str(e)}
 
 def _send_telegram(text: str, thread_id: int = None) -> bool:
+    """Send via centralized telegram_bridge with safety checks."""
     if not _HAS_TELEGRAM:
         return False
     try:
+        from telegram_bridge import send_telegram
         tid = thread_id or -1003976074764
-        result = _send_telegram_api(-1003976074764, text, parse_mode="Markdown", message_thread_id=thread_id)
-        return result.get("ok", False)
-    except Exception:
+        result = send_telegram(text, thread_id=str(tid) if tid else None, parse_mode="Markdown")
+        return result.get("status") in ("ok", "sent")
+    except Exception as e:
+        _log("autonomous_agent", f"Telegram send error: {e}", "ERROR")
         return False
 
 

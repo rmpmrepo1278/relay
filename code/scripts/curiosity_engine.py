@@ -17,7 +17,6 @@ DB = HERMES_HOME / "data" / "unified_memory.db"
 LOGS = HERMES_HOME / "logs"
 LOGS.mkdir(parents=True, exist_ok=True)
 sys.path.insert(0, str(HERMES_HOME / "hermes-agent" / "scripts" / "lib"))
-import telegram_send  # type: ignore
 
 DRY_RUN = "--dry-run" in sys.argv
 MIN_QUESTIONS = int(os.environ.get("DRIFT_MIN_QUESTIONS", "2"))
@@ -117,7 +116,8 @@ def _page_user(topic, questions, coverage, snippet, did_research):
             else "I gathered what I already know here — say 'expand " + topic + "' for a deeper dive.")
     qpart = "\nLatest questions:\n" + "\n".join(f"• {q[:160]}" for q in questions[:4])
     close = "\n(Dig deeper? I revisit this weekly, or ask me to expand.)"
-    telegram_send.send_telegram(head + body + qpart + "\n" + snippet[:280] + close, dedup=True)
+    from telegram_bridge import send_telegram
+    send_telegram(head + body + qpart + "\n" + snippet[:280] + close, dedup_window=120)
 
 
 def run():

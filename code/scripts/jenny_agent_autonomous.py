@@ -24,7 +24,7 @@ class JennyAgent(AutonomousAgent):
             name="jenny",
             domain="coordination",
             topic_id=10000,  # Coordination topic
-            cycle_interval_minutes=30,
+            cycle_interval_minutes=1,
         )
         self.org_roster = self._load_roster()
         self.mem_root = Path.home() / ".hermes" / "collaborator-memory"
@@ -83,6 +83,66 @@ class JennyAgent(AutonomousAgent):
             return True
         return False
 
+    def _assess_message(self, title: str) -> str:
+        """Assess whether Jenny should respond directly or delegate to a specialist.
+
+        Returns one of:
+        - 'respond': Jenny can handle this directly (greetings, small talk, simple queries)
+        - 'delegate': A specialist agent is more appropriate
+        - 'coordinate': Multi-agent coordination needed
+        """
+        low = title.lower().strip()
+
+        # 1. Greetings & small talk → Jenny responds directly
+        if self._looks_like_greeting(title):
+            return "respond"
+
+        # 2. Jenny's direct competence domains → respond
+        # Brief-related
+        if any(tok in low for tok in ["brief", "org brief", "daily brief", "weekly brief"]):
+            return "respond"
+        # Onboarding
+        if any(tok in low for tok in ["onboard", "introduce", "welcome new"]):
+            return "respond"
+        # Coordination overview
+        if any(tok in low for tok in ["team", "roster", "status overview"]):
+            return "respond"
+
+        # 3. Specialist domains → delegate (Jenny's competence boundary)
+        # Homelab/Docker/containers/systemd
+        homelab_keywords = ["docker", "container", "systemd", "kubernetes", "homelab",
+                            "disk", "memory", "backup", "health check", "status",
+                            "restart", "update", "disk cleanup"]
+        if any(tok in low for tok in homelab_keywords):
+            # Jenny can coordinate but specialized agents handle deep domain work
+            return "delegate"
+
+        # Finlay/Finance
+        finlay_keywords = ["finance", "bill", "bank", "payment", "subscription",
+                           "budget", "expense", "invoice", "cost", "refund"]
+        if any(tok in low for tok in finlay_keywords):
+            return "delegate"
+
+        # Calendula/Health
+        calendula_keywords = ["calendar", "appointment", "medication", "refill",
+                              "doctor", "vaccine", "health check", "symptoms"]
+        if any(tok in low for tok in calendula_keywords):
+            return "delegate"
+
+        # Connector/Telegram/Notifications
+        connector_keywords = ["telegram", "notify", "digest", "topic", "broadcast",
+                              "message", "send message"]
+        if any(tok in low for tok in connector_keywords):
+            return "delegate"
+
+        # 4. Coordination/meta-tasks → coordinate or delegate
+        if any(tok in low for tok in ["coordinate", "delegate", "assign", "handoff"]):
+            # Jenny can coordinate but may delegate execution
+            return "coordinate"
+
+        # 5. Unknown/complex → delegate (safe default)
+        return "delegate"
+
     def _mark_task_ended(self, key: str, status: str, proof: str = ""):
         """Set a bus task to a terminal state (done/failed) via POST JSON."""
         import urllib.request
@@ -124,10 +184,10 @@ class JennyAgent(AutonomousAgent):
             ("housekeep",   ["filter", "clean", "appliance", "clog", "vacuum", "air"]),
             ("calendula",   ["calendar", "appointment", "medication", "refill", "doctor", "vaccine"]),
             ("connector",   ["birthday", "anniversary", "contact", "gift", "friend", "family"]),
-            ("baseplate",   ["container", "deploy", "docker", "systemd", "uptime", "homelab", "backup"]),
+            ("homelab",     ["disk", "network", "update", "restart", "health check", "status", "how"]),
+            ("baseplate",   ["container", "deploy", "docker", "systemd", "uptime", "backup"]),
             ("vault",       ["memory", "backup", "journal", "knowledge", "data", "sync"]),
             ("courier",     ["notify", "telegram", "digest", "topic", "broadcast"]),
-            ("homelab",     ["disk", "network", "update", "restart", "health check"]),
         ]
         for agent, keys in table:
             if any(k in low for k in keys):
@@ -358,7 +418,9 @@ class JennyAgent(AutonomousAgent):
                 })
             elif action == "user_directive":
                 title = insight.get("source_task", {}).get("title", "")
-                if self._looks_like_greeting(title):
+                assessment = self._assess_message(title)
+                if assessment == "respond":
+                    # Jenny handles this directly (greetings, small talk, simple queries)
                     plans.append({
                         "action": "reply_chat",
                         "content": title,
@@ -367,14 +429,35 @@ class JennyAgent(AutonomousAgent):
                         "dedup_key": insight.get("dedup_key"),
                         "source_task": insight.get("source_task", {}),
                     })
-                else:
-                    agent = self._route_directive(title)
+                elif assessment == "delegate":
+                    # A specialist agent is more appropriate → delegate as before
+                    if self._looks_like_greeting(title):
+                        plans.append({
+                            "action": "reply_chat",
+                            "content": title,
+                            "priority": 6,
+                            "confidence": 0.95,
+                            "dedup_key": insight.get("dedup_key"),
+                            "source_task": insight.get("source_task", {}),
+                        })
+                    else:
+                        agent = self._route_directive(title)
+                        plans.append({
+                            "action": "delegate",
+                            "target": agent,
+                            "content": title,
+                            "priority": 8,
+                            "confidence": 0.7,
+                            "dedup_key": insight.get("dedup_key"),
+                            "source_task": insight.get("source_task", {}),
+                        })
+                elif assessment == "coordinate":
+                    # Multi-agent coordination needed
                     plans.append({
-                        "action": "delegate",
-                        "target": agent,
-                        "content": title,
-                        "priority": 8,
-                        "confidence": 0.7,
+                        "action": "coordinate_cross_agent",
+                        "content": f"Jenny to coordinate: {title}",
+                        "priority": 7,
+                        "confidence": 0.8,
                         "dedup_key": insight.get("dedup_key"),
                         "source_task": insight.get("source_task", {}),
                     })

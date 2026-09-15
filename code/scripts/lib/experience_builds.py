@@ -80,11 +80,11 @@ def _now() -> str:
 def page_telegram(text: str) -> str:
     """Best-effort page. Returns 'sent' | 'skipped-unavailable' | 'error'."""
     try:
-        sys.path.insert(0, str(HERMES_HOME / "hermes-agent" / "scripts" / "lib"))
-        import telegram_send  # type: ignore
-        if telegram_send.send_telegram(text, dedup=True):
+        from telegram_bridge import send_telegram
+        result = send_telegram(text, dedup_window=120)
+        if result.get("status") in ("ok", "sent"):
             return "sent"
-        return "skipped-duplicate"
+        return "skipped-unavailable"
     except Exception:
         # graceful: never let credential issues crash autonomous work
         return "skipped-unavailable"

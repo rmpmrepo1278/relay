@@ -152,9 +152,14 @@ def _load_env():
                     TELEGRAM_CHAT_ID = v.strip("'\"")
 
 
-def _send_telegram(message: str):
-    from telegram_bridge import send_telegram_html
-    send_telegram_html(message)
+def _send_telegram(message: str, thread_id: Optional[str] = None):
+    """Send package update via centralized telegram_bridge with HTML parse mode."""
+    try:
+        from telegram_bridge import send_telegram
+        result = send_telegram(message, parse_mode="HTML", thread_id=thread_id)
+        return result.get("status") in ("ok", "sent")
+    except Exception:
+        return False
 
 
 def _get_gmail_service():

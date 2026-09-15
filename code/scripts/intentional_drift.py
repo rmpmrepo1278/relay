@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 HERMES_HOME = Path.home() / ".hermes"
 DB = HERMES_HOME / "data" / "unified_memory.db"
 sys.path.insert(0, str(HERMES_HOME / "hermes-agent" / "scripts" / "lib"))
-import telegram_send  # type: ignore
+from telegram_bridge import send_telegram
 
 MIN_QUESTIONS = int(os.environ.get("DRIFT_MIN_QUESTIONS", "2"))
 DRY_RUN = "--dry-run" in sys.argv
@@ -123,7 +123,8 @@ def run():
                 "I wrote a reusable playbook so you don't have to re-figure it.\n"
                 "SOP id: " + sop_id
             )
-            telegram_send.send_telegram(msg, dedup=True)
+            from telegram_bridge import send_telegram
+            send_telegram(msg, dedup_window=120)
 
     c.close()
     return {"fired": fired, "threshold": MIN_QUESTIONS, "dry_run": DRY_RUN}

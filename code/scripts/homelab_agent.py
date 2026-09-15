@@ -68,8 +68,10 @@ def _send_telegram(text: str, thread_id: Optional[int] = None):
     """Send via n8n bridge to the homelab topic."""
     try:
         sys.path.insert(0, str(HERMES_HOME / "scripts"))
-        from telegram_bridge import send_telegram_markdown
-        send_telegram_markdown(text, thread_id=thread_id)
+        from telegram_bridge import send_telegram
+        # Use topic-based thread_id from topic_map if not specified
+        effective_thread = thread_id or _get_topic_id()
+        send_telegram(text, thread_id=str(effective_thread) if effective_thread else None, parse_mode="Markdown")
     except Exception as e:
         _log(f"Telegram send error: {e}")
 

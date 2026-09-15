@@ -47,15 +47,12 @@ def _load_tg_config():
                         _TG_TOKEN = v.strip(chr(34) + chr(39))
                     elif k in ("TELEGRAM_CHAT_ID", "TELEGRAM_HOME_CHANNEL"):
                         _TG_CHAT = v.strip(chr(34) + chr(39))
-def _send_telegram(message: str, parse_mode: str = "Markdown"):
-    if _TG_TOKEN is None:
-        _load_tg_config()
-    if not _TG_TOKEN or not _TG_CHAT:
-        return False
+def _send_telegram(message: str) -> bool:
+    """Send via centralized telegram_bridge."""
     try:
-        from telegram_bridge import send_telegram_markdown as _send
-        _send(message)
-        return True
+        from telegram_bridge import send_telegram
+        result = send_telegram(message, parse_mode="Markdown")
+        return result.get("status") in ("ok", "sent")
     except Exception:
         return False
 

@@ -33,11 +33,12 @@ QUORUM = 3
 MAJORITY = 2
 
 sys.path.insert(0, str(HERMES_HOME / "hermes-agent" / "scripts" / "lib"))
-import telegram_send  # type: ignore
 def _safe_tg(text, dedup=True):
     """Telegram is best-effort: missing credentials must never abort autonomous work."""
     try:
-        return telegram_send.send_telegram(text, dedup=dedup)
+        from telegram_bridge import send_telegram
+        result = send_telegram(text, dedup_window=120 if dedup else None)
+        return result.get("status") in ("ok", "sent")
     except Exception:
         return False
 

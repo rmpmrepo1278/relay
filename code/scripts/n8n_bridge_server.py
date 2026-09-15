@@ -2,6 +2,8 @@
 """Lightweight HTTP bridge for n8n — executes system commands and returns JSON."""
 import html
 import http.server
+from typing import Optional
+from typing import Optional
 import json
 import re
 import subprocess
@@ -624,7 +626,7 @@ def _save_proposal(pid: str, proposal: dict) -> None:
     f.write_text(json.dumps(proposal, default=str, indent=2))
 
 
-def _load_proposal(pid: str) -> dict | None:
+def _load_proposal(pid: str) -> Optional[dict]:
     f = PROPOSAL_DIR / f"{pid}.json"
     if f.exists():
         try:
@@ -1408,7 +1410,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         pass
 
 
-def _telegram_get_updates(offset: int = 0) -> dict | None:
+def _telegram_get_updates(offset: int = 0) -> Optional[dict]:
     """Long-poll Telegram getUpdates. Returns the API response or None on error."""
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getUpdates"
     params = {"offset": offset + 1, "timeout": 25, "allowed_updates": ["message"]}
@@ -1421,7 +1423,7 @@ def _telegram_get_updates(offset: int = 0) -> dict | None:
         return None
 
 
-def _telegram_send_text(chat_id: int, text: str, message_thread_id: int | None = None):
+def _telegram_send_text(chat_id: int, text: str, message_thread_id: Optional[int] = None):
     """Send a text reply back to the Telegram chat."""
     payload = {"chat_id": str(chat_id), "text": text, "parse_mode": "Markdown"}
     if message_thread_id:
@@ -2483,13 +2485,7 @@ def _call(handler_name, **kw):
 
 def _first_word(text):
     parts = text.split()
-    if not parts:
-        return ""
-    w=parts[0].lower()
-    # Strip @botname suffix like /new@ChaguliBot -> /new
-    if "@" in w and w.startswith("/"):
-        w=w.split("@")[0]
-    return w
+    return parts[0].lower() if parts else ""
 
 def _rest(text):
     parts = text.split(maxsplit=1)
@@ -2951,8 +2947,6 @@ def _route_telegram_command(text, thread_id=None):
         "/deploy": lambda: _call("/deploy", args=rest) if rest else {"error": "image required: /deploy <image>"},
         "/evals": lambda: _call("/evals"),
         "/eval-rm": lambda: _call("/eval-rm", args=rest) if rest else {"error": "name required: /eval-rm <name>"},
-        "/new": lambda: {"text": "🆕 Started new chat — how can I help?"},
-        "/reset": lambda: {"text": "🔄 Reset done — fresh context. What would you like to do?"},
         "/recall": lambda: _route_recall(rest),
         "/goals": lambda: _route_goals(),
         "/send": lambda: _call("/send", args=rest) if rest else {"text": "❌ Usage: /send <proposal_id>"},
@@ -2986,10 +2980,6 @@ def _route_telegram_command(text, thread_id=None):
             # Topic-scoped plain text → route to that agent
             if current_agent:
                 return _agent_cmd(current_agent, text)
-            # Explicit homelab health routing (fix Calendula mis-route)
-            _low2 = text.lower()
-            if any(k in _low2 for k in ["homelab health", "homelab doing", "lab health", "lab status", "homelan"]) or ("homelab" in _low2 and any(k in _low2 for k in ["health","status","doing","how"])): 
-                return _agent_cmd("homelab", "check")
             # Fallback: sidecar agent path
             _low = text.lower()
             if "jobs pipeline" in _low or "job pipeline" in _low:
@@ -3034,7 +3024,7 @@ def _jenny_directive(text: str) -> dict:
     })
     if not res.get("ok"):
         return {"text": f"❌ Failed to task Jenny: {res.get('error', 'bus unreachable')}"}
-    return {"status": "ok"}
+    return {"text": f"📥 Tasked Jenny (Coordination):\n\"{text}\"\nTask queued."}
 
 
 def _team_status() -> dict:
@@ -3095,7 +3085,7 @@ def _delegate_to_agent(args: str) -> dict:
         })
         if not res.get("ok"):
             return {"text": f"❌ Failed to delegate: {res.get('error', 'bus unreachable')}"}
-        return {"text": f"📤 Delegated to *{agent}*:\n\"{task}\"\n(next cycle ~5 min)"}
+        return {"text": f"📤 Delegated to *{agent}*:\n\"{task}\"\ncomplete."}
     # Legacy: /delegate <task> → Claude Code
     return _claude_delegate(args, category="infra")
 
@@ -3143,19 +3133,73 @@ def _agent_cmd(agent: str, args: str) -> dict:
         elif agent == "personal":
             # Personal agents: finlay, housekeep, calendula, connector
             # Usage: /personal finlay check, /personal housekeep check, etc.
+            # Also: /personal import gmail [--dry-run] [--live] — bulk-create Finlay/Calendula from last 30d Gmail
             subparts = args.split()
             if not subparts:
-                return {"text": "Usage: /personal <finlay|housekeep|calendula|connector> <check|report|...>"}
+                return {"text": "Usage: /personal <finlay|housekeep|calendula|connector> <check|report|...>\n       /personal import gmail [--dry-run|--live] [--days 30] [--limit 100]"}
+            # Bulk import: /personal import gmail
+            if subparts[0].lower() == "import" and len(subparts) >= 2 and subparts[1].lower() in ("gmail", "gmail-dry", "gmail-live"):
+                # Supports: import gmail, import gmail --dry-run, import gmail --live, import gmail --days 30 --limit 50 --query "after:2026/08/01"
+                rest_import = " ".join(subparts[2:]) if len(subparts) > 2 else ""
+                # default dry-run for safety; --live required to write
+                import_args = []
+                if "--live" in args or " --live" in rest_import:
+                    import_args.append("--live")
+                else:
+                    import_args.append("--dry-run")
+                # propagate days/limit/query if present
+                for flag in ["--days", "--limit", "--query", "--hermes-home"]:
+                    if flag in args:
+                        # extract value after flag
+                        try:
+                            idx = args.split().index(flag)
+                            val = args.split()[idx+1] if idx+1 < len(args.split()) else ""
+                            # handle --query with spaces: take rest after flag up to next -- or end
+                            if flag == "--query":
+                                # grab quoted or remainder
+                                import re as _re
+                                m = _re.search(r"--query\s+(.+?)(?:\s+--|\s*$)", args)
+                                if m:
+                                    val = m.group(1).strip().strip('"').strip("'")
+                                    import_args += [flag, val]
+                                elif val:
+                                    import_args += [flag, val]
+                            elif val:
+                                import_args += [flag, val]
+                        except Exception:
+                            pass
+                # locate script: HERMES_HOME/scripts/personal_import_gmail.py else collab code/scripts
+                import subprocess as _sp
+                candidates = [
+                    HERMES_HOME / "scripts" / "personal_import_gmail.py",
+                    HERMES_HOME / "collaborator-memory" / "code" / "scripts" / "personal_import_gmail.py",
+                    Path.home() / ".hermes" / "scripts" / "personal_import_gmail.py",
+                    Path.home() / ".hermes" / "collaborator-memory" / "code" / "scripts" / "personal_import_gmail.py",
+                ]
+                script_path = next((p for p in candidates if p.exists()), candidates[0])
+                r = _sp.run(
+                    ["python3", str(script_path)] + import_args,
+                    capture_output=True, text=True, timeout=90,
+                    env={**os.environ, "HERMES_HOME": str(HERMES_HOME)},
+                )
+                out = (r.stdout or "").strip()
+                err = (r.stderr or "").strip()
+                # truncate to Telegram limit
+                combined = out[-3500:] if out else err[-1000:]
+                if r.returncode != 0:
+                    return {"text": f"❌ import gmail failed (rc={r.returncode}):\n{err or out}"[:4000]}
+                # summarize counts from JSON if present
+                try:
+                    import json as _json
+                    # last JSON blob in output
+                    j = _json.loads(out[out.rfind("{"):out.rfind("}")+1]) if "{" in out else None
+                    if j and "finlay_would_add" in j:
+                        mode = "dry-run" if "--dry-run" in import_args else "live"
+                        return {"text": f"📥 import gmail ({mode}) — {j.get('messages_scanned', '?')} msgs scanned, {len(j.get('candidates', []))} candidates → finlay +{j.get('finlay_would_add',0)} (before {j.get('finlay_before',0)}→{j.get('finlay_after',0)}), calendula +{j.get('calendula_would_add',0)} (before {j.get('calendula_before',0)}→{j.get('calendula_after',0)}), dups {j.get('skipped_dup',0)}\n\n{combined[:2500]}"}
+                except Exception:
+                    pass
+                return {"text": f"📥 import gmail:\n{combined[:3500]}"}
             subagent = subparts[0]
-            # Bulk import from Gmail last 30d
-            if subagent == "import" and "gmail" in " ".join(subparts[1:]):
-                import subprocess
-                r=subprocess.run(["python3", str(p.parent / "import_gmail.py"), "--dry-run"], capture_output=True, text=True, timeout=30)
-                out=(r.stdout or "").strip()
-                err=(r.stderr or "").strip()
-                if r.returncode!=0:
-                    return {"text": f"Import gmail failed: {err or out}"}
-                return {"text": f"📥 Gmail import (30d dry-run):\n{out[:3000]}"}
             subargs = " ".join(subparts[1:]) if len(subparts) > 1 else "check"
             script_map = {
                 "finlay": "finlay",
@@ -3165,7 +3209,7 @@ def _agent_cmd(agent: str, args: str) -> dict:
             }
             script_name = script_map.get(subagent)
             if not script_name:
-                return {"text": f"Unknown personal agent: {subagent}. Use: finlay, housekeep, calendula, connector"}
+                return {"text": f"Unknown personal agent: {subagent}. Use: finlay, housekeep, calendula, connector\n       or: /personal import gmail [--dry-run|--live]"}
             import subprocess
             r = subprocess.run(
                 ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), subagent] + (subargs.split() if subargs else []),

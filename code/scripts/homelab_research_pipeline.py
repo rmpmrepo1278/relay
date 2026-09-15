@@ -12,6 +12,7 @@ Scheduled via systemd timer (runs daily at 06:00).
 import json, os, subprocess, sys, time
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 HERMES_HOME = Path(os.environ.get("HERMES_HOME", str(Path.home() / ".hermes")))
 if not os.environ.get("TELEGRAM_HOME_CHANNEL"):
@@ -34,19 +35,13 @@ def _run(cmd, timeout=20):
     except Exception:
         return -1, "", "command failed"
 
-def _send_telegram(text):
-    if not TELEGRAM_CHAT:
-        return False
-    import urllib.request
-    payload = json.dumps({"chat_id": TELEGRAM_CHAT, "text": text[:4000]}).encode()
+def _send_telegram(text: str, thread_id: Optional[str] = None) -> bool:
+    """Send via centralized telegram_bridge."""
     try:
-        req = urllib.request.Request(
-            BRIDGE_URL + "/telegram-send",
-            data=payload,
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {BRIDGE_AUTH}"},
-        )
-        with urllib.request.urlopen(req, timeout=10):
-            return True
+        from telegram_bridge import send_telegram
+        effective_thread = thread_id or os.environ.get("TELEGRAM_HOME_THREAD")
+        result = send_telegram(text, thread_id=effective_thread, parse_mode="HTML")
+        return result.get("status") in ("ok", "sent")
     except Exception:
         return False
 
