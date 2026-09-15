@@ -132,3 +132,35 @@ Interests: self_hosting, ai_agents, llm_inference
   • Microsoft patches Windows and Excel – breaks audio, remote access, and paste
     https://www.theregister.com/os-platforms/2026/09/14/microsoft-patches-windows-and-excel-breaks-audio-remote-access-and-paste/5296085
     (181 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • How to Get Started with HashiCorp Nomad
+    https://oneuptime.com/blog/post/2026-01-26-hashicorp-nomad-getting-started/view
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Agent Evaluation in 2026: Complete Guide
+    https://orq.ai/blog/agent-evaluation
+🔀 **Intersection:** ai agents × monitoring
+  • 【2026年最新】生成AIおすすめ比較10選！ChatGPT、Gemini、Claude …
+    https://aismiley.co.jp/ai_news/generative-ai-compare/
+📄 **arXiv (security):**
+  • An Empirical Security Analysis of Open-Source Software Used in Onboard Satellite
+    http://arxiv.org/abs/2609.15425v1
+  • Empirical Evaluation of Task-Based Permission Scoping Architecture for AI Agents
+    http://arxiv.org/abs/2609.15422v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐224204
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26748
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22032
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Steam Frame starts at $1059
+    https://store.steampowered.com/hardware/steamframe
+    (539 points on HN)
