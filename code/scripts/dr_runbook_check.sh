@@ -20,7 +20,7 @@ chk "2-bridge-script" "test -f /home/rohit/.hermes/scripts/n8n_bridge_server.py"
 # 3. Healthchecks Host header 100.122.58.40:8004 (SITE_ROOT) in ping paths
 chk "3-hc-host-header" "grep -rq 'Host: 100.122.58.40:8004' /home/rohit/.hermes/scripts/hc_ping.sh"
 # 4. Fallback providers configured in ~/.hermes/config.yaml
-chk "4-fallback-providers" "grep -q 'magnitude' /home/rohit/.hermes/config.yaml"
+chk "4-fallback-providers" "grep -q 'fallback_providers' /home/rohit/.hermes/config.yaml && grep -qE '\- (groq|openrouter)' /home/rohit/.hermes/config.yaml"
 # 5. Collaborator memory relay present + git-clean enough to sync
 chk "5-collab-memory" "test -d /home/rohit/.hermes/collaborator-memory/.git"
 # 6. Circuit breaker script + DB usable (status exits 0)
