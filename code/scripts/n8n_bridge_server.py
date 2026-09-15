@@ -2483,7 +2483,13 @@ def _call(handler_name, **kw):
 
 def _first_word(text):
     parts = text.split()
-    return parts[0].lower() if parts else ""
+    if not parts:
+        return ""
+    w=parts[0].lower()
+    # Strip @botname suffix like /new@ChaguliBot -> /new
+    if "@" in w and w.startswith("/"):
+        w=w.split("@")[0]
+    return w
 
 def _rest(text):
     parts = text.split(maxsplit=1)
@@ -2945,6 +2951,8 @@ def _route_telegram_command(text, thread_id=None):
         "/deploy": lambda: _call("/deploy", args=rest) if rest else {"error": "image required: /deploy <image>"},
         "/evals": lambda: _call("/evals"),
         "/eval-rm": lambda: _call("/eval-rm", args=rest) if rest else {"error": "name required: /eval-rm <name>"},
+        "/new": lambda: {"text": "🆕 Started new chat — how can I help?"},
+        "/reset": lambda: {"text": "🔄 Reset done — fresh context. What would you like to do?"},
         "/recall": lambda: _route_recall(rest),
         "/goals": lambda: _route_goals(),
         "/send": lambda: _call("/send", args=rest) if rest else {"text": "❌ Usage: /send <proposal_id>"},
@@ -2978,6 +2986,10 @@ def _route_telegram_command(text, thread_id=None):
             # Topic-scoped plain text → route to that agent
             if current_agent:
                 return _agent_cmd(current_agent, text)
+            # Explicit homelab health routing (fix Calendula mis-route)
+            _low2 = text.lower()
+            if any(k in _low2 for k in ["homelab health", "homelab doing", "lab health", "lab status", "homelan"]) or ("homelab" in _low2 and any(k in _low2 for k in ["health","status","doing","how"])): 
+                return _agent_cmd("homelab", "check")
             # Fallback: sidecar agent path
             _low = text.lower()
             if "jobs pipeline" in _low or "job pipeline" in _low:
