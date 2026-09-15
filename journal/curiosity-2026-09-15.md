@@ -67,3 +67,33 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐22096
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=0eb81026099c6530024707f3088a6475
+🌱 **Adjacent to ai agents:** agent evaluation
+  • Microsoft Docs
+    https://docs.microsoft.com/api/search?search=start+%3E+settings+%3E+sy&locale=en-us
+🔀 **Intersection:** ai agents × self hosting
+📄 **arXiv (self hosting):**
+  • Understanding the oversubscription behaviour of DragonFly+ networks
+    http://arxiv.org/abs/2609.15955v1
+  • Cnuas: A Software-Defined AI/HPC Rack-scale Emulation Platform and Hyperscale Da
+    http://arxiv.org/abs/2609.15889v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐225313
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26769
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22100
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Most people prefer traditional architecture
+    https://www.worksinprogress.news/p/do-people-prefer-traditional-architecture
+    (237 points on HN)
