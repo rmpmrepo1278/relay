@@ -1,7 +1,7 @@
 {
   "agent": "hermes-mind-loop",
   "version": "1.0.0",
-  "last_seen": "2026-09-16T18:44:35.476535+00:00",
+  "last_seen": "2026-09-16T18:49:43.700312+00:00",
   "capabilities": [
     {
       "name": "health_check",
