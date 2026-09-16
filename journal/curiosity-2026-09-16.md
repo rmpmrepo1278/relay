@@ -46,3 +46,31 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐22142
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 12:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • Bing Webmaster Tools
+    https://www.bing.com/webmasters/about
+  • Collections - Bing
+    https://www.bing.com/saves/
+🌱 **Adjacent to ai agents:** multi agent systems
+  • multi- - Microsoft Style Guide | Microsoft Learn
+    https://learn.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/m/multi
+  • Microsoft products and apps support
+    https://support.microsoft.com/en-us/all-products-list
+🔀 **Intersection:** ai agents × automation
+📄 **arXiv (llm inference):**
+  • Bridging the Gap Between Homogeneous and Heterogeneous Asynchronous Optimization
+    http://arxiv.org/abs/2609.17483v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐226551
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26793
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22155
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
