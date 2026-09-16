@@ -74,3 +74,23 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐22155
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 13:30 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (automation):**
+  • Coding Agents Have Converged: Why the SWE-bench Leaderboard Can No Longer Order 
+    http://arxiv.org/abs/2609.17394v1
+  • Type-IV Code Clone Detection via Layer-Wise Non-Contrastive Representation Learn
+    http://arxiv.org/abs/2609.17338v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐226557
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26795
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • langchain-ai/openwiki ⭐16567
+    OpenWiki is a CLI that writes and maintains agent documentation for your codebas
+    https://github.com/langchain-ai/openwiki
