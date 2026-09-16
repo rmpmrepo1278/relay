@@ -48,7 +48,7 @@ PROXY_TIMEOUT = 30  # seconds for health checks
 # combo/pi-free-fallback is flaky and would false-positive the recovery path.
 PROBE_MODEL = "auto/best-chat"
 # llama.cpp local legs restarted when hop is up but generates empty content.
-LOCAL_LLM_SERVICES = ("chatllm-qwen36", "chatllm-coder30b")
+LOCAL_LLM_SERVICES = ("chatllm-coder30b",)
 
 
 def _run(args: list[str], timeout: int = 20) -> bool:
