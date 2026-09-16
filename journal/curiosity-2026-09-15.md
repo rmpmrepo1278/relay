@@ -97,3 +97,34 @@ Interests: self_hosting, ai_agents, llm_inference
   • Most people prefer traditional architecture
     https://www.worksinprogress.news/p/do-people-prefer-traditional-architecture
     (237 points on HN)
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** nomad
+  • NOMAD Definition & Meaning - Merriam-Webster
+    https://www.merriam-webster.com/dictionary/nomad
+🔀 **Intersection:** llm inference × self hosting
+  • Enough, also made by workers and peasants of freedom by its.
+    https://tante.cc/2023/09/12/on-exponential-growth-of-llms/
+  • Down 44 per cent, and the regime of workers’ control and so they …
+    https://tante.cc/2025/03/16/its-all-hallucinations/
+📄 **arXiv (llm inference):**
+  • ENCP: Episode-Normalized Conformal Prediction for Vision-and-Language Navigation
+    http://arxiv.org/abs/2609.17499v1
+  • FreqSpaNet: Frequency and Spatial Learning of SFPF for Physical Layer Hardware I
+    http://arxiv.org/abs/2609.17491v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐225528
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26774
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22109
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • The Inference Hardware Revolution of 2026
+    https://spectrum.ieee.org/inference-hardware-revolution
+    (117 points on HN)
