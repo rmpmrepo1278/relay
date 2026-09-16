@@ -13,44 +13,59 @@ pass() { log "PASS: $*"; }
 
 log "=== Backup Restore Drill Start ==="
 
-# ── 1. Test postgres backup can be restored ──────────────────────────
-LATEST_DUMP=$(ls -t /mnt/usb/backups/db-dumps/metronix-*.sql.gz 2>/dev/null | head -1)
-if [ -z "$LATEST_DUMP" ]; then
-    log "SKIP: No postgres dump found"
+# ── 1. Test latest real DB dump can be restored ──────────────────────
+# Real pipeline: disaster_recovery backup -> /mnt/usb/backups/docker-volumes/YYYY-MM-DD/*.sql.gz
+DUMP_ROOT="/mnt/usb/backups/docker-volumes"
+NEWEST_DIR=$(ls -td "$DUMP_ROOT"/*/ 2>/dev/null | head -1 || true)
+LATEST_DUMP=""
+if [ -n "$NEWEST_DIR" ]; then
+    if [ -f "$NEWEST_DIR/immich_database.sql.gz" ]; then
+        LATEST_DUMP="$NEWEST_DIR/immich_database.sql.gz"
+    else
+        LATEST_DUMP=$(ls "$NEWEST_DIR"/*.sql.gz 2>/dev/null | head -1 || true)
+    fi
+fi
+
+if [ -z "$LATEST_DUMP" ] || [ ! -f "$LATEST_DUMP" ]; then
+    log "SKIP: No db dump found under $DUMP_ROOT"
 else
-    log "Testing restore of $LATEST_DUMP"
-    
-    # Create temporary postgres container
+    log "Testing restore of $LATEST_DUMP (dir $NEWEST_DIR)"
+
+    # Create temporary postgres container (17-alpine matches immich/paperless pg)
+    if docker ps -a --format '{{.Names}}' | grep -qx restore-test-pg; then
+        docker rm -f restore-test-pg >/dev/null 2>&1
+    fi
     docker run -d --name restore-test-pg \
         -e POSTGRES_DB=restore_test \
         -e POSTGRES_USER=restore_test \
         -e POSTGRES_PASSWORD=restore_test \
         -p 15432:5432 \
-        postgres:16-alpine 2>/dev/null
-    
-    sleep 5
-    
-    # Decompress and restore
+        postgres:17-alpine >/dev/null 2>&1 || fail "Could not start restore-test-pg container"
+
+    sleep 6
+
+    # Decompress and restore (plain SQL dump piped into psql)
     gunzip -c "$LATEST_DUMP" | docker exec -i restore-test-pg \
-        psql -U restore_test -d restore_test 2>/dev/null
-    
+        psql -U restore_test -d restore_test >/dev/null 2>"$RESTORE_DIR/psql.err" || true
+
     # Verify table count
     TABLES=$(docker exec restore-test-pg \
         psql -U restore_test -d restore_test -t \
-        -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" 2>/dev/null | tr -d  )
-    
+        -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" 2>/dev/null | tr -d '[:space:]')
+
     docker rm -f restore-test-pg >/dev/null 2>&1
-    
-    if [ "$TABLES" -gt 0 ]; then
-        pass "Postgres restore: $TABLES tables found"
+
+    if [ -n "$TABLES" ] && [ "$TABLES" -gt 0 ] 2>/dev/null; then
+        pass "DB restore: $TABLES tables found from $LATEST_DUMP"
     else
-        fail "Postgres restore: no tables found"
+        log "psql stderr tail: $(tail -3 "$RESTORE_DIR/psql.err" | tr '\n' ' ')"
+        fail "DB restore: no tables found"
     fi
 fi
 
 # ── 2. Test Kopia snapshot can be browsed ────────────────────────────
 if command -v kopia >/dev/null 2>&1; then
-    SNAPSHOT_COUNT=$(kopia snapshot list --json 2>/dev/null | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
+    SNAPSHOT_COUNT=$(sudo -n kopia snapshot list --json 2>/dev/null | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
     if [ "$SNAPSHOT_COUNT" -gt 0 ]; then
         pass "Kopia: $SNAPSHOT_COUNT snapshots browsable"
     else
@@ -69,6 +84,7 @@ else
 fi
 
 # ── 4. Cleanup ──────────────────────────────────────────────────────
+docker rm -f restore-test-pg >/dev/null 2>&1 || true
 rm -rf "$RESTORE_DIR"
 log "=== Backup Restore Drill Complete ==="
 log "Results logged to $LOG"

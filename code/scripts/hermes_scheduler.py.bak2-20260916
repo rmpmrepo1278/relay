@@ -481,7 +481,7 @@ Job("weekly_audit", p(f"{h}/scripts/weekly_audit.py"),
         Job("doc_sync", p(f"{h}/scripts/claude_md_sync.py"),
             Schedule(minute="0", hour="*/6"), timeout=60,
             description="Regenerate CLAUDE.md live sections from reality", tags=["maintenance"]),
-        Job("doc_drift_check", f"python3 {h}/scripts/claude_md_sync.py && python3 {h}/scripts/doc_drift_check.py",
+        Job("doc_drift_check", f"{h}/scripts/claude_md_sync.py && {h}/scripts/doc_drift_check.py",
             Schedule(minute="0", hour="13"), timeout=60,
             description="Verify CLAUDE.md matches reality; alert on drift", tags=["maintenance"]),
 
