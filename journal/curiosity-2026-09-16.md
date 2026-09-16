@@ -94,3 +94,27 @@ Interests: self_hosting, ai_agents, llm_inference
   • langchain-ai/openwiki ⭐16567
     OpenWiki is a CLI that writes and maintains agent documentation for your codebas
     https://github.com/langchain-ai/openwiki
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** llm inference × automation
+📄 **arXiv (self hosting):**
+  • Cross-Domain Inference for Human Localization: Applying Wi-Fi RSSI Data to CSI-T
+    http://arxiv.org/abs/2609.17204v1
+  • Agentic RDZ: Autonomous Zone Management with AI Agents and an FR3 Coexistence Us
+    http://arxiv.org/abs/2609.17110v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐226582
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26797
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22164
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Reversing Factorio's RNG
+    https://gegell.github.io/posts/factorio-rng/
+    (98 points on HN)
