@@ -26,3 +26,23 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐22122
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 08:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🔀 **Intersection:** automation × ai agents
+  • What is automation? - IBM
+    https://www.ibm.com/think/topics/automation
+📄 **arXiv (ai agents):**
+  • PhysStream: Streaming Physics-Grounded Video Generation with Structured Scene Me
+    http://arxiv.org/abs/2609.17521v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐226420
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26788
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22142
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
