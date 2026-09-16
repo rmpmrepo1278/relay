@@ -44,9 +44,10 @@ CONFIG = HH / "config.yaml"
 PROXY_PORT = 8083
 PROXY_SERVICE = "tokenjuice-hop"
 PROXY_TIMEOUT = 30  # seconds for health checks
-# Model the probe exercises. Backed by the llama.cpp legs (reliable);
-# combo/pi-free-fallback is flaky and would false-positive the recovery path.
-PROBE_MODEL = "auto/best-chat"
+# Model the probe exercises. MUST be the local leg, not an auto/* alias:
+# auto/* is cloud-first now, so a cloud outage would false-positive recovery
+# and a dead local leg would be missed entirely. This explicitly hits :8089.
+PROBE_MODEL = "coder/qwen3-coder-30b-a3b"
 # llama.cpp local legs restarted when hop is up but generates empty content.
 LOCAL_LLM_SERVICES = ("chatllm-coder30b",)
 
