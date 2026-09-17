@@ -334,7 +334,7 @@ Job("homelab_reporter", p(f"{h}/scripts/homelab_reporter.py"),
 
         # ── Nightly (2-3am) ──
         Job("backup_databases", p(f"{h}/scripts/disaster_recovery.py backup"),
-            Schedule(minute="0", hour="2"), timeout=2100, description="Nightly database backup via disaster_recovery", tags=["backup"],
+            Schedule(minute="30", hour="9"), timeout=2400, description="Database backup via disaster_recovery (09:30 — outside nightly internet outage so the OneDrive push succeeds)", tags=["backup"],
             healthchecks_uuid=HC_UUID_DB_BACKUP),
         Job("backup_volumes", s(f"{h}/scripts/backup_volumes.sh"),
             Schedule(minute="15", hour="2"), timeout=3600, description="Nightly tar backup of docker volumes", tags=["backup"],

@@ -10,6 +10,7 @@ import sqlite3
 import shutil
 import os
 import subprocess
+import time
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, List
@@ -117,6 +118,11 @@ def create_backup(backup_type="full"):
     # run BEFORE recording so the status can be persisted.
     push_result = _push_to_onedrive(backup_path)
 
+    # Retention: keep the last 14 days of local full_* backups. Each night's
+    # copy also lands off-site (OneDrive) and on the USB bank, so pruning the
+    # boot-disk copy prevents unbounded growth (~150MB/day).
+    _prune_old_backups(keep_days=14)
+
     # Best-effort migration: ensure onedrive_push column exists (supports pre-existing DBs).
     _ensure_schema_columns()
 
@@ -150,6 +156,29 @@ def _ensure_schema_columns():
         pass
 
 
+def _prune_old_backups(keep_days=14):
+    """Remove local full_* backup dirs older than keep_days.
+
+    The latest backup dir is always preserved (the restore path reads the
+    most recent one), even if it is older than the window.
+    """
+    try:
+        cutoff = datetime.now() - timedelta(days=keep_days)
+        full_dirs = sorted(
+            (d for d in BACKUP_DIR.glob("full_*") if d.is_dir()),
+            key=lambda d: d.name,
+        )
+        for d in full_dirs:
+            try:
+                stamp = datetime.strptime(d.name, "full_%Y%m%d_%H%M%S")
+            except ValueError:
+                continue
+            if stamp < cutoff and d != full_dirs[-1]:
+                shutil.rmtree(str(d), ignore_errors=True)
+    except Exception:
+        pass
+
+
 def _push_to_onedrive(backup_path, remote="msonedrive:", dest="HermesBackups"):
     """Best-effort copy of a local backup folder to OneDrive (nickynrohit@live.com).
 
@@ -167,18 +196,28 @@ def _push_to_onedrive(backup_path, remote="msonedrive:", dest="HermesBackups"):
     except Exception as e:
         return {"ok": False, "error": "rclone check failed: %s" % e}
     target = f"{remote}{dest}/{Path(backup_path).name}"
-    try:
-        r = subprocess.run(
-            ["rclone", "copy", str(backup_path), target,
-             "--verbose", "--transfers", "4"],
-            capture_output=True, text=True, timeout=1800,
-        )
-        if r.returncode == 0:
-            return {"ok": True, "target": target}
-        tail = (r.stderr or r.stdout).strip().splitlines()[-1:] or ["?"]
-        return {"ok": False, "error": tail[0][:200]}
-    except Exception as e:
-        return {"ok": False, "error": "onedrive push failed: %s" % e}
+    # The nightly 02:00 window overlaps a documented internet outage; retries
+    # with a bounded per-attempt timeout let a single job ride out transient
+    # connectivity loss (rclone has its own low-level retries on top).
+    attempts = 3
+    for attempt in range(1, attempts + 1):
+        try:
+            r = subprocess.run(
+                ["rclone", "copy", str(backup_path), target,
+                 "--verbose", "--transfers", "4"],
+                capture_output=True, text=True, timeout=600,
+            )
+            if r.returncode == 0:
+                return {"ok": True, "target": target}
+            tail = (r.stderr or r.stdout).strip().splitlines()[-1:] or ["?"]
+            last_err = tail[0][:200]
+            if attempt < attempts:
+                time.sleep(10 * attempt)
+        except Exception as e:
+            last_err = f"onedrive push failed: %s" % e
+            if attempt < attempts:
+                time.sleep(10 * attempt)
+    return {"ok": False, "error": last_err}
 
 def restore_backup(backup_id=None, backup_path=None):
     """Restore from a backup."""
