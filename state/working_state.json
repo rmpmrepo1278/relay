@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "device": "home-hp",
-  "updated_at": "2026-09-16T15:30:25+00:00",
+  "updated_at": "2026-09-17T15:30:38+00:00",
   "priorities": [
     {
       "id": "it_1018070",
@@ -21,6 +21,6 @@
   ],
   "open_commitments": 0,
   "done_intents_today": 0,
-  "last_review": "2026-09-16T04:30:23+00:00",
+  "last_review": "2026-09-17T04:30:25+00:00",
   "health": "sleep=7.5 \u00b7 energy=3.0"
 }
