@@ -70,3 +70,33 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐22239
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 16:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Home Assistant: Complete Getting-Started Guide (2026)
+    https://www.promptquorum.com/smart-home/home-assistant-getting-started
+🌱 **Adjacent to ai agents:** multi agent systems
+  • Multi - Wikipedia
+    https://en.wikipedia.org/wiki/Multi
+🔀 **Intersection:** ai agents × llm inference
+📄 **arXiv (self hosting):**
+  • When Agents Look Like Beacons: NIDS Evasion by Model Context Protocol Traffic
+    http://arxiv.org/abs/2609.19091v1
+  • Taming the Agentic RAN: Stability-Guaranteed Arbitration of Autonomous AI Agents
+    http://arxiv.org/abs/2609.18857v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐227894
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26820
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22245
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Running Ubuntu on the Lenovo IdeaPad Duet
+    https://vhaudiquet.fr/blog/duet-ubuntu/
+    (61 points on HN)
