@@ -118,3 +118,37 @@ Interests: self_hosting, ai_agents, llm_inference
   • Reversing Factorio's RNG
     https://gegell.github.io/posts/factorio-rng/
     (98 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** k3s
+  • Working with Kubernetes in VS Code
+    https://code.visualstudio.com/docs/azure/kubernetes
+  • Visual Studio Code - The open source AI code editor | Your home for ...
+    https://code.visualstudio.com/
+🌱 **Adjacent to ai agents:** multi agent systems
+  • MULTI- Definition & Meaning - Merriam-Webster
+    https://www.merriam-webster.com/dictionary/multi-
+  • Multi - Wikipedia
+    https://en.m.wikipedia.org/wiki/Multi
+🔀 **Intersection:** ai agents × automation
+📄 **arXiv (ai agents):**
+  • Objective vs. Search: Decomposing What Makes a Good Tokeniser
+    http://arxiv.org/abs/2609.19145v1
+  • A Zeroth-Order Paradigm for LLM Preference Alignment
+    http://arxiv.org/abs/2609.19144v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐226823
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26803
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22179
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Reversing Factorio's RNG
+    https://gegell.github.io/posts/factorio-rng/
+    (154 points on HN)
