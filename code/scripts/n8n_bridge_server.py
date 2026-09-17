@@ -59,6 +59,24 @@ SENSITIVE_PATHS = {
 }
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT = os.environ.get("TELEGRAM_HOME_CHANNEL", "-1003976074764")
+ALLOWED_USER_IDS = set()
+for _uid in os.environ.get("TELEGRAM_ALLOWED_USERS", "").split(","):
+    _uid = _uid.strip()
+    if _uid.lstrip("-").isdigit():
+        ALLOWED_USER_IDS.add(int(_uid))
+
+def _sender_allowed(from_id) -> bool:
+    """Only the configured owner(s) may drive the bot over Telegram.
+
+    Without an allowlist the bot is public and any of our /run, /docker-exec,
+    /restart handlers are reachable by strangers — enforce the user list.
+    """
+    if not ALLOWED_USER_IDS:
+        return True  # no allowlist configured → keep old behaviour
+    try:
+        return int(from_id) in ALLOWED_USER_IDS
+    except (TypeError, ValueError):
+        return False
 
 HANDLERS = {}
 PROPOSAL_DIR = HERMES_HOME / "data" / "proposals"
@@ -77,11 +95,8 @@ def handle_ping(data):
 @handler("/system-health")
 def handle_system_health(data):
     try:
-        r = subprocess.run(
-            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "status", "hermes-gateway", "hermes-scheduler", "hermes-mind-loop"],
-            capture_output=True, text=True, timeout=10
-        )
-        lines = r.stdout.split('\n')
+        ok, so, se = _run_on_host(["systemctl", "--user", "status", "hermes-gateway", "hermes-scheduler", "hermes-mind-loop"], timeout=15)
+        lines = so.split('\n')
         services = {}
         for s in ['hermes-gateway', 'hermes-scheduler', 'hermes-mind-loop']:
             for i, line in enumerate(lines):
@@ -125,11 +140,10 @@ def handle_system_health(data):
 
         # Container stats
         try:
-            cr = subprocess.run(["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"],
-                                capture_output=True, text=True, timeout=10)
+            ok, so, se = _run_on_host(["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"], timeout=15)
             cnames = []
             unhealthy = []
-            for line in cr.stdout.strip().split("\n"):
+            for line in so.strip().split("\n"):
                 if line:
                     parts = line.split("\t", 1)
                     cnames.append(parts[0])
@@ -189,6 +203,59 @@ def mcp_call_tool(name, arguments=None, _id=1):
         raise RuntimeError(result["error"].get("message"))
     texts = [c.get("text", "") for c in result.get("result", {}).get("content", []) if c.get("type") == "text"]
     return "\n".join(texts)
+
+
+# --- hostctl client: host-side proxy for systemd/docker/df/CRG/scripts ---
+# The bridge runs inside the n8n-bridge container (no sudo, no docker socket,
+# HOME=/opt/data breaks Path.home()). hostctl runs as rohit on the host and
+# exposes the exact host-only operations we need on 127.0.0.1:9201.
+HOSTCTL_URL = os.environ.get("HOSTCTL_URL", "http://127.0.0.1:9201")
+
+def _hostctl(endpoint, payload=None, timeout=90):
+    """Call the host-side proxy. Returns (ok, stdout, stderr)."""
+    body = json.dumps(payload or {}).encode()
+    req = urllib.request.Request(
+        f"{HOSTCTL_URL}{endpoint}",
+        data=body,
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {AUTH_KEY}"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            out = json.loads(resp.read())
+        return bool(out.get("ok")), out.get("stdout", ""), out.get("stderr", "")
+    except Exception as e:
+        return False, "", f"hostctl {endpoint}: {e}"
+
+
+def _run_on_host(argv, timeout=90):
+    """Drop into hostctl so host-native commands run where the host facilities are."""
+    if not argv:
+        return False, "", "empty argv"
+    tool = argv[0]
+    if tool == "docker":
+        ok, so, se = _hostctl("/docker", {"args": argv[1:], "timeout": timeout})
+    elif tool in ("systemctl",):
+        ok, so, se = _hostctl("/systemctl", {"args": argv[1:], "timeout": timeout})
+    elif tool == "journalctl":
+        unit = ""
+        lines = 60
+        args = argv[1:]
+        for i, a in enumerate(args):
+            if a in ("-u", "--unit") and i + 1 < len(args):
+                unit = args[i + 1]
+            elif a == "-n" and i + 1 < len(args):
+                try:
+                    lines = int(args[i + 1])
+                except ValueError:
+                    pass
+        ok, so, se = _hostctl("/journalctl", {"unit": unit or "agentbus", "lines": lines})
+    elif tool == "df":
+        ok, so, se = _hostctl("/df", {"args": argv[1:] or ["-h", "/", "/home"]})
+    elif tool in ("code-review-graph", "crg"):
+        ok, so, se = _hostctl("/crg", {"args": argv[1:], "timeout": timeout})
+    else:
+        return True, "", f"tool '{tool}' not routed via hostctl"
+    return ok, so, se
 
 
 @handler("/docker-ps")
@@ -333,12 +400,9 @@ def handle_service_restart(data):
                 "error": (f"auto-heal paused until {datetime.fromtimestamp(st['paused_until']).strftime('%H:%M')} "
                           f"after {st['failures']} consecutive failures")}
     try:
-        show = subprocess.run(
-            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "show", name, "-p", "Type", "-p", "UnitFileState", "-p", "LoadState"],
-            capture_output=True, text=True, timeout=10
-        )
+        ok, so, se = _run_on_host(["systemctl", "--user", "show", name, "-p", "Type", "-p", "UnitFileState", "-p", "LoadState"], timeout=15)
         props = {}
-        for line in show.stdout.splitlines():
+        for line in so.splitlines():
             if "=" in line:
                 k, v = line.split("=", 1)
                 props[k] = v
@@ -607,6 +671,15 @@ def handle_telegram_webhook(data):
     chat = msg.get("chat", {})
     chat_id = chat.get("id", TELEGRAM_CHAT)
     thread_id = msg.get("message_thread_id")
+
+    # Ingress gate: only allowlisted users may drive the bot.
+    from_id = (msg.get("from") or {}).get("id") or chat_id
+    if not _sender_allowed(from_id):
+        # Post to sender chat only if they messaged us privately; never to the group.
+        if int(chat_id) >= 0:
+            _telegram_send_text(chat_id, "⛔ This bot is private. Your user is not allowlisted.",
+                                message_thread_id=thread_id)
+        return {"status": "ok", "blocked": True, "reason": "sender not allowlisted"}
 
     # Route command through existing router
     result = _route_telegram_command(text, thread_id=thread_id)
@@ -1469,6 +1542,13 @@ def _telegram_poller():
                         chat = msg.get("chat", {})
                         chat_id = chat.get("id")
                         thread_id = msg.get("message_thread_id") or chat.get("message_thread_id") or None
+
+                        # Ingress gate: only allowlisted users may drive the bot.
+                        from_id = (msg.get("from") or {}).get("id") or chat.get("id")
+                        if not _sender_allowed(from_id):
+                            print(f"[telegram-poller] blocked message from uid={from_id}", file=sys.stderr)
+                            state_file.write_text(json.dumps({"offset": offset}))
+                            continue
 
                         # Record active chat/thread so queued host applies reply to this topic.
                         global _tg_chat_ctx
