@@ -96,7 +96,12 @@ SCRIPT_ALLOWLIST = {
     "system_doctor.py",
     "unified_cost_guard.py",
     "unified_memory.py",
+    "memory_scanner.py",
+    "narrative_memory.py",
+    "personal_model.py",
+    "session_handoff.py",
 }
+SKILL_SCRIPT_PREFIX = "skills/"
 SCRIPT_MAX_ARGS = 20
 
 
@@ -105,10 +110,19 @@ def _safe(argv, verbs):
         return False
     if argv[0] not in verbs:
         return False
-    for a in argv[1:]:
-        if not isinstance(a, str) or len(a) > 200:
+    # docker exec ... <name> sh -c '<shell command>': the argument that follows
+    # "-c" is a free-form shell string (already token-gated at the bridge).
+    exec_cmd_index = None
+    if argv[0] == "exec" and "-c" in argv:
+        pos = argv.index("-c")
+        if pos + 1 < len(argv):
+            exec_cmd_index = pos + 1
+    for i, a in enumerate(argv[1:]):
+        if not isinstance(a, str) or len(a) > 500:
             return False
         if a.startswith("--format") or a.startswith("{{") or "\t" in a:
+            continue
+        if i + 1 == exec_cmd_index:
             continue
         if not SAFE_TOKEN.match(a):
             return False
@@ -201,9 +215,15 @@ def handle_graphify(payload):
 
 def handle_script(payload):
     name = str(payload.get("name") or "").strip()
-    if name not in SCRIPT_ALLOWLIST:
+    if name in SCRIPT_ALLOWLIST:
+        script = os.path.join(SCRIPTS_DIR, name)
+    elif name.startswith(SKILL_SCRIPT_PREFIX) and name.endswith(".py"):
+        # skills/<category>/<skill>/scripts/<file>.py — resolve under HERMES_HOME
+        script = os.path.join(HERMES_HOME, *name.split("/"))
+        if not os.path.exists(script):
+            return {"ok": False, "code": -1, "stdout": "", "stderr": f"script: {name} not found"}
+    else:
         return {"ok": False, "code": -1, "stdout": "", "stderr": f"script: '{name}' not allowed"}
-    script = os.path.join(SCRIPTS_DIR, name)
     if not os.path.exists(script):
         return {"ok": False, "code": -1, "stdout": "", "stderr": f"script: {name} not found"}
     args = payload.get("args") or []

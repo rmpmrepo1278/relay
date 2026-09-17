@@ -316,8 +316,8 @@ def handle_backup_status(data):
 @handler("/disk-usage")
 def handle_disk_usage(data):
     try:
-        r = subprocess.run(["df", "-h", "/", "/home"], capture_output=True, text=True, timeout=5)
-        lines = r.stdout.strip().split('\n')[1:]
+        ok, so, se = _run_on_host(["df", "-h", "/", "/home"], timeout=15)
+        lines = so.strip().split('\n')[1:]
         mounts = []
         for line in lines:
             parts = line.split()
@@ -333,8 +333,8 @@ def handle_docker_restart(data):
     if not name:
         return {"status": "error", "message": "container name required"}
     try:
-        r = subprocess.run(["docker", "restart", name], capture_output=True, text=True, timeout=30)
-        return ok_result(output=r.stdout.strip(), returncode=r.returncode, error=r.stderr.strip()) if r.returncode == 0 else err_result(r.stderr.strip())
+        ok, so, se = _run_on_host(["docker", "restart", name], timeout=40)
+        return ok_result(output=so.strip(), error=se.strip()) if ok else err_result(se.strip())
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -345,8 +345,8 @@ def handle_docker_logs(data):
     if not name:
         return {"status": "error", "message": "container name required"}
     try:
-        r = subprocess.run(["docker", "logs", "--tail", str(tail), name], capture_output=True, text=True, timeout=10)
-        return {"status": "ok", "logs": r.stdout[-5000:] + r.stderr[-5000:]}
+        ok, so, se = _run_on_host(["docker", "logs", "--tail", str(tail), name], timeout=20)
+        return {"status": "ok", "logs": so[-5000:] + se[-5000:]}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -357,8 +357,8 @@ def handle_docker_exec(data):
     if not name or not cmd:
         return {"status": "error", "message": "container and cmd required"}
     try:
-        r = subprocess.run(["docker", "exec", name, "sh", "-c", cmd], capture_output=True, text=True, timeout=30)
-        return ok_result(output=r.stdout[-5000:], stderr=r.stderr[-500:])
+        ok, so, se = _run_on_host(["docker", "exec", name, "sh", "-c", cmd], timeout=40)
+        return ok_result(output=so[-5000:], stderr=se[-500:])
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -420,26 +420,20 @@ def handle_service_restart(data):
                     "paused": paused_now, "consecutive_failures": st["failures"],
                     "error": f"unit {name} not found"}
         if props.get("Type") == "oneshot" or props.get("UnitFileState") == "static":
-            reset = subprocess.run(
-                ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "reset-failed", name],
-                capture_output=True, text=True, timeout=10
-            )
+            ok, so, se = _run_on_host(["systemctl", "--user", "reset-failed", name], timeout=15)
             st["failures"] = 0
             st["paused_until"] = 0
             _heal_save_state(heal)
-            return {"status": "ok", "service": name, "skipped": True, "message": f"skipped non-restartable unit (Type={props.get('Type')}, UnitFileState={props.get('UnitFileState')}); reset-failed applied", "reset_output": reset.stdout.strip()}
-        r = subprocess.run(
-            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "restart", name],
-            capture_output=True, text=True, timeout=30
-        )
-        if r.returncode == 0:
+            return {"status": "ok", "service": name, "skipped": True, "message": f"skipped non-restartable unit (Type={props.get('Type')}, UnitFileState={props.get('UnitFileState')}); reset-failed applied", "reset_output": so.strip()}
+        ok, so, se = _run_on_host(["systemctl", "--user", "restart", name], timeout=40)
+        if ok:
             st["failures"] = 0
             st["paused_until"] = 0
             st["last_error"] = ""
             _heal_save_state(heal)
-            return ok_result(service=name, output=r.stdout.strip(), stderr=r.stderr.strip(), consecutive_failures=0)
+            return ok_result(service=name, output=so.strip(), stderr=se.strip(), consecutive_failures=0)
         st["failures"] = st.get("failures", 0) + 1
-        st["last_error"] = r.stderr.strip()
+        st["last_error"] = se.strip()
         paused_now = st["failures"] >= HEAL_FAIL_THRESHOLD
         if paused_now:
             st["paused_until"] = now + HEAL_COOLDOWN
@@ -448,7 +442,7 @@ def handle_service_restart(data):
             _heal_notify_paused(name, st)
         return {"status": "attention" if paused_now else "error", "service": name,
                 "paused": paused_now, "consecutive_failures": st["failures"],
-                "output": r.stdout.strip(), "error": r.stderr.strip()}
+                "output": so.strip(), "error": se.strip()}
     except Exception as e:
         return {"status": "error", "service": name, "message": str(e)}
 
@@ -475,11 +469,8 @@ def handle_service_logs(data):
     if not name:
         return {"status": "error", "message": "service name required"}
     try:
-        r = subprocess.run(
-            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "journalctl", "--user", "-u", name, "--no-pager", "-n", str(lines)],
-            capture_output=True, text=True, timeout=10
-        )
-        return ok_result(logs=r.stdout[-5000:])
+        ok, so, se = _run_on_host(["journalctl", "--user", "-u", name, "--no-pager", "-n", str(lines)], timeout=20)
+        return ok_result(logs=so[-5000:])
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -928,17 +919,18 @@ def handle_voice_transcribe(data):
         if idx + 1 < len(parts):
             backend = parts[idx + 1]
 
-    script = f"{HERMES_HOME}/skills/voice-transcription/scripts/voice_transcribe.py"
-    cmd = [sys.executable, script, "pipeline", file_path]
+    script_name = "skills/voice-transcription/scripts/voice_transcribe.py"
+    cmd = ["pipeline", file_path]
     if backend:
         cmd += ["--backend", backend]
 
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
-        if r.returncode == 0:
+        ok, so, se = _hostctl("/script", {"name": script_name, "args": cmd, "timeout": 90})
+        r_out, r_err = (so if ok else ""), (se or so)
+        if ok:
             import json as _json
             try:
-                result = _json.loads(r.stdout.strip())
+                result = _json.loads(r_out.strip())
                 if result.get("success"):
                     text_out = result.get("text", "")
                     backend_name = result.get("backend", "unknown")
@@ -951,16 +943,14 @@ def handle_voice_transcribe(data):
                     return {"text": out}
                 return {"text": f"❌ Transcription failed: {result.get('error', 'unknown')}"}
             except _json.JSONDecodeError:
-                return {"text": r.stdout.strip()[:500]}
+                return {"text": r_out.strip()[:500]}
         try:
-            result = json.loads(r.stdout.strip() or r.stderr.strip())
+            result = json.loads(r_out.strip() or r_err.strip())
             if result.get("error") or result.get("success") == False:
                 return {"text": f"❌ voice-transcribe: {result.get('error', result.get('text','unknown'))}"}
         except (json.JSONDecodeError, TypeError):
             pass
-        return {"text": f"❌ voice-transcribe: {r.stderr.strip()[:300] or r.stdout.strip()[:300]}"}
-    except subprocess.TimeoutExpired:
-        return {"text": "⏳ voice-transcribe: timed out"}
+        return {"text": f"❌ voice-transcribe: {r_err.strip()[:300] or r_out.strip()[:300]}"}
     except Exception as e:
         return {"text": f"❌ voice-transcribe: {str(e)}"}
 
@@ -1169,14 +1159,11 @@ def handle_memory(data):
 @handler("/all-services-status")
 def handle_all_services_status(data):
     try:
-        r = subprocess.run(
-            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "list-units", "--type=service", "--no-pager", "--plain", "--no-legend"],
-            capture_output=True, text=True, timeout=10
-        )
+        ok, so, se = _run_on_host(["systemctl", "--user", "list-units", "--type=service", "--no-pager", "--plain", "--no-legend"], timeout=20)
         heal = _heal_load_state()
         now = time.time()
         services = []
-        for line in r.stdout.strip().split('\n'):
+        for line in so.strip().split('\n'):
             parts = line.split(None, 4)
             if len(parts) >= 4:
                 name = parts[0]
@@ -1194,12 +1181,9 @@ def handle_all_services_status(data):
 @handler("/docker-unhealthy")
 def handle_docker_unhealthy(data):
     try:
-        r = subprocess.run(
-            ["docker", "ps", "--filter", "health=unhealthy", "--filter", "status=exited", "--format", "{{.Names}}\t{{.Status}}\t{{.Image}}"],
-            capture_output=True, text=True, timeout=10
-        )
+        ok, so, se = _run_on_host(["docker", "ps", "--filter", "health=unhealthy", "--filter", "status=exited", "--format", "{{.Names}}\t{{.Status}}\t{{.Image}}"], timeout=20)
         containers = []
-        for line in r.stdout.strip().split('\n'):
+        for line in so.strip().split('\n'):
             if line:
                 parts = line.split('\t', 2)
                 containers.append({"name": parts[0], "status": parts[1] if len(parts)>1 else "", "image": parts[2] if len(parts)>2 else ""})
@@ -1210,12 +1194,9 @@ def handle_docker_unhealthy(data):
 @handler("/docker-images")
 def handle_docker_images(data):
     try:
-        r = subprocess.run(
-            ["docker", "images", "--format", "{{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"],
-            capture_output=True, text=True, timeout=10
-        )
+        ok, so, se = _run_on_host(["docker", "images", "--format", "{{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"], timeout=30)
         images = []
-        for line in r.stdout.strip().split('\n'):
+        for line in so.strip().split('\n'):
             if line:
                 parts = line.split('\t', 2)
                 images.append({"image": parts[0], "size": parts[1] if len(parts)>1 else "", "created": parts[2] if len(parts)>2 else ""})
@@ -1769,14 +1750,16 @@ _HH = HERMES_HOME
 
 
 def _run_script(name, *args, timeout=60, cwd=None):
+    # Route through hostctl: scripts use Path.home()/".hermes" and must run with
+    # the host HOME, not the container's HOME=/opt/data.
     try:
-        r = subprocess.run(
-            [sys.executable, str(_HH / "scripts" / name), *args],
-            capture_output=True, text=True, timeout=timeout, cwd=cwd or str(_HH),
-        )
-        return {"success": r.returncode == 0, "output": r.stdout[-3000:], "error": r.stderr[-500:], "code": r.returncode}
-    except subprocess.TimeoutExpired:
-        return {"success": False, "output": "", "error": "timed out", "code": -1}
+        ok, so, se = _hostctl("/script", {"name": name, "args": list(args), "timeout": timeout})
+        if "hostctl" in se:
+            # hostctl down → normalise to the legacy code so callers still work
+            ok = False
+        if ok:
+            return {"success": True, "output": so[-3000:], "error": "", "code": 0}
+        return {"success": False, "output": "", "error": (se or "script failed")[:500], "code": 1}
     except Exception as e:
         return {"success": False, "output": "", "error": str(e), "code": -1}
 
