@@ -2,12 +2,13 @@
 """commitment_tracker.py — Track commitments made in conversations for follow-through."""
 from __future__ import annotations
 import json
+import os
 import re
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional
 
-HERMES_HOME = Path.home() / ".hermes"
+HERMES_HOME = Path(os.environ.get("HERMES_HOME") or (Path.home() / ".hermes"))
 DATA_FILE = HERMES_HOME / "data" / "commitments.json"
 
 DATA_FILE.parent.mkdir(parents=True, exist_ok=True)

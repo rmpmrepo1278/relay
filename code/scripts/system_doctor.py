@@ -71,6 +71,9 @@ def vacuum_dbs():
     for db_path in Path.home().glob(".hermes/**/*.db"):
         if ".git" in str(db_path):
             continue
+        # Skip the nested doubled-path tree (~/.hermes/.hermes leak)
+        if "/.hermes/.hermes/" in str(db_path):
+            continue
         try:
             size_before = db_path.stat().st_size
             conn = sqlite3.connect(str(db_path))

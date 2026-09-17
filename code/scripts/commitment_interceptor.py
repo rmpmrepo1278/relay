@@ -25,11 +25,12 @@ Integration:
 
 from __future__ import annotations
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-HERMES_HOME = Path.home() / ".hermes"
+HERMES_HOME = Path(os.environ.get("HERMES_HOME") or (Path.home() / ".hermes"))
 sys.path.insert(0, str(HERMES_HOME / "scripts"))
 
 from commitment_tracker import extract_commitments, add_commitment

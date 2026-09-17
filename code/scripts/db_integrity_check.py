@@ -79,6 +79,11 @@ def main():
     for db in dbs:
         if "backups" in db.parts:
             continue
+        # Skip the nested doubled-path tree (~/.hermes/.hermes), a stale leak
+        # from the container HOME mount; rglob would otherwise recurse into it.
+        rel = db.relative_to(HERMES_HOME)
+        if rel.parts and rel.parts[0] == ".hermes":
+            continue
         r = check_db(db)
         results[str(db)] = r
         if not r["ok"]:
