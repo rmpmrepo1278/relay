@@ -2989,6 +2989,8 @@ def _route_telegram_command(text, thread_id=None):
         "/personal": lambda: _agent_cmd("personal", rest),
         "/jenny": lambda: _agent_cmd("jenny", rest),
     }
+        "/new": lambda: {"text": "🆕 Started new chat — how can I help?"},
+        "/reset": lambda: {"text": "🔄 Reset done — fresh context. What would you like to do?"},
     m.update(agent_cmds)
 
     handler_fn = m.get(cmd)
