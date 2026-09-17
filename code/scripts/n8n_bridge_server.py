@@ -235,7 +235,9 @@ def _run_on_host(argv, timeout=90):
     if tool == "docker":
         ok, so, se = _hostctl("/docker", {"args": argv[1:], "timeout": timeout})
     elif tool in ("systemctl",):
-        ok, so, se = _hostctl("/systemctl", {"args": argv[1:], "timeout": timeout})
+        # hostctl already runs under `systemctl --user`; strip our duplicate --user
+        args = [a for a in argv[1:] if a != "--user"]
+        ok, so, se = _hostctl("/systemctl", {"args": args, "timeout": timeout})
     elif tool == "journalctl":
         unit = ""
         lines = 60
