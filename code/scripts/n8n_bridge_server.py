@@ -966,17 +966,16 @@ def handle_save_session(data):
         # Build context from memory
         context = f"## Saved context for: {topic}\n## Timestamp: {datetime.utcnow().isoformat()}\n"
 
-    script = f"{HERMES_HOME}/skills/session-handoff/scripts/session_handoff.py"
+    script = "skills/session-handoff/scripts/session_handoff.py"
     try:
-        r = subprocess.run([sys.executable, script, "save", topic, "--context", context],
-                          capture_output=True, text=True, timeout=15)
-        if r.returncode == 0:
-            result = json.loads(r.stdout.strip())
+        ok, so, se = _hostctl("/script", {"name": script, "args": ["save", topic, "--context", context], "timeout": 15})
+        if ok:
+            result = json.loads(so.strip())
             if result.get("success"):
                 # Notify user
                 sid = result.get("session_id", "?")
                 return {"text": f"💾 Session saved: `{topic}` (id: {sid}) — use `/claude-resume-session {topic}` on your laptop"}
-        return {"text": f"❌ save-session: {r.stderr.strip()[:200]}"}
+        return {"text": f"❌ save-session: {se.strip()[:200] or so.strip()[:200]}"}
     except Exception as e:
         return {"text": f"❌ save-session: {str(e)}"}
 
@@ -987,20 +986,19 @@ def handle_load_session(data):
     if not topic:
         return {"text": "Usage: /claude-load-session <topic>"}
 
-    script = f"{HERMES_HOME}/skills/session-handoff/scripts/session_handoff.py"
+    script = "skills/session-handoff/scripts/session_handoff.py"
     try:
-        r = subprocess.run([sys.executable, script, "load", topic],
-                          capture_output=True, text=True, timeout=10)
-        if r.returncode == 0:
+        ok, so, se = _hostctl("/script", {"name": script, "args": ["load", topic], "timeout": 10})
+        if ok:
             try:
-                result = json.loads(r.stdout.strip())
+                result = json.loads(so.strip())
                 if result.get("success"):
                     context = result.get("context", "")
                     return {"text": f"📥 Context loaded for `{topic}`:\n```\n{context[:400]}...\n```"}
                 return {"text": f"❌ {result.get('error', 'unknown')}"}
             except json.JSONDecodeError:
-                return {"text": r.stdout.strip()[:500]}
-        return {"text": f"❌ load-session: {r.stderr.strip()[:200]}"}
+                return {"text": so.strip()[:500]}
+        return {"text": f"❌ load-session: {se.strip()[:200] or so.strip()[:200]}"}
     except Exception as e:
         return {"text": f"❌ load-session: {str(e)}"}
 
@@ -1011,21 +1009,18 @@ def handle_resume_session(data):
     if not topic:
         return {"text": "Usage: /claude-resume-session <topic>"}
 
-    script = f"{HERMES_HOME}/skills/session-handoff/scripts/session_handoff.py"
+    script = "skills/session-handoff/scripts/session_handoff.py"
     try:
-        r = subprocess.run([sys.executable, script, "resume", topic, "--task", f"Continue working on: {topic}"],
-                          capture_output=True, text=True, timeout=360)
-        if r.returncode == 0:
+        ok, so, se = _hostctl("/script", {"name": script, "args": ["resume", topic, "--task", f"Continue working on: {topic}"], "timeout": 360})
+        if ok:
             try:
-                result = json.loads(r.stdout.strip())
+                result = json.loads(so.strip())
                 if result.get("success"):
                     return {"text": result.get("text", f"✅ Resumed session for `{topic}`")[:500]}
                 return {"text": f"❌ {result.get('error', 'unknown')}"}
             except json.JSONDecodeError:
-                return {"text": r.stdout.strip()[:500]}
-        return {"text": f"❌ resume-session: {r.stderr.strip()[:200]}"}
-    except subprocess.TimeoutExpired:
-        return {"text": "⏳ resume-session: timed out"}
+                return {"text": so.strip()[:500]}
+        return {"text": f"❌ resume-session: {se.strip()[:200] or so.strip()[:200]}"}
     except Exception as e:
         return {"text": f"❌ resume-session: {str(e)}"}
 
@@ -1061,15 +1056,12 @@ def handle_habit(data):
     else:
         return {"text": f"Unknown habit subcommand. Try: checkoff, prompts, streaks, goals"}
 
-    script = f"{HERMES_HOME}/skills/habit-tracker/scripts/habit_tracker.py"
+    script_name = "skills/habit-tracker/scripts/habit_tracker.py"
     try:
-        r = subprocess.run([sys.executable, script, *cmd_args],
-                          capture_output=True, text=True, timeout=10)
-        if r.returncode == 0:
-            return {"text": r.stdout.strip()[:2000]}
-        return {"text": f"❌ habit: {r.stderr.strip()[:300]}"}
-    except subprocess.TimeoutExpired:
-        return {"text": "⏳ habit: timed out"}
+        ok, so, se = _hostctl("/script", {"name": script_name, "args": cmd_args, "timeout": 10})
+        if ok:
+            return {"text": so.strip()[:2000]}
+        return {"text": f"❌ habit: {se.strip()[:300] or so.strip()[:300]}"}
     except Exception as e:
         return {"text": f"❌ habit: {str(e)}"}
 
@@ -1083,27 +1075,25 @@ def handle_compose(data):
     if not text:
         return {"text": "Usage: /compose <goal> | /compose-dry <goal>"}
 
-    script = f"{HERMES_HOME}/skills/compose-planning/scripts/compose.py"
+    script_name = "skills/compose-planning/scripts/compose.py"
     dry = data.get("dry_run", False) or "dry" in data.get("command", "").lower()
 
     try:
-        cmd = [sys.executable, script, "plan", text]
+        args = ["plan", text]
         if dry:
-            cmd.append("--dry-run")
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            args.append("--dry-run")
+        ok, so, se = _hostctl("/script", {"name": script_name, "args": args, "timeout": 300})
 
-        if r.returncode == 0:
+        if ok:
             try:
-                result = json.loads(r.stdout.strip())
+                result = json.loads(so.strip())
                 if result.get("text"):
                     # Send to Telegram
                     _call("/telegram-send", text=result["text"][:1500], category="infra")
                     return {"text": result["text"][:800]}
             except json.JSONDecodeError:
-                return {"text": r.stdout.strip()[:500]}
-        return {"text": f"❌ compose: {r.stderr.strip()[:300]}"}
-    except subprocess.TimeoutExpired:
-        return {"text": "⏳ compose: timed out (task too complex)"}
+                return {"text": so.strip()[:500]}
+        return {"text": f"❌ compose: {se.strip()[:300] or so.strip()[:300]}"}
     except Exception as e:
         return {"text": f"❌ compose: {str(e)}"}
 
@@ -1119,17 +1109,14 @@ def handle_memory(data):
     if not args_str:
         return {"text": "📣 Usage: /memory scan | /memory notify | /memory <query>"}
 
-    scanner = f"{HERMES_HOME}/skills/memory-scanner/scripts/memory_scanner.py"
+    scanner = "skills/memory-scanner/scripts/memory_scanner.py"
 
     if "notify" in args_str:
         try:
-            r = subprocess.run([sys.executable, scanner, "notify"],
-                              capture_output=True, text=True, timeout=30)
-            if r.returncode == 0:
-                return {"text": r.stdout.strip()[:2000]}
-            return {"text": f"❌ memory: {r.stderr.strip()[:300]}"}
-        except subprocess.TimeoutExpired:
-            return {"text": "⏳ memory: timed out"}
+            ok, so, se = _hostctl("/script", {"name": scanner, "args": ["notify"], "timeout": 30})
+            if ok:
+                return {"text": so.strip()[:2000]}
+            return {"text": f"❌ memory: {se.strip()[:300] or so.strip()[:300]}"}
         except Exception as e:
             return {"text": f"❌ memory: {str(e)}"}
     elif args_str.startswith("scan"):
@@ -1140,13 +1127,10 @@ def handle_memory(data):
         elif args_str != "scan":
             cmd_args.extend(args_str.split())
         try:
-            r = subprocess.run([sys.executable, scanner, *cmd_args],
-                              capture_output=True, text=True, timeout=30)
-            if r.returncode == 0:
-                return {"text": r.stdout.strip()[:2000]}
-            return {"text": f"❌ memory: {r.stderr.strip()[:300]}"}
-        except subprocess.TimeoutExpired:
-            return {"text": "⏳ memory: timed out"}
+            ok, so, se = _hostctl("/script", {"name": scanner, "args": cmd_args, "timeout": 30})
+            if ok:
+                return {"text": so.strip()[:2000]}
+            return {"text": f"❌ memory: {se.strip()[:300] or so.strip()[:300]}"}
         except Exception as e:
             return {"text": f"❌ memory: {str(e)}"}
     else:
@@ -1576,41 +1560,16 @@ def main():
 # ── Code Review Graph endpoints ──────────────────────────────────────────
 import subprocess, json as _json
 from pathlib import Path as _Path
-_CRG = "/home/rohit/.local/bin/code-review-graph"
 _CRG_DEFAULT_REPO = "/home/rohit/.hermes"
 _CRG_REGISTRY = _Path.home() / ".code-review-graph" / "registry.json"
 
-def _crg_repo_path(repo: str) -> str:
-    """Resolve a repo alias or path to a CRG-registered repository root.
-
-    Accepts:
-      - an alias registered in registry.json (hermes-agent,
-        hermes-scripts, career-ops, collaborator-memory, home)
-      - an absolute path to any registered repo
-    Falls back to the default repo when nothing matches.
-    """
-    if not repo:
-        return _CRG_DEFAULT_REPO
-    try:
-        reg = _json.loads(_CRG_REGISTRY.read_text())
-        entries = reg.get("repos", [])
-    except Exception:
-        entries = []
-    for entry in entries:
-        if repo in (entry.get("alias"), entry.get("path")):
-            return entry["path"]
-    return repo if str(repo).startswith("/") else _CRG_DEFAULT_REPO
-
 def _crg(*args, repo: str = ""):
-    resolved = _crg_repo_path(repo)
+    resolved = repo or _CRG_DEFAULT_REPO
     try:
-        r = subprocess.run(
-            [_CRG] + list(args) + ["--repo", resolved],
-            capture_output=True, text=True, timeout=45,
-        )
-        return {"success": r.returncode == 0, "output": r.stdout, "error": r.stderr}
-    except subprocess.TimeoutExpired:
-        return {"success": False, "output": "", "error": "timed out"}
+        ok, so, se = _hostctl("/crg", {"args": list(args), "repo": resolved, "timeout": 60})
+        return {"success": ok, "output": so, "error": se}
+    except Exception as e:
+        return {"success": False, "output": "", "error": str(e)}
 
 def _clean_lines(out: str) -> str:
     return "\n".join(
@@ -1689,20 +1648,16 @@ def _cg_repos(data):
         return {"error": f"could not read registry: {e}"}
 
 
-_GRAPHIFY = "/home/rohit/.local/bin/graphify"
-
 @handler("/graphify")
 def _gf(data):
     cmd = (data.get("cmd") or "").strip()
     if not cmd:
         return {"text": "Usage: /graphify <command> [args]\nCommands: path, explain, diagnose"}
     try:
-        r = subprocess.run([_GRAPHIFY] + cmd.split(), capture_output=True, text=True, timeout=15)
-        if r.returncode == 0:
-            return {"text": r.stdout[:3000]}
-        return {"text": "\u274c " + r.stderr[:500]}
-    except subprocess.TimeoutExpired:
-        return {"text": "\u23f3 graphify timed out"}
+        ok, so, se = _hostctl("/graphify", {"cmd": cmd, "timeout": 15})
+        if ok:
+            return {"text": so[:3000]}
+        return {"text": "\u274c " + se[:500]}
     except Exception as e:
         return {"text": "\u26a0 graphify error: " + str(e)}
 
@@ -1715,12 +1670,10 @@ def _gf_path(data):
     if len(parts) < 2:
         return {"text": "Need two node names: /graphify-path <node-a> <node-b>"}
     try:
-        r = subprocess.run([_GRAPHIFY, "path", parts[0], parts[1]], capture_output=True, text=True, timeout=15)
-        if r.returncode == 0:
-            return {"text": r.stdout[:3000]}
-        return {"text": "\u274c " + r.stderr[:500]}
-    except subprocess.TimeoutExpired:
-        return {"text": "\u23f3 timed out"}
+        ok, so, se = _hostctl("/graphify", {"cmd": f"path {parts[0]} {parts[1]}", "timeout": 15})
+        if ok:
+            return {"text": so[:3000]}
+        return {"text": "\u274c " + se[:500]}
     except Exception as e:
         return {"text": "\u26a0 error: " + str(e)}
 
@@ -1730,12 +1683,10 @@ def _gf_explain(data):
     if not target:
         return {"text": "Usage: /graphify-explain <node-name>"}
     try:
-        r = subprocess.run([_GRAPHIFY, "explain", target], capture_output=True, text=True, timeout=15)
-        if r.returncode == 0:
-            return {"text": r.stdout[:3000]}
-        return {"text": "\u274c " + r.stderr[:500]}
-    except subprocess.TimeoutExpired:
-        return {"text": "\u23f3 timed out"}
+        ok, so, se = _hostctl("/graphify", {"cmd": f"explain {target}", "timeout": 15})
+        if ok:
+            return {"text": so[:3000]}
+        return {"text": "\u274c " + se[:500]}
     except Exception as e:
         return {"text": "\u26a0 error: " + str(e)}
 # ── Subsystem handlers: ledger, commitments, queue, digest, doctor, ─────────
@@ -3320,7 +3271,6 @@ def _route_recall(query: str) -> dict:
     if not query:
         return {"error": "usage: /recall <search term>"}
     try:
-        HERMES_HOME = HERMES_HOME
         sys.path.insert(0, str(HERMES_HOME / "scripts"))
         import narrative_memory as _nm
         results = _nm.retrieve_similar(query, k=5)
@@ -3338,7 +3288,6 @@ def _route_recall(query: str) -> dict:
 def _route_goals():
     """Show active life goals from personal_model."""
     try:
-        HERMES_HOME = HERMES_HOME
         sys.path.insert(0, str(HERMES_HOME / "scripts"))
         import personal_model as _pm
         pm = _pm._load_state()
@@ -3371,18 +3320,8 @@ def handle_memory_write(data):
     if isinstance(tags, str):
         tags = [tags]
     args = ["store", namespace, key, text, "--domain", domain, "--tags", *tags]
-    try:
-        pr = subprocess.run(
-            ["sudo", "-n", "env", "HOME=/home/rohit", sys.executable,
-             str(_HH / "scripts" / "unified_memory.py"), *args],
-            capture_output=True, text=True, timeout=30, cwd="/home/rohit",
-        )
-        r = {"success": pr.returncode == 0, "output": pr.stdout[-3000:],
-             "error": pr.stderr[-500:], "code": pr.returncode}
-    except subprocess.TimeoutExpired:
-        r = {"success": False, "output": "", "error": "timed out", "code": -1}
-    except Exception as e:
-        r = {"success": False, "output": "", "error": str(e), "code": -1}
+    ok, so, se = _hostctl("/script", {"name": "unified_memory.py", "args": args, "timeout": 30})
+    r = {"success": ok, "output": so[-3000:], "error": se[-500:], "code": 0 if ok else 1}
     if r["success"]:
         return {"stored": True, "id": f"{namespace}/{key}", "domain": domain}
     return {"stored": False, "error": r["error"] or r["output"]}

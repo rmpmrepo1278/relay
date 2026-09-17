@@ -26,7 +26,7 @@ from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-HERMES_HOME = Path.home() / ".hermes"
+HERMES_HOME = Path(os.environ.get("HERMES_HOME") or (Path.home() / ".hermes"))
 DATA_DIR = HERMES_HOME / "data"
 STATE_DIR = HERMES_HOME / "state"
 LOG_DIR = HERMES_HOME / "logs"

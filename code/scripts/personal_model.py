@@ -13,12 +13,13 @@ Persists to .hermes/state/personal_model.json (overlays the existing schema).
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-HERMES_HOME = Path.home() / ".hermes"
+HERMES_HOME = Path(os.environ.get("HERMES_HOME") or (Path.home() / ".hermes"))
 STATE_DIR = HERMES_HOME / "state"
 STATE_FILE = STATE_DIR / "personal_model.json"
 LOG_DIR = HERMES_HOME / "logs"
