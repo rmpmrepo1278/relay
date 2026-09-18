@@ -1320,6 +1320,14 @@ def run_cycle():
         with tracer.span("plan", parent=cycle_span) as plan_span:
             plans = create_plan(insights, anticipations, state=state)
             plans = mind_loop_integration.plan_intelligence(insights, anticipations, plans)
+            # LLM-governed selection over the deterministic candidates. On any
+            # offline/malformed reply this is a no-op (deterministic plans kept).
+            try:
+                if _NEW_MODULES:
+                    from mind_loop_integration import llm_plan_overlay
+                    plans = llm_plan_overlay(plans, insights, anticipations)
+            except Exception as e:
+                log(f"llm_plan_overlay error (kept deterministic plans): {e}", level="WARN")
             plan_span.set_attribute("plan_count", len(plans))
 
         # 5. ACT  — execute plans via multi-agent sub-specialists

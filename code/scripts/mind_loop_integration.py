@@ -7,9 +7,138 @@ and memory synthesis capabilities.
 """
 
 import json
+import os
 import sys
+import urllib.request
 from pathlib import Path
 from datetime import datetime
+
+
+def _hop_ask(prompt: str, max_tokens: int = 500, _timeout: int = 90):
+    """Local LLM via the hop gateway (haiku-4.5 via OmniRoute/llama.cpp legs).
+    Mirror of agent_loop.py / homelab_agent_autonomous.py. Returns text or None."""
+    url = os.environ.get("HOP_URL", "http://127.0.0.1:8083/v1/chat/completions")
+    model = os.environ.get("HOP_MODEL", "haiku-4.5")
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": max_tokens,
+        "temperature": 0.2,
+        "chat_template_kwargs": {"enable_thinking": False},
+    }
+    try:
+        req = urllib.request.Request(
+            url, data=json.dumps(payload).encode(),
+            headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=_timeout) as r:
+            data = json.load(r)
+        return data["choices"][0]["message"].get("content") or None
+    except Exception:
+        return None
+
+
+def llm_plan_overlay(plans: list, insights: list, anticipations: list) -> list:
+    """LLM-governed selection over the deterministic candidate plans.
+
+    The candidate plans are produced by keyword/priority rules (create_plan).
+    This overlay asks the local LLM which candidates to actually run this cycle
+    and which to defer, so the meta-planner is non-deterministic and governed by
+    model judgment — while the guardrails that PREVENT disasters stay in force
+    downstream (fail-closed action gate + read-only run_command allowlist +
+    confidence gating + CRG blast-radius downgrade in the ACT phase).
+
+    Bounds (minimal, disaster-only):
+      - The LLM may only keep/drop/re-prioritize existing candidates, and may
+        propose at most ONE new candidate of type add_task or send_telegram.
+      - It can never invent run_command/execute content here — arbitrary commands
+        are rejected by the ACT gate regardless of this overlay.
+      - Any malformed/offline reply degrades to the deterministic plan untouched.
+    """
+    if not plans:
+        return plans
+    digest = []
+    for i, p in enumerate(plans):
+        a = p.get("action", "generic")
+        c = str(p.get("content", ""))[:120]
+        cmd = str(p.get("command", ""))[:120]
+        prio = p.get("priority")
+        digest.append(f"{i}: action={a} priority={prio} content={c!r}" + (f" command={cmd!r}" if cmd else ""))
+    ins_txt = "\n".join(f"- {i.get('content')!r}" for i in insights[:6]) or "- (none)"
+    ant_txt = "\n".join(f"- {a.get('content')!r}" for a in anticipations[:4]) or "- (none)"
+
+    prompt = (
+        "You are the meta-planner deciding WHAT the agent fleet actually does this cycle.\n\n"
+        f"Recent insights:\n{ins_txt}\n\n"
+        f"Honest forecast cues:\n{ant_txt}\n\n"
+        "Deterministic candidate plans (index: action priority content):\n"
+        + "\n".join(digest) + "\n\n"
+        "Decide which to run now. Return ONLY JSON:\n"
+        '{"keep": [indices to RUN this cycle], "defer": [indices to postpone], '
+        '"note": "one sentence".}\n'
+        "Rules: keep+defer must not overlap and should cover all indices. If nothing "
+        "is worth running this cycle, keep may be empty. You may add a single extra "
+        '{"propose": {"action": "add_task|send_telegram", "content": "..."}} — never set '
+        "commands, never use run_command. No markdown, no prose."
+    )
+    text = _hop_ask(prompt, max_tokens=500)
+    if not text:
+        return plans
+    try:
+        cleaned = text.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        data = json.loads(cleaned)
+    except Exception:
+        return plans
+
+    keep_raw, defer_raw = data.get("keep", []), data.get("defer", [])
+    try:
+        keep = {int(i) for i in keep_raw if str(i).lstrip("-").isdigit()}
+        defer = {int(i) for i in defer_raw if str(i).lstrip("-").isdigit()}
+    except Exception:
+        return plans
+    valid = set(range(len(plans)))
+    keep &= valid
+    defer &= valid
+
+    # Empty decision is legitimate (LLM judges nothing worth running) → defer all.
+    if not keep:
+        deferred = [dict(p, **{"priority": "low", "_deferred_by_llm": True}) for p in plans]
+        _log_overlay(f"LLM overlay: nothing runnable this cycle ({len(plans)} deferred)")
+        return deferred
+
+    selected = []
+    for i in sorted(keep):
+        p = plans[i]
+        p = dict(p)
+        p.setdefault("_llm_overlay", True)
+        selected.append(p)
+
+    # One bounded proposal, only from the harmless action family.
+    propose = data.get("propose")
+    if isinstance(propose, dict):
+        action = str(propose.get("action", "")).strip()
+        content = str(propose.get("content", "")).strip(" \n\"'")
+        if action in ("add_task", "send_telegram") and content and len(content) <= 240:
+            selected.append({
+                "action": action,
+                "content": content,
+                "priority": "medium",
+                "_llm_proposed": True,
+            })
+
+    _log_overlay(f"LLM overlay: kept {len(keep)}/{len(plans)} deferred {len(defer)}"
+                 + (f" proposed +1 ({propose.get('action')})" if propose and isinstance(propose, dict) else ""))
+    return selected
+
+
+def _log_overlay(msg: str):
+    try:
+        ts = datetime.utcnow().isoformat(timespec="seconds")
+        with open(Path.home() / ".hermes" / "logs" / "mind_loop.log", "a") as f:
+            f.write(f"[{ts}] INFO mind_loop: {msg}\n")
+    except Exception:
+        pass
 
 
 
