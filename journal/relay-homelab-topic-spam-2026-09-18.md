@@ -52,8 +52,11 @@ genuine ones and noise and reduce the spam."
    `dispatch_plan → agent_orchestrator.dispatch → homelab_agent(task)` →
    `homelab_agent.py:602` ran `verify_backups()` unconditionally on backup-keyword
    tasks. So a full kopia `repository verify` (as non-root, failing silently)
-   ran every 5 minutes, around the clock. Fixed: `verify_backups()` self-throttles
-   to once per 6h (`_VERIFY_LOCK`) and runs `sudo -n kopia repository verify`.
+   ran every ~2-5 minutes, around the clock. Fixed: `verify_backups()` is
+   **file-persisted self-throttled to once per 6h** (`state/homelab_verify_lock.json`),
+   because a module-level dict resets per process and several callers exist
+   (mind_loop 5-min, homelab daemon 15-min LLM path, bridge replies). All now
+   share the 6h window. Runs via `sudo -n kopia repository verify`.
 
 ## Verified
 
