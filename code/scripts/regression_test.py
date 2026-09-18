@@ -4,6 +4,9 @@ import json
 import os
 import sys
 import glob
+import time
+import urllib.request
+import urllib.error
 from pathlib import Path
 
 _BRIDGE = os.environ.get("TELEGRAM_BRIDGE_URL", "http://127.0.0.1:9199")
@@ -22,6 +25,21 @@ def _bridge_key() -> str:
 
 
 _AUTH = "Bearer " + _bridge_key()
+
+
+def _env_file(name):
+    """Mirror the bridge's env resolution: os.environ first, then ~/.hermes/.env."""
+    v = os.environ.get(name)
+    if v:
+        return v
+    try:
+        for line in Path("/home/rohit/.hermes/.env").read_text().splitlines():
+            key, _, val = line.partition("=")
+            if key == name and val:
+                return val
+    except Exception:
+        pass
+    return None
 
 
 def _post(ep, d, t=15):
@@ -85,13 +103,59 @@ def test_bridge_ping():
 def test_telegram_send():
     ok, detail = _send_tg("regression test")
     if isinstance(detail, dict) and detail.get("status") == "ok":
-        # Throttled or direct-sent: bridge accepted the message (reachability + auth OK).
-        # Throttled sends return {"status":"ok","throttled":true} with no response payload;
-        # actual delivery to Telegram was verified separately. Treat as PASS.
-        return 0, f"accepted (throttled={detail.get('throttled', False)} cat={detail.get('category', '?')})"
+        # Bridge accepted the message. A throttled/deduped send never touches
+        # api.telegram.org, so this proves bridge reachability + auth ONLY.
+        # Real delivery is asserted by tg-egress below.
+        return 0, f"bridge accepted (throttled={detail.get('throttled', False)} cat={detail.get('category', '?')})"
     if ok:
-        return 0, f"msg_id={detail}"
+        return 0, f"bridge sent msg_id={detail}"
     return 1, str(detail)[:80]
+
+
+def test_telegram_egress():
+    """REAL Telegram egress: sendMessage straight to api.telegram.org with the
+    same token the bridge loads, require ok:true + message_id (delivered), then
+    deleteMessage to self-clean. This is the check tg-send's throttle-acceptance
+    could never catch — Round-9: TELEGRAM_BOT_TOKEN never loaded in the bridge,
+    so every send was a silent botNone/getUpdates-style 404 while the bridge
+    poller looked healthy. A plain bridge OK must no longer count as delivery."""
+    token = _env_file("TELEGRAM_BOT_TOKEN")
+    if not token:
+        return 1, "TELEGRAM_BOT_TOKEN missing from .env -> egress impossible (Round-9 failure mode)"
+    chat = _env_file("TELEGRAM_HOME_CHANNEL") or _DEFAULT_CHAT
+    thread = _env_file("TELEGRAM_HOME_CHANNEL_THREAD_ID")
+    payload = {"chat_id": chat, "message_thread_id": int(thread),
+               "text": f"regression egress probe {time.strftime('%m%d%H%M%S')} (auto-deleted)"}
+    try:
+        req = urllib.request.Request(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            data=json.dumps(payload).encode(),
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=20) as r:
+            resp = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        try:
+            body = json.loads(e.read().decode() or "{}")
+            desc = body.get("description", e)
+        except Exception:
+            desc = e
+        return 1, f"egress FAIL (HTTP {e.code}): {desc}"
+    except Exception as e:
+        return 1, f"egress FAIL (send): {str(e)[:140]}"
+    if not resp.get("ok"):
+        return 1, f"egress FAIL: {resp.get('description', '?')[:140]}"
+    mid = resp.get("result", {}).get("message_id")
+    try:
+        req = urllib.request.Request(
+            f"https://api.telegram.org/bot{token}/deleteMessage",
+            data=json.dumps({"chat_id": chat, "message_id": mid}).encode(),
+            headers={"Content-Type": "application/json"},
+        )
+        urllib.request.urlopen(req, timeout=20)
+    except Exception:
+        pass
+    return 0, f"egress OK: delivered to chat {chat} (thread {thread}), msg_id={mid}, deleted"
 
 
 def test_docker_ps():
@@ -188,14 +252,48 @@ def test_gdrive_owned():
 
 
 
+def test_homelab_backups():
+    """Real kopia probe via homelab_agent.check_backups() (sudo -n kopia:
+    repo lives under root's config). Guards the Round-10 fixes: stream JSON
+    parse (was reading 1 snapshot / oldest) + sudo path (was "not_configured"
+    false alarm). Sleeps through the 6h verify throttle — this only reads."""
+    import subprocess
+    scripts = str(Path(__file__).resolve().parent)
+    code = (
+        "import sys, json; sys.path.insert(0, sys.argv[1]); import homelab_agent as h; "
+        "print(json.dumps(h.check_backups()))"
+    )
+    try:
+        r = subprocess.run(
+            [sys.executable, "-c", code, scripts],
+            capture_output=True, text=True, timeout=90,
+        )
+    except Exception as e:
+        return 1, str(e)[:120]
+    if r.returncode != 0:
+        return 1, (r.stderr or r.stdout)[:140]
+    try:
+        b = json.loads(r.stdout.strip())
+    except Exception:
+        return 1, f"bad check_backups output: {r.stdout[:140]}"
+    st = b.get("status")
+    if st != "healthy":
+        return 1, f"backups {st}: {json.dumps(b)[:160]}"
+    if b.get("total_snapshots", 0) < 1:
+        return 1, "backups healthy but 0 snapshots parsed (stream parse regression?)"
+    return 0, f"kopia OK: {b.get('total_snapshots')} snaps, newest age {b.get('age_hours')}h"
+
+
 ALL_TESTS = [
     ("bridge-ping", test_bridge_ping),
     ("tg-send", test_telegram_send),
+    ("tg-egress", test_telegram_egress),
     ("docker-ps", test_docker_ps),
     ("autoheal", test_autoheal),
     ("inventory", test_inventory),
     ("ask-func", test_ask),
     ("gdrive-owned", test_gdrive_owned),
+    ("homelab-backups", test_homelab_backups),
 ]
 
 
