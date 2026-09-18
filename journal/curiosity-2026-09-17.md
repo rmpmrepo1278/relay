@@ -100,3 +100,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • Running Ubuntu on the Lenovo IdeaPad Duet
     https://vhaudiquet.fr/blog/duet-ubuntu/
     (61 points on HN)
+
+## Curiosity — 20:15 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to self hosting:** home assistant advanced
+  • Homes.com: Homes for Sale, Homes for Rent, Real Estate
+    https://www.homes.com/?msockid=2004266266f5602a2ff831ba67136159
+  • Zillow: Real Estate, Apartments, Mortgages & Home Values
+    https://www.zillow.com/?msockid=2004266266f5602a2ff831ba67136159
+🔀 **Intersection:** self hosting × automation
+  • Self - Wikipedia
+    https://en.wikipedia.org/wiki/Self
+📄 **arXiv (ai agents):**
+  • Coding Agents with an Obstacle-Aware Harness for Safe Robot Manipulation
+    http://arxiv.org/abs/2609.20822v1
+  • Workspace Models: Lightweight Robotic Memory via Saliency-Driven Supervision
+    http://arxiv.org/abs/2609.20820v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐228133
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26825
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22257
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
