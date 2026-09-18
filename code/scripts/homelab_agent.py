@@ -551,23 +551,39 @@ def pull_docker_images() -> Dict:
 
 
 # Full kopia repository verify is heavy: never run it more than once per
-# interval regardless of caller (mind_loop dispatches a homelab check task every
-# 5 min — previously this re-ran a full verify each time, around the clock).
-_VERIFY_LOCK = {"last": 0.0}
+# interval REGARDLESS of caller process (mind_loop, the autonomous daemon, and
+# the bridge all import this module — a per-process dict resets every spawn).
+# The lock is therefore file-persisted. mind_loop dispatches a homelab check
+# task every 5 min; previously this re-ran a full verify each time.
 _VERIFY_MIN_INTERVAL = 6 * 3600  # 6h
+_VERIFY_LOCK_FILE = LOG_DIR.parent / "state" / "homelab_verify_lock.json"
+
+
+def _verify_read_lock() -> float:
+    try:
+        return float(json.loads(_VERIFY_LOCK_FILE.read_text()).get("last", 0.0))
+    except Exception:
+        return 0.0
+
+
+def _verify_write_lock(now: float):
+    try:
+        _VERIFY_LOCK_FILE.write_text(json.dumps({"last": now}))
+    except Exception:
+        pass
 
 
 def verify_backups() -> Dict:
-    """Verify Kopia repository integrity. Self-throttled to once per 6h and
-    run via sudo (the repo is under root's config)."""
+    """Verify Kopia repository integrity. Self-throttled to once per 6h (shared
+    across processes via a file lock) and run via sudo (repo is root's)."""
     import time as _t
     now = _t.time()
-    if now - _VERIFY_LOCK["last"] < _VERIFY_MIN_INTERVAL:
+    last = _verify_read_lock()
+    if now - last < _VERIFY_MIN_INTERVAL:
         return {"status": "skipped_throttled",
-                "note": "kopia verify ran recently; next full verify within 6h",
-                "last_ran": _VERIFY_LOCK["last"]}
+                "note": f"kopia verify ran recently ({last}); next full verify within 6h"}
     _log("Verifying Kopia backups")
-    _VERIFY_LOCK["last"] = now
+    _verify_write_lock(now)
     r = _run_cmd("sudo -n kopia repository verify 2>/dev/null || echo 'verify failed'", timeout=600)
     return {"status": "ok" if "ERROR" not in r["stdout"] else "error", "output": r["stdout"][-500:]}
 

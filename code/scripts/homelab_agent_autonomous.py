@@ -639,7 +639,17 @@ class HomelabAgent(AutonomousAgent):
         return {"error": f"Unknown domain: {domain}"}
 
     def _verify_backups(self) -> dict:
-        result = subprocess.run("sudo -n kopia repository verify 2>/dev/null || echo 'verify failed'", shell=True, capture_output=True, text=True, timeout=300)
+        # Share the same 6h file lock as homelab_agent.verify_backups() so the
+        # LLM-picked verify and the 5-min mind_loop dispatch cannot stack.
+        lock_file = STATE_DIR / "homelab_verify_lock.json"
+        try:
+            last = float(json.loads(lock_file.read_text()).get("last", 0.0))
+        except Exception:
+            last = 0.0
+        if time.time() - last < 6 * 3600:
+            return {"status": "skipped_throttled", "locked": True}
+        lock_file.write_text(json.dumps({"last": time.time()}))
+        result = subprocess.run("sudo -n kopia repository verify 2>/dev/null || echo 'verify failed'", shell=True, capture_output=True, text=True, timeout=600)
         return {"ok": "ERROR" not in result.stdout}
 
     def _clean_disk(self) -> dict:
