@@ -86,3 +86,26 @@ Interests: self_hosting, ai_agents, llm_inference
   • How to Write with an LLM
     https://sockpuppet.org/blog/2026/09/17/how-to-write-with-an-llm/
     (303 points on HN)
+
+## Curiosity — 16:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** constitutional ai
+  • CONSTITUTIONAL | English meaning - Cambridge Dictionary
+    https://dictionary.cambridge.org/dictionary/english/constitutional
+🔀 **Intersection:** automation × self hosting
+📄 **arXiv (self hosting):**
+  • RUN-O-RAN: An O-RAN-Native Architecture Enabling Cooperative Uplink Localization
+    http://arxiv.org/abs/2609.20640v1
+  • NS3Learn: Transferring 5G NR Mode-2 Reception Realism from ns-3 to the Veins/SUM
+    http://arxiv.org/abs/2609.20578v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐229103
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26860
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22315
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
