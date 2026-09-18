@@ -84,12 +84,12 @@ def main():
     os.makedirs(WORK, exist_ok=True)
     cache = {}
     if os.path.exists(CACHE):
-        cache = json.load(open(CACHE))
+        cache = {str(k): v for k, v in json.load(open(CACHE)).items()}
     pages = split_pages(open(SRC, encoding="utf-8", errors="replace").read())
     idxs = [i for i in range(len(pages)) if len(clean(pages[i])) >= 8]
     if ONLY:
         idxs = [i for i in idxs if i in ONLY]
-    todo = [i for i in idxs if i not in cache or not cache[i].get("ok")]
+    todo = [i for i in idxs if str(i) not in cache or not cache[str(i)].get("ok")]
     print(f"pages total={len(pages)} target={len(idxs)} done={len(cache)} todo={len(todo)}", flush=True)
 
     lock = threading.Lock()
