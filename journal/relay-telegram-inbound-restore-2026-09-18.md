@@ -42,15 +42,58 @@ Two stacked failures in the bridge path:
 ## Verified
 - `py_compile` clean; module import test: router sig `(text, thread_id=None)`,
   `_jenny_directive`/`_agent_cmd`/`_bus_req` present.
-- Container logs: "n8n bridge on 127.0.0.1:9199" + "Telegram long-polling receiver started".
-- **0 poller errors in 90s.**
-- Regression **7/7 PASS** (bridge-ping, tg-send, docker-ps 27, autoheal, inventory 48,
-  ask-func, gdrive-owned).
+- Regression **7/7 PASS** (post-fix end-state; tg-send is throttle-accept PASS —
+  real egress proven by the live replies below, not the regression).
 - agentbus reachable from container (network_mode: host): `BUS OK`,
   presence all 10 agents incl. jenny.
-- Live long-poll: `ESTAB 192.168.29.10:55338 → 149.154.166.110:443` (1577B buffered).
-- Poller resumes from `telegram_offset.json` (814285830) — already-consumed "hi"
-  messages won't replay; a new message is needed for the end-to-end proof.
+
+## Follow-up correction — the REAL root cause (same day)
+The fix above restored the routing code, but inbound was STILL dead and offset
+still frozen at 814285830. Probe `getUpdates?offset=0` showed the user's messages
+(814285831–838, incl. "hi"×3, "Hello??!!", "When is the travel certificate
+expiring?", topic 10000) **retained and unconfirmed** — Telegram was never
+delivering them because the running bridge never actually polled with a token:
+
+- **The `n8n-bridge` container runs with `HOME=/opt/data`** (docker-compose
+  sets it explicitly; `working_dir: /opt/data`, mount `~/.hermes:/opt/data`).
+- The bridge script resolves everything as `Path.home()/.hermes/...` →
+  `/opt/data/.hermes/...`, which does NOT exist (would need the host's
+  `~/.hermes/.hermes`). `_ENV_PATH` is therefore missing → `TELEGRAM_TOKEN=None`.
+- `_telegram_get_updates()` swallows exceptions (`except Exception: return None`)
+  → every poll was a `botNone/getUpdates` 404 → silent `None` → `sleep(1)` loop.
+  **Zero error logs.** The earlier "0 errors in 90s" + "ESTAB → 149.154.166.110"
+  observations were this failed request / buffered 404 response, not a healthy poll.
+- The `tg-send: PASS` regression line is throttle-**acceptance**, not delivery —
+  it never exercised real egress, which is why the outage was invisible for days.
+- All `Path.home()/.hermes` paths in the script (env, offset, throttle, topics,
+  scripts, state) were equally broken in-container: the container bridge has
+  likely NEVER sent a real Telegram message.
+
+## Real fix
+`docker-compose.yml` `n8n-bridge` service:
+- `HOME: /opt/data` → `HOME: /home/rohit`
+- added mount `- /home/rohit/.hermes:/home/rohit/.hermes`
+Backup: `docker-compose.yml.bak-20260918-115709`. Recreated with
+`docker compose up -d --no-deps n8n-bridge` (container 722d69f47012).
+
+## Proof (end-to-end, live)
+- Offset file advanced `814285830 → 814285838` on first poll after recreate; all 8
+  queued messages consumed and routed:
+  - `Hi` (831) → `jenny-1789757959-c1a529` **done, replied**
+  - `When is the travel certificate expiring?` (832) → `jenny-1789757960-d64e33`
+    **done, replied**
+  - `Hello??!!` (833) / `hi` (834, 838) → jenny tasks; 833 **done, replied**,
+    834 **done, delegated_to:finlay**, 838 ready → picked up next cycle
+  - `Hi` (835, topic 10026 homelab) → homelab agent; `Hola` (836, no topic) →
+    magnitude reply; `/new@ChaguliBot` (837) → "Unknown command"
+- Poller and sender share `TELEGRAM_TOKEN`; poller pulling updates proves the
+  token loads — jenny's `proof=replied` marks reflect real /sendMessage egress.
+
+## Notes
+- Gateway/dashboard containers have the same `HOME=/opt/data` pattern: their
+  Telegram platform (if ever enabled) would silently 404 the same way. Out of
+  scope here; noted for a future round.
+- Remediation is compose-schema (rebuild-safe); no host-file pollution.
 
 ## Notes
 - `n8n-bridge` container is the canonical live bridge (Round-5 finding). Host-side
