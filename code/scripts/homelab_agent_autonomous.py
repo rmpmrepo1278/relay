@@ -503,7 +503,11 @@ class HomelabAgent(AutonomousAgent):
     def _notify_policy(self, plan: dict, signals: dict) -> tuple:
         """Transition + silence-window alerting. Rejects empty prose (the old
         'infra update' fallback) and repeats of the same (domain,status)
-        within NOTIFY_MIN_INTERVAL."""
+        within NOTIFY_MIN_INTERVAL. Empty content is rejected here too — the
+        act() path already strips it, this is defense-in-depth for any caller."""
+        content = str(plan.get("content") or plan.get("text") or "").strip()
+        if not content:
+            return False, "empty content (no prose to send)"
         sig = self._notify_sig(plan, signals)
         if sig == "general|":
             return False, "no abnormal signal to report (or multiple unanchored)"
