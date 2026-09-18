@@ -28,6 +28,39 @@ TEAM = ["jenny", "homelab", "baseplate", "vault", "courier", "inference",
         "finlay", "housekeep", "calendula", "connector"]
 
 
+# ── Fail-closed guardrail defaults (see guardrails.py) ──────────────────────
+# An optional ~/.hermes/agents/guardrails.yaml [jenny_llm] section can add
+# extra tools/intents (extra_tools / extra_intents) or raise the caps below.
+ALLOWED_TOOLS = {"send_telegram", "create_bus_task", "run_command"}
+ALLOWED_INTENTS = {"chat", "execute", "delegate", "coordinate", "spawn", "retire"}
+MAX_DELEGATIONS = 3
+MAX_STEPS = 5
+MAX_REPLY = 600
+MAX_ARGS = 300
+
+try:
+    from guardrails import load_guardrails
+    _G = load_guardrails("jenny_llm")
+    if _G.get("extra_tools"):
+        ALLOWED_TOOLS |= set(_G["extra_tools"])
+    if _G.get("extra_intents"):
+        ALLOWED_INTENTS |= set(_G["extra_intents"])
+    for _k in ("max_delegations", "max_steps", "max_reply", "max_args"):
+        if _G.get(_k):
+            globals()[_k] = _G[_k]
+    if _G:
+        try:
+            os.makedirs(os.path.expanduser("~/.hermes/logs"), exist_ok=True)
+            with open(os.path.expanduser("~/.hermes/logs/jenny_llm_guardrails.log"), "a") as _lf:
+                _lf.write("%s guardrails overrides: %s\n" % (
+                    __import__("datetime").datetime.now().isoformat(timespec="seconds"),
+                    sorted(_G.keys(), key=str)))
+        except Exception:
+            pass
+except ImportError:
+    pass
+
+
 def hop_ask(prompt: str, max_tokens: int = 500) -> str | None:
     payload = {
         "model": HOP_MODEL,

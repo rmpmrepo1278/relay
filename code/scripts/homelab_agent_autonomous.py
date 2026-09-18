@@ -36,6 +36,10 @@ HOP = os.environ.get("HOP_URL", "http://127.0.0.1:8083/v1/chat/completions")
 HOP_MODEL = os.environ.get("HOP_MODEL", "haiku-4.5")
 
 # ── Guardrail constants ──────────────────────────────────────────────────────
+# Fail-closed: these built-ins are the defaults. An optional
+# ~/.hermes/agents/guardrails.yaml [homelab] section can *add* to the
+# allowlists (extra_*), retune per-action cooldowns (cooldown_min), or replace
+# scalar knobs (see guardrails.py). Absent file/key ⇒ these values stand.
 ALLOWED_ACTIONS = {"heal", "verify_backups", "clean_disk", "apply_updates", "notify", "nothing"}
 HEAL_TARGETS = {"docker", "systemd", "agentbus"}
 HIGH_RISK = {"apply_updates", "clean_disk"}
@@ -49,6 +53,29 @@ RISK_COOLDOWN_MIN = {
 DISK_WARN_PCT = 85
 NOTIFY_MAX_LEN = 400
 FULL_UPGRADE = os.environ.get("HOMELAB_ALLOW_FULL_UPGRADE", "").lower() in ("1", "true", "yes")
+CLEAN_DISK_ALLOW_VOLUMES = False  # --volumes is data-destructive; stays off unless configured
+
+try:
+    from guardrails import load_guardrails
+    _G = load_guardrails("homelab")
+    if _G.get("extra_actions"):
+        ALLOWED_ACTIONS |= set(_G["extra_actions"])
+    if _G.get("extra_heal_targets"):
+        HEAL_TARGETS |= set(_G["extra_heal_targets"])
+    if _G.get("cooldown_min"):
+        RISK_COOLDOWN_MIN.update({k: float(v) for k, v in _G["cooldown_min"].items()})
+    if _G.get("disk_warn_pct"):
+        DISK_WARN_PCT = _G["disk_warn_pct"]
+    if _G.get("notify_max_len"):
+        NOTIFY_MAX_LEN = _G["notify_max_len"]
+    if _G.get("allow_full_upgrade"):
+        FULL_UPGRADE = True  # env var OR config flag
+    if _G.get("clean_disk_allow_volumes"):
+        CLEAN_DISK_ALLOW_VOLUMES = True
+    if _G:
+        _log("homelab guardrails: active overrides %s" % sorted((k for k, _ in _G.items()), key=str))
+except ImportError:
+    _G = {}
 
 
 class HomelabAgent(AutonomousAgent):
@@ -527,8 +554,10 @@ class HomelabAgent(AutonomousAgent):
 
     def _clean_disk(self) -> dict:
         results = []
-        # NOTE: never --volumes; an autonomous agent must not drop volumes.
-        for cmd in ["docker system prune -f 2>/dev/null", "apt-get clean", "journalctl --vacuum-time=7d"]:
+        cmds = ["docker system prune -f 2>/dev/null", "apt-get clean", "journalctl --vacuum-time=7d"]
+        if CLEAN_DISK_ALLOW_VOLUMES:
+            cmds.append("docker system prune --volumes -f 2>/dev/null")
+        for cmd in cmds:
             r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=120)
             results.append({"cmd": cmd, "ok": r.returncode == 0})
         return {"ok": all(r["ok"] for r in results), "results": results}
