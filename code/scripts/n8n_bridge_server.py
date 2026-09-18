@@ -2,8 +2,6 @@
 """Lightweight HTTP bridge for n8n — executes system commands and returns JSON."""
 import html
 import http.server
-from typing import Optional
-from typing import Optional
 import json
 import re
 import subprocess
@@ -18,13 +16,8 @@ import hashlib
 from pathlib import Path
 from datetime import datetime
 
-PORT = int(os.environ.get("PORT", "9199"))
-# HERMES_HOME is env-overridable: the n8n-bridge container mounts ~/.hermes at
-# /opt/data and sets HERMES_HOME=/opt/data (its $HOME points at the mount root,
-# so Path.home() would wrongly resolve to /opt/data/.hermes). On the host the
-# env var is unset and we fall back to ~/.hermes (unchanged behavior).
-HERMES_HOME = Path(os.path.expanduser(os.environ.get("HERMES_HOME") or "~/.hermes"))
-THROTTLE_FILE = HERMES_HOME / "data" / "telegram_throttle.json"
+PORT = 9199
+THROTTLE_FILE = Path.home() / ".hermes" / "data" / "telegram_throttle.json"
 CATEGORY_COOLDOWN = float(os.environ.get("TELEGRAM_CATEGORY_COOLDOWN", "300"))
 BURST_LIMIT = int(os.environ.get("TELEGRAM_BURST_LIMIT", "10"))
 BURST_WINDOW = float(os.environ.get("TELEGRAM_BURST_WINDOW", "60"))
@@ -37,11 +30,12 @@ GENERAL_COOLDOWN = float(os.environ.get("TELEGRAM_GENERAL_COOLDOWN", "600"))
 # Service auto-heal de-escalation: after HEAL_FAIL_THRESHOLD consecutive restart
 # failures a unit is paused for HEAL_COOLDOWN seconds (no more hammering), and the
 # automation is told to stop retrying until the pause expires.
-HEAL_STATE_FILE = HERMES_HOME / "data" / "service_heal_state.json"
+HEAL_STATE_FILE = Path.home() / ".hermes" / "data" / "service_heal_state.json"
 HEAL_FAIL_THRESHOLD = int(os.environ.get("SERVICE_HEAL_THRESHOLD", "3"))
 HEAL_COOLDOWN = float(os.environ.get("SERVICE_HEAL_COOLDOWN", "3600"))
-SCRIPTS_DIR = HERMES_HOME / "scripts"
-_ENV_PATH = HERMES_HOME / ".env"
+SCRIPTS_DIR = os.path.expanduser("~/.hermes/scripts")
+HERMES_HOME = Path.home() / ".hermes"
+_ENV_PATH = Path.home() / ".hermes" / ".env"
 if _ENV_PATH.exists():
     for _line in _ENV_PATH.read_text().splitlines():
         _line = _line.strip()
@@ -59,27 +53,9 @@ SENSITIVE_PATHS = {
 }
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT = os.environ.get("TELEGRAM_HOME_CHANNEL", "-1003976074764")
-ALLOWED_USER_IDS = set()
-for _uid in os.environ.get("TELEGRAM_ALLOWED_USERS", "").split(","):
-    _uid = _uid.strip()
-    if _uid.lstrip("-").isdigit():
-        ALLOWED_USER_IDS.add(int(_uid))
-
-def _sender_allowed(from_id) -> bool:
-    """Only the configured owner(s) may drive the bot over Telegram.
-
-    Without an allowlist the bot is public and any of our /run, /docker-exec,
-    /restart handlers are reachable by strangers — enforce the user list.
-    """
-    if not ALLOWED_USER_IDS:
-        return True  # no allowlist configured → keep old behaviour
-    try:
-        return int(from_id) in ALLOWED_USER_IDS
-    except (TypeError, ValueError):
-        return False
 
 HANDLERS = {}
-PROPOSAL_DIR = HERMES_HOME / "data" / "proposals"
+PROPOSAL_DIR = Path.home() / ".hermes" / "data" / "proposals"
 PROPOSAL_DIR.mkdir(parents=True, exist_ok=True)
 
 def handler(path):
@@ -95,8 +71,11 @@ def handle_ping(data):
 @handler("/system-health")
 def handle_system_health(data):
     try:
-        ok, so, se = _run_on_host(["systemctl", "--user", "status", "hermes-gateway", "hermes-scheduler", "hermes-mind-loop"], timeout=15)
-        lines = so.split('\n')
+        r = subprocess.run(
+            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "status", "hermes-gateway", "hermes-scheduler", "hermes-mind-loop"],
+            capture_output=True, text=True, timeout=10
+        )
+        lines = r.stdout.split('\n')
         services = {}
         for s in ['hermes-gateway', 'hermes-scheduler', 'hermes-mind-loop']:
             for i, line in enumerate(lines):
@@ -140,10 +119,11 @@ def handle_system_health(data):
 
         # Container stats
         try:
-            ok, so, se = _run_on_host(["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"], timeout=15)
+            cr = subprocess.run(["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"],
+                                capture_output=True, text=True, timeout=10)
             cnames = []
             unhealthy = []
-            for line in so.strip().split("\n"):
+            for line in cr.stdout.strip().split("\n"):
                 if line:
                     parts = line.split("\t", 1)
                     cnames.append(parts[0])
@@ -205,61 +185,6 @@ def mcp_call_tool(name, arguments=None, _id=1):
     return "\n".join(texts)
 
 
-# --- hostctl client: host-side proxy for systemd/docker/df/CRG/scripts ---
-# The bridge runs inside the n8n-bridge container (no sudo, no docker socket,
-# HOME=/opt/data breaks Path.home()). hostctl runs as rohit on the host and
-# exposes the exact host-only operations we need on 127.0.0.1:9201.
-HOSTCTL_URL = os.environ.get("HOSTCTL_URL", "http://127.0.0.1:9201")
-
-def _hostctl(endpoint, payload=None, timeout=90):
-    """Call the host-side proxy. Returns (ok, stdout, stderr)."""
-    body = json.dumps(payload or {}).encode()
-    req = urllib.request.Request(
-        f"{HOSTCTL_URL}{endpoint}",
-        data=body,
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {AUTH_KEY}"},
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            out = json.loads(resp.read())
-        return bool(out.get("ok")), out.get("stdout", ""), out.get("stderr", "")
-    except Exception as e:
-        return False, "", f"hostctl {endpoint}: {e}"
-
-
-def _run_on_host(argv, timeout=90):
-    """Drop into hostctl so host-native commands run where the host facilities are."""
-    if not argv:
-        return False, "", "empty argv"
-    tool = argv[0]
-    if tool == "docker":
-        ok, so, se = _hostctl("/docker", {"args": argv[1:], "timeout": timeout})
-    elif tool in ("systemctl",):
-        # hostctl already runs under `systemctl --user`; strip our duplicate --user
-        args = [a for a in argv[1:] if a != "--user"]
-        ok, so, se = _hostctl("/systemctl", {"args": args, "timeout": timeout})
-    elif tool == "journalctl":
-        unit = ""
-        lines = 60
-        args = argv[1:]
-        for i, a in enumerate(args):
-            if a in ("-u", "--unit") and i + 1 < len(args):
-                unit = args[i + 1]
-            elif a == "-n" and i + 1 < len(args):
-                try:
-                    lines = int(args[i + 1])
-                except ValueError:
-                    pass
-        ok, so, se = _hostctl("/journalctl", {"unit": unit or "agentbus", "lines": lines})
-    elif tool == "df":
-        ok, so, se = _hostctl("/df", {"args": argv[1:] or ["-h", "/", "/home"]})
-    elif tool in ("code-review-graph", "crg"):
-        ok, so, se = _hostctl("/crg", {"args": argv[1:], "timeout": timeout})
-    else:
-        return True, "", f"tool '{tool}' not routed via hostctl"
-    return ok, so, se
-
-
 @handler("/docker-ps")
 def handle_docker_ps(data):
     try:
@@ -318,8 +243,8 @@ def handle_backup_status(data):
 @handler("/disk-usage")
 def handle_disk_usage(data):
     try:
-        ok, so, se = _run_on_host(["df", "-h", "/", "/home"], timeout=15)
-        lines = so.strip().split('\n')[1:]
+        r = subprocess.run(["df", "-h", "/", "/home"], capture_output=True, text=True, timeout=5)
+        lines = r.stdout.strip().split('\n')[1:]
         mounts = []
         for line in lines:
             parts = line.split()
@@ -335,8 +260,8 @@ def handle_docker_restart(data):
     if not name:
         return {"status": "error", "message": "container name required"}
     try:
-        ok, so, se = _run_on_host(["docker", "restart", name], timeout=40)
-        return ok_result(output=so.strip(), error=se.strip()) if ok else err_result(se.strip())
+        r = subprocess.run(["docker", "restart", name], capture_output=True, text=True, timeout=30)
+        return ok_result(output=r.stdout.strip(), returncode=r.returncode, error=r.stderr.strip()) if r.returncode == 0 else err_result(r.stderr.strip())
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -347,8 +272,8 @@ def handle_docker_logs(data):
     if not name:
         return {"status": "error", "message": "container name required"}
     try:
-        ok, so, se = _run_on_host(["docker", "logs", "--tail", str(tail), name], timeout=20)
-        return {"status": "ok", "logs": so[-5000:] + se[-5000:]}
+        r = subprocess.run(["docker", "logs", "--tail", str(tail), name], capture_output=True, text=True, timeout=10)
+        return {"status": "ok", "logs": r.stdout[-5000:] + r.stderr[-5000:]}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -359,8 +284,8 @@ def handle_docker_exec(data):
     if not name or not cmd:
         return {"status": "error", "message": "container and cmd required"}
     try:
-        ok, so, se = _run_on_host(["docker", "exec", name, "sh", "-c", cmd], timeout=40)
-        return ok_result(output=so[-5000:], stderr=se[-500:])
+        r = subprocess.run(["docker", "exec", name, "sh", "-c", cmd], capture_output=True, text=True, timeout=30)
+        return ok_result(output=r.stdout[-5000:], stderr=r.stderr[-500:])
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -402,9 +327,12 @@ def handle_service_restart(data):
                 "error": (f"auto-heal paused until {datetime.fromtimestamp(st['paused_until']).strftime('%H:%M')} "
                           f"after {st['failures']} consecutive failures")}
     try:
-        ok, so, se = _run_on_host(["systemctl", "--user", "show", name, "-p", "Type", "-p", "UnitFileState", "-p", "LoadState"], timeout=15)
+        show = subprocess.run(
+            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "show", name, "-p", "Type", "-p", "UnitFileState", "-p", "LoadState"],
+            capture_output=True, text=True, timeout=10
+        )
         props = {}
-        for line in so.splitlines():
+        for line in show.stdout.splitlines():
             if "=" in line:
                 k, v = line.split("=", 1)
                 props[k] = v
@@ -422,20 +350,26 @@ def handle_service_restart(data):
                     "paused": paused_now, "consecutive_failures": st["failures"],
                     "error": f"unit {name} not found"}
         if props.get("Type") == "oneshot" or props.get("UnitFileState") == "static":
-            ok, so, se = _run_on_host(["systemctl", "--user", "reset-failed", name], timeout=15)
+            reset = subprocess.run(
+                ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "reset-failed", name],
+                capture_output=True, text=True, timeout=10
+            )
             st["failures"] = 0
             st["paused_until"] = 0
             _heal_save_state(heal)
-            return {"status": "ok", "service": name, "skipped": True, "message": f"skipped non-restartable unit (Type={props.get('Type')}, UnitFileState={props.get('UnitFileState')}); reset-failed applied", "reset_output": so.strip()}
-        ok, so, se = _run_on_host(["systemctl", "--user", "restart", name], timeout=40)
-        if ok:
+            return {"status": "ok", "service": name, "skipped": True, "message": f"skipped non-restartable unit (Type={props.get('Type')}, UnitFileState={props.get('UnitFileState')}); reset-failed applied", "reset_output": reset.stdout.strip()}
+        r = subprocess.run(
+            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "restart", name],
+            capture_output=True, text=True, timeout=30
+        )
+        if r.returncode == 0:
             st["failures"] = 0
             st["paused_until"] = 0
             st["last_error"] = ""
             _heal_save_state(heal)
-            return ok_result(service=name, output=so.strip(), stderr=se.strip(), consecutive_failures=0)
+            return ok_result(service=name, output=r.stdout.strip(), stderr=r.stderr.strip(), consecutive_failures=0)
         st["failures"] = st.get("failures", 0) + 1
-        st["last_error"] = se.strip()
+        st["last_error"] = r.stderr.strip()
         paused_now = st["failures"] >= HEAL_FAIL_THRESHOLD
         if paused_now:
             st["paused_until"] = now + HEAL_COOLDOWN
@@ -444,7 +378,7 @@ def handle_service_restart(data):
             _heal_notify_paused(name, st)
         return {"status": "attention" if paused_now else "error", "service": name,
                 "paused": paused_now, "consecutive_failures": st["failures"],
-                "output": so.strip(), "error": se.strip()}
+                "output": r.stdout.strip(), "error": r.stderr.strip()}
     except Exception as e:
         return {"status": "error", "service": name, "message": str(e)}
 
@@ -471,8 +405,11 @@ def handle_service_logs(data):
     if not name:
         return {"status": "error", "message": "service name required"}
     try:
-        ok, so, se = _run_on_host(["journalctl", "--user", "-u", name, "--no-pager", "-n", str(lines)], timeout=20)
-        return ok_result(logs=so[-5000:])
+        r = subprocess.run(
+            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "journalctl", "--user", "-u", name, "--no-pager", "-n", str(lines)],
+            capture_output=True, text=True, timeout=10
+        )
+        return ok_result(logs=r.stdout[-5000:])
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -543,23 +480,18 @@ def _message_category(text):
 
 
 def _send_telegram_api(chat_id, text, parse_mode="", message_thread_id=None):
-    payload = {"chat_id": str(chat_id), "text": text}
+    payload = {"chat_id": chat_id, "text": text}
     if parse_mode:
         payload["parse_mode"] = parse_mode
     if message_thread_id is not None:
         payload["message_thread_id"] = int(message_thread_id)
-    data = json.dumps(payload).encode()
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
-        data=data,
+        data=json.dumps(payload).encode(),
         headers={"Content-Type": "application/json"}
     )
-    try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return json.loads(resp.read())
-    except Exception as e:
-        print(f"[_send_telegram_api] error: {e}", file=sys.stderr)
-        return {"ok": False, "error": str(e)}
+    resp = urllib.request.urlopen(req, timeout=10)
+    return json.loads(resp.read())
 
 
 def _topic_for_category(category):
@@ -594,7 +526,7 @@ def handle_telegram_send(data):
         pass
 
     # Global exact-match dedup: suppress identical text to same chat within window.
-    dedup_file = HERMES_HOME / "data" / "telegram_dedup.json"
+    dedup_file = Path.home() / ".hermes" / "data" / "telegram_dedup.json"
     window = float(data.get("dedup_window", 120))
     now = time.time()
     last_seen = _load_json(dedup_file, {})
@@ -646,44 +578,6 @@ def handle_telegram_send(data):
         return {"status": "error", "message": str(e)}
 
 
-@handler("/telegram-webhook")
-def handle_telegram_webhook(data):
-    """
-    Receive Telegram updates via webhook (avoids getUpdates 409 conflict).
-    Expected payload: Telegram Update object from Bot API.
-    """
-    # Telegram sends Update object with message/edited_message/channel_post etc.
-    msg = data.get("message") or data.get("edited_message") or data.get("channel_post") or data.get("edited_channel_post")
-    if not msg:
-        return {"status": "ok", "ignored": "no message in update"}
-
-    text = msg.get("text", "").strip()
-    if not text:
-        return {"status": "ok", "ignored": "empty text"}
-
-    chat = msg.get("chat", {})
-    chat_id = chat.get("id", TELEGRAM_CHAT)
-    thread_id = msg.get("message_thread_id")
-
-    # Ingress gate: only allowlisted users may drive the bot.
-    from_id = (msg.get("from") or {}).get("id") or chat_id
-    if not _sender_allowed(from_id):
-        # Post to sender chat only if they messaged us privately; never to the group.
-        if int(chat_id) >= 0:
-            _telegram_send_text(chat_id, "⛔ This bot is private. Your user is not allowlisted.",
-                                message_thread_id=thread_id)
-        return {"status": "ok", "blocked": True, "reason": "sender not allowlisted"}
-
-    # Route command through existing router
-    result = _route_telegram_command(text, thread_id=thread_id)
-
-    # Send response back to Telegram
-    if result and "text" in result:
-        _telegram_send_text(chat_id, result["text"][:4096], message_thread_id=thread_id)
-
-    return {"status": "ok", "processed": True}
-
-
 # ─── Proposal queue: /send <id> + /skip <id> for Telegram-confirm authoring ──
 
 def _save_proposal(pid: str, proposal: dict) -> None:
@@ -692,7 +586,7 @@ def _save_proposal(pid: str, proposal: dict) -> None:
     f.write_text(json.dumps(proposal, default=str, indent=2))
 
 
-def _load_proposal(pid: str) -> Optional[dict]:
+def _load_proposal(pid: str) -> dict | None:
     f = PROPOSAL_DIR / f"{pid}.json"
     if f.exists():
         try:
@@ -921,18 +815,17 @@ def handle_voice_transcribe(data):
         if idx + 1 < len(parts):
             backend = parts[idx + 1]
 
-    script_name = "skills/voice-transcription/scripts/voice_transcribe.py"
-    cmd = ["pipeline", file_path]
+    script = f"{HERMES_HOME}/skills/voice-transcription/scripts/voice_transcribe.py"
+    cmd = [sys.executable, script, "pipeline", file_path]
     if backend:
         cmd += ["--backend", backend]
 
     try:
-        ok, so, se = _hostctl("/script", {"name": script_name, "args": cmd, "timeout": 90})
-        r_out, r_err = (so if ok else ""), (se or so)
-        if ok:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
+        if r.returncode == 0:
             import json as _json
             try:
-                result = _json.loads(r_out.strip())
+                result = _json.loads(r.stdout.strip())
                 if result.get("success"):
                     text_out = result.get("text", "")
                     backend_name = result.get("backend", "unknown")
@@ -945,14 +838,16 @@ def handle_voice_transcribe(data):
                     return {"text": out}
                 return {"text": f"❌ Transcription failed: {result.get('error', 'unknown')}"}
             except _json.JSONDecodeError:
-                return {"text": r_out.strip()[:500]}
+                return {"text": r.stdout.strip()[:500]}
         try:
-            result = json.loads(r_out.strip() or r_err.strip())
+            result = json.loads(r.stdout.strip() or r.stderr.strip())
             if result.get("error") or result.get("success") == False:
                 return {"text": f"❌ voice-transcribe: {result.get('error', result.get('text','unknown'))}"}
         except (json.JSONDecodeError, TypeError):
             pass
-        return {"text": f"❌ voice-transcribe: {r_err.strip()[:300] or r_out.strip()[:300]}"}
+        return {"text": f"❌ voice-transcribe: {r.stderr.strip()[:300] or r.stdout.strip()[:300]}"}
+    except subprocess.TimeoutExpired:
+        return {"text": "⏳ voice-transcribe: timed out"}
     except Exception as e:
         return {"text": f"❌ voice-transcribe: {str(e)}"}
 
@@ -968,16 +863,17 @@ def handle_save_session(data):
         # Build context from memory
         context = f"## Saved context for: {topic}\n## Timestamp: {datetime.utcnow().isoformat()}\n"
 
-    script = "skills/session-handoff/scripts/session_handoff.py"
+    script = f"{HERMES_HOME}/skills/session-handoff/scripts/session_handoff.py"
     try:
-        ok, so, se = _hostctl("/script", {"name": script, "args": ["save", topic, "--context", context], "timeout": 15})
-        if ok:
-            result = json.loads(so.strip())
+        r = subprocess.run([sys.executable, script, "save", topic, "--context", context],
+                          capture_output=True, text=True, timeout=15)
+        if r.returncode == 0:
+            result = json.loads(r.stdout.strip())
             if result.get("success"):
                 # Notify user
                 sid = result.get("session_id", "?")
                 return {"text": f"💾 Session saved: `{topic}` (id: {sid}) — use `/claude-resume-session {topic}` on your laptop"}
-        return {"text": f"❌ save-session: {se.strip()[:200] or so.strip()[:200]}"}
+        return {"text": f"❌ save-session: {r.stderr.strip()[:200]}"}
     except Exception as e:
         return {"text": f"❌ save-session: {str(e)}"}
 
@@ -988,19 +884,20 @@ def handle_load_session(data):
     if not topic:
         return {"text": "Usage: /claude-load-session <topic>"}
 
-    script = "skills/session-handoff/scripts/session_handoff.py"
+    script = f"{HERMES_HOME}/skills/session-handoff/scripts/session_handoff.py"
     try:
-        ok, so, se = _hostctl("/script", {"name": script, "args": ["load", topic], "timeout": 10})
-        if ok:
+        r = subprocess.run([sys.executable, script, "load", topic],
+                          capture_output=True, text=True, timeout=10)
+        if r.returncode == 0:
             try:
-                result = json.loads(so.strip())
+                result = json.loads(r.stdout.strip())
                 if result.get("success"):
                     context = result.get("context", "")
                     return {"text": f"📥 Context loaded for `{topic}`:\n```\n{context[:400]}...\n```"}
                 return {"text": f"❌ {result.get('error', 'unknown')}"}
             except json.JSONDecodeError:
-                return {"text": so.strip()[:500]}
-        return {"text": f"❌ load-session: {se.strip()[:200] or so.strip()[:200]}"}
+                return {"text": r.stdout.strip()[:500]}
+        return {"text": f"❌ load-session: {r.stderr.strip()[:200]}"}
     except Exception as e:
         return {"text": f"❌ load-session: {str(e)}"}
 
@@ -1011,18 +908,21 @@ def handle_resume_session(data):
     if not topic:
         return {"text": "Usage: /claude-resume-session <topic>"}
 
-    script = "skills/session-handoff/scripts/session_handoff.py"
+    script = f"{HERMES_HOME}/skills/session-handoff/scripts/session_handoff.py"
     try:
-        ok, so, se = _hostctl("/script", {"name": script, "args": ["resume", topic, "--task", f"Continue working on: {topic}"], "timeout": 360})
-        if ok:
+        r = subprocess.run([sys.executable, script, "resume", topic, "--task", f"Continue working on: {topic}"],
+                          capture_output=True, text=True, timeout=360)
+        if r.returncode == 0:
             try:
-                result = json.loads(so.strip())
+                result = json.loads(r.stdout.strip())
                 if result.get("success"):
                     return {"text": result.get("text", f"✅ Resumed session for `{topic}`")[:500]}
                 return {"text": f"❌ {result.get('error', 'unknown')}"}
             except json.JSONDecodeError:
-                return {"text": so.strip()[:500]}
-        return {"text": f"❌ resume-session: {se.strip()[:200] or so.strip()[:200]}"}
+                return {"text": r.stdout.strip()[:500]}
+        return {"text": f"❌ resume-session: {r.stderr.strip()[:200]}"}
+    except subprocess.TimeoutExpired:
+        return {"text": "⏳ resume-session: timed out"}
     except Exception as e:
         return {"text": f"❌ resume-session: {str(e)}"}
 
@@ -1058,12 +958,15 @@ def handle_habit(data):
     else:
         return {"text": f"Unknown habit subcommand. Try: checkoff, prompts, streaks, goals"}
 
-    script_name = "skills/habit-tracker/scripts/habit_tracker.py"
+    script = f"{HERMES_HOME}/skills/habit-tracker/scripts/habit_tracker.py"
     try:
-        ok, so, se = _hostctl("/script", {"name": script_name, "args": cmd_args, "timeout": 10})
-        if ok:
-            return {"text": so.strip()[:2000]}
-        return {"text": f"❌ habit: {se.strip()[:300] or so.strip()[:300]}"}
+        r = subprocess.run([sys.executable, script, *cmd_args],
+                          capture_output=True, text=True, timeout=10)
+        if r.returncode == 0:
+            return {"text": r.stdout.strip()[:2000]}
+        return {"text": f"❌ habit: {r.stderr.strip()[:300]}"}
+    except subprocess.TimeoutExpired:
+        return {"text": "⏳ habit: timed out"}
     except Exception as e:
         return {"text": f"❌ habit: {str(e)}"}
 
@@ -1077,25 +980,27 @@ def handle_compose(data):
     if not text:
         return {"text": "Usage: /compose <goal> | /compose-dry <goal>"}
 
-    script_name = "skills/compose-planning/scripts/compose.py"
+    script = f"{HERMES_HOME}/skills/compose-planning/scripts/compose.py"
     dry = data.get("dry_run", False) or "dry" in data.get("command", "").lower()
 
     try:
-        args = ["plan", text]
+        cmd = [sys.executable, script, "plan", text]
         if dry:
-            args.append("--dry-run")
-        ok, so, se = _hostctl("/script", {"name": script_name, "args": args, "timeout": 300})
+            cmd.append("--dry-run")
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
 
-        if ok:
+        if r.returncode == 0:
             try:
-                result = json.loads(so.strip())
+                result = json.loads(r.stdout.strip())
                 if result.get("text"):
                     # Send to Telegram
                     _call("/telegram-send", text=result["text"][:1500], category="infra")
                     return {"text": result["text"][:800]}
             except json.JSONDecodeError:
-                return {"text": so.strip()[:500]}
-        return {"text": f"❌ compose: {se.strip()[:300] or so.strip()[:300]}"}
+                return {"text": r.stdout.strip()[:500]}
+        return {"text": f"❌ compose: {r.stderr.strip()[:300]}"}
+    except subprocess.TimeoutExpired:
+        return {"text": "⏳ compose: timed out (task too complex)"}
     except Exception as e:
         return {"text": f"❌ compose: {str(e)}"}
 
@@ -1111,14 +1016,17 @@ def handle_memory(data):
     if not args_str:
         return {"text": "📣 Usage: /memory scan | /memory notify | /memory <query>"}
 
-    scanner = "skills/memory-scanner/scripts/memory_scanner.py"
+    scanner = f"{HERMES_HOME}/skills/memory-scanner/scripts/memory_scanner.py"
 
     if "notify" in args_str:
         try:
-            ok, so, se = _hostctl("/script", {"name": scanner, "args": ["notify"], "timeout": 30})
-            if ok:
-                return {"text": so.strip()[:2000]}
-            return {"text": f"❌ memory: {se.strip()[:300] or so.strip()[:300]}"}
+            r = subprocess.run([sys.executable, scanner, "notify"],
+                              capture_output=True, text=True, timeout=30)
+            if r.returncode == 0:
+                return {"text": r.stdout.strip()[:2000]}
+            return {"text": f"❌ memory: {r.stderr.strip()[:300]}"}
+        except subprocess.TimeoutExpired:
+            return {"text": "⏳ memory: timed out"}
         except Exception as e:
             return {"text": f"❌ memory: {str(e)}"}
     elif args_str.startswith("scan"):
@@ -1129,10 +1037,13 @@ def handle_memory(data):
         elif args_str != "scan":
             cmd_args.extend(args_str.split())
         try:
-            ok, so, se = _hostctl("/script", {"name": scanner, "args": cmd_args, "timeout": 30})
-            if ok:
-                return {"text": so.strip()[:2000]}
-            return {"text": f"❌ memory: {se.strip()[:300] or so.strip()[:300]}"}
+            r = subprocess.run([sys.executable, scanner, *cmd_args],
+                              capture_output=True, text=True, timeout=30)
+            if r.returncode == 0:
+                return {"text": r.stdout.strip()[:2000]}
+            return {"text": f"❌ memory: {r.stderr.strip()[:300]}"}
+        except subprocess.TimeoutExpired:
+            return {"text": "⏳ memory: timed out"}
         except Exception as e:
             return {"text": f"❌ memory: {str(e)}"}
     else:
@@ -1145,11 +1056,14 @@ def handle_memory(data):
 @handler("/all-services-status")
 def handle_all_services_status(data):
     try:
-        ok, so, se = _run_on_host(["systemctl", "--user", "list-units", "--type=service", "--no-pager", "--plain", "--no-legend"], timeout=20)
+        r = subprocess.run(
+            ["sudo", "-u", "rohit", "env", "XDG_RUNTIME_DIR=/run/user/1000", "systemctl", "--user", "list-units", "--type=service", "--no-pager", "--plain", "--no-legend"],
+            capture_output=True, text=True, timeout=10
+        )
         heal = _heal_load_state()
         now = time.time()
         services = []
-        for line in so.strip().split('\n'):
+        for line in r.stdout.strip().split('\n'):
             parts = line.split(None, 4)
             if len(parts) >= 4:
                 name = parts[0]
@@ -1167,9 +1081,12 @@ def handle_all_services_status(data):
 @handler("/docker-unhealthy")
 def handle_docker_unhealthy(data):
     try:
-        ok, so, se = _run_on_host(["docker", "ps", "--filter", "health=unhealthy", "--filter", "status=exited", "--format", "{{.Names}}\t{{.Status}}\t{{.Image}}"], timeout=20)
+        r = subprocess.run(
+            ["docker", "ps", "--filter", "health=unhealthy", "--filter", "status=exited", "--format", "{{.Names}}\t{{.Status}}\t{{.Image}}"],
+            capture_output=True, text=True, timeout=10
+        )
         containers = []
-        for line in so.strip().split('\n'):
+        for line in r.stdout.strip().split('\n'):
             if line:
                 parts = line.split('\t', 2)
                 containers.append({"name": parts[0], "status": parts[1] if len(parts)>1 else "", "image": parts[2] if len(parts)>2 else ""})
@@ -1180,9 +1097,12 @@ def handle_docker_unhealthy(data):
 @handler("/docker-images")
 def handle_docker_images(data):
     try:
-        ok, so, se = _run_on_host(["docker", "images", "--format", "{{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"], timeout=30)
+        r = subprocess.run(
+            ["docker", "images", "--format", "{{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"],
+            capture_output=True, text=True, timeout=10
+        )
         images = []
-        for line in so.strip().split('\n'):
+        for line in r.stdout.strip().split('\n'):
             if line:
                 parts = line.split('\t', 2)
                 images.append({"image": parts[0], "size": parts[1] if len(parts)>1 else "", "created": parts[2] if len(parts)>2 else ""})
@@ -1208,7 +1128,7 @@ def handle_run_cron(data):
 def handle_morning_briefing(data):
     """Aggregate all morning briefing data into one response."""
     from datetime import datetime
-    HERMES = HERMES_HOME
+    HERMES = Path.home() / ".hermes"
     sections = []
 
     # Journal
@@ -1294,7 +1214,7 @@ def handle_morning_briefing(data):
 def handle_evening_briefing(data):
     """Aggregate all evening briefing data into one response."""
     from datetime import datetime, timedelta
-    HERMES = HERMES_HOME
+    HERMES = Path.home() / ".hermes"
     sections = []
 
     # Interest profile
@@ -1450,7 +1370,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         pass
 
 
-def _telegram_get_updates(offset: int = 0) -> Optional[dict]:
+def _telegram_get_updates(offset: int = 0) -> dict | None:
     """Long-poll Telegram getUpdates. Returns the API response or None on error."""
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getUpdates"
     params = {"offset": offset + 1, "timeout": 25, "allowed_updates": ["message"]}
@@ -1463,29 +1383,18 @@ def _telegram_get_updates(offset: int = 0) -> Optional[dict]:
         return None
 
 
-def _telegram_send_text(chat_id: int, text: str, message_thread_id: Optional[int] = None):
+def _telegram_send_text(chat_id: int, text: str, message_thread_id: int | None = None):
     """Send a text reply back to the Telegram chat."""
     payload = {"chat_id": str(chat_id), "text": text, "parse_mode": "Markdown"}
     if message_thread_id:
         payload["message_thread_id"] = str(message_thread_id)
-    data = json.dumps(payload).encode()
-    req = urllib.request.Request(
-        f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
-        data=data,
-        headers={"Content-Type": "application/json"}
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return json.loads(resp.read())
-    except Exception as e:
-        print(f"[telegram_send_text] error: {e}", file=sys.stderr)
-        return {"ok": False, "error": str(e)}
+    _send_telegram_api(chat_id, text, parse_mode="Markdown", message_thread_id=message_thread_id)
 
 
 def _telegram_poller():
     """Background thread: polls Telegram for incoming commands and routes them."""
     import threading
-    state_file = HERMES_HOME / "state" / "telegram_offset.json"
+    state_file = Path.home() / ".hermes" / "state" / "telegram_offset.json"
     state_file.parent.mkdir(parents=True, exist_ok=True)
 
     def loop():
@@ -1510,19 +1419,12 @@ def _telegram_poller():
                         chat_id = chat.get("id")
                         thread_id = msg.get("message_thread_id") or chat.get("message_thread_id") or None
 
-                        # Ingress gate: only allowlisted users may drive the bot.
-                        from_id = (msg.get("from") or {}).get("id") or chat.get("id")
-                        if not _sender_allowed(from_id):
-                            print(f"[telegram-poller] blocked message from uid={from_id}", file=sys.stderr)
-                            state_file.write_text(json.dumps({"offset": offset}))
-                            continue
-
                         # Record active chat/thread so queued host applies reply to this topic.
                         global _tg_chat_ctx
                         _tg_chat_ctx = {"chat_id": chat_id, "thread_id": thread_id}
 
                         # Route command through existing router
-                        result = _route_telegram_command(text, thread_id=thread_id)
+                        result = _route_telegram_command(text)
 
                         # Send the response back to Telegram
                         if result and "text" in result:
@@ -1562,16 +1464,41 @@ def main():
 # ── Code Review Graph endpoints ──────────────────────────────────────────
 import subprocess, json as _json
 from pathlib import Path as _Path
+_CRG = "/home/rohit/.local/bin/code-review-graph"
 _CRG_DEFAULT_REPO = "/home/rohit/.hermes"
 _CRG_REGISTRY = _Path.home() / ".code-review-graph" / "registry.json"
 
-def _crg(*args, repo: str = ""):
-    resolved = repo or _CRG_DEFAULT_REPO
+def _crg_repo_path(repo: str) -> str:
+    """Resolve a repo alias or path to a CRG-registered repository root.
+
+    Accepts:
+      - an alias registered in registry.json (hermes-agent,
+        hermes-scripts, career-ops, collaborator-memory, home)
+      - an absolute path to any registered repo
+    Falls back to the default repo when nothing matches.
+    """
+    if not repo:
+        return _CRG_DEFAULT_REPO
     try:
-        ok, so, se = _hostctl("/crg", {"args": list(args), "repo": resolved, "timeout": 60})
-        return {"success": ok, "output": so, "error": se}
-    except Exception as e:
-        return {"success": False, "output": "", "error": str(e)}
+        reg = _json.loads(_CRG_REGISTRY.read_text())
+        entries = reg.get("repos", [])
+    except Exception:
+        entries = []
+    for entry in entries:
+        if repo in (entry.get("alias"), entry.get("path")):
+            return entry["path"]
+    return repo if str(repo).startswith("/") else _CRG_DEFAULT_REPO
+
+def _crg(*args, repo: str = ""):
+    resolved = _crg_repo_path(repo)
+    try:
+        r = subprocess.run(
+            [_CRG] + list(args) + ["--repo", resolved],
+            capture_output=True, text=True, timeout=45,
+        )
+        return {"success": r.returncode == 0, "output": r.stdout, "error": r.stderr}
+    except subprocess.TimeoutExpired:
+        return {"success": False, "output": "", "error": "timed out"}
 
 def _clean_lines(out: str) -> str:
     return "\n".join(
@@ -1650,16 +1577,20 @@ def _cg_repos(data):
         return {"error": f"could not read registry: {e}"}
 
 
+_GRAPHIFY = "/home/rohit/.local/bin/graphify"
+
 @handler("/graphify")
 def _gf(data):
     cmd = (data.get("cmd") or "").strip()
     if not cmd:
         return {"text": "Usage: /graphify <command> [args]\nCommands: path, explain, diagnose"}
     try:
-        ok, so, se = _hostctl("/graphify", {"cmd": cmd, "timeout": 15})
-        if ok:
-            return {"text": so[:3000]}
-        return {"text": "\u274c " + se[:500]}
+        r = subprocess.run([_GRAPHIFY] + cmd.split(), capture_output=True, text=True, timeout=15)
+        if r.returncode == 0:
+            return {"text": r.stdout[:3000]}
+        return {"text": "\u274c " + r.stderr[:500]}
+    except subprocess.TimeoutExpired:
+        return {"text": "\u23f3 graphify timed out"}
     except Exception as e:
         return {"text": "\u26a0 graphify error: " + str(e)}
 
@@ -1672,10 +1603,12 @@ def _gf_path(data):
     if len(parts) < 2:
         return {"text": "Need two node names: /graphify-path <node-a> <node-b>"}
     try:
-        ok, so, se = _hostctl("/graphify", {"cmd": f"path {parts[0]} {parts[1]}", "timeout": 15})
-        if ok:
-            return {"text": so[:3000]}
-        return {"text": "\u274c " + se[:500]}
+        r = subprocess.run([_GRAPHIFY, "path", parts[0], parts[1]], capture_output=True, text=True, timeout=15)
+        if r.returncode == 0:
+            return {"text": r.stdout[:3000]}
+        return {"text": "\u274c " + r.stderr[:500]}
+    except subprocess.TimeoutExpired:
+        return {"text": "\u23f3 timed out"}
     except Exception as e:
         return {"text": "\u26a0 error: " + str(e)}
 
@@ -1685,10 +1618,12 @@ def _gf_explain(data):
     if not target:
         return {"text": "Usage: /graphify-explain <node-name>"}
     try:
-        ok, so, se = _hostctl("/graphify", {"cmd": f"explain {target}", "timeout": 15})
-        if ok:
-            return {"text": so[:3000]}
-        return {"text": "\u274c " + se[:500]}
+        r = subprocess.run([_GRAPHIFY, "explain", target], capture_output=True, text=True, timeout=15)
+        if r.returncode == 0:
+            return {"text": r.stdout[:3000]}
+        return {"text": "\u274c " + r.stderr[:500]}
+    except subprocess.TimeoutExpired:
+        return {"text": "\u23f3 timed out"}
     except Exception as e:
         return {"text": "\u26a0 error: " + str(e)}
 # ── Subsystem handlers: ledger, commitments, queue, digest, doctor, ─────────
@@ -1699,20 +1634,18 @@ import json
 import subprocess
 from pathlib import Path
 
-_HH = HERMES_HOME
+_HH = Path.home() / ".hermes"
 
 
 def _run_script(name, *args, timeout=60, cwd=None):
-    # Route through hostctl: scripts use Path.home()/".hermes" and must run with
-    # the host HOME, not the container's HOME=/opt/data.
     try:
-        ok, so, se = _hostctl("/script", {"name": name, "args": list(args), "timeout": timeout})
-        if "hostctl" in se:
-            # hostctl down → normalise to the legacy code so callers still work
-            ok = False
-        if ok:
-            return {"success": True, "output": so[-3000:], "error": "", "code": 0}
-        return {"success": False, "output": "", "error": (se or "script failed")[:500], "code": 1}
+        r = subprocess.run(
+            [sys.executable, str(_HH / "scripts" / name), *args],
+            capture_output=True, text=True, timeout=timeout, cwd=cwd or str(_HH),
+        )
+        return {"success": r.returncode == 0, "output": r.stdout[-3000:], "error": r.stderr[-500:], "code": r.returncode}
+    except subprocess.TimeoutExpired:
+        return {"success": False, "output": "", "error": "timed out", "code": -1}
     except Exception as e:
         return {"success": False, "output": "", "error": str(e), "code": -1}
 
@@ -2629,7 +2562,7 @@ def _claude_delegate(task: str, category: str = "infra") -> dict:
     return {"text": f"{icon} Claude Code session `{session_id[:8]}`\n\n{summary[:800]}\n\n_Sent to {category} topic._"}
 
 HOP_URL = os.environ.get("HOP_URL", "http://127.0.0.1:8083/v1/chat/completions")
-HOP_MODEL = os.environ.get("HOP_MODEL", "haiku-4.5")
+HOP_MODEL = os.environ.get("HOP_MODEL", "magnitude/gemma-4-26b-a4b-it-qat:gguf:q4")
 
 def _md_escape(text: str) -> str:
     """Lightly escape Telegram Markdown punctuation so model output sends cleanly."""
@@ -2675,7 +2608,7 @@ def _homelab_context() -> str:
         return "Homelab snapshot unavailable."
 
 
-def _sidecar_reply(text: str) -> dict:
+def _magnitude_reply(text: str) -> dict:
     """Sidecar agent reply via tokenjuice-hop. Fast-fail, one retry, live context."""
     try:
         urllib.request.urlopen(
@@ -2695,8 +2628,7 @@ def _sidecar_reply(text: str) -> dict:
         "- If the snapshot is unavailable or stale, say so instead of guessing.\n"
         "- If asked which model you run on: the 'haiku-4.5' alias on "
         "tokenjuice-hop, which routes to nvidia/minimax-m3 via OmniRoute, with "
-        "local llama.cpp legs (qwen3-coder-30b-a3b / lfm2.5-8b) as last-resort "
-        "fallback.\n"
+        "a local magnitude (Gemma) model as last-resort fallback.\n"
         "- If asked for detail beyond the snapshot, suggest the right Telegram "
         "slash command (e.g. /docker, /disk, /status, /health)."
     )
@@ -2905,24 +2837,12 @@ def _run_jobs_pipeline(text=None) -> dict:
     return {"text": body[:4000]}
 
 
-def _route_telegram_command(text, thread_id=None):
-    """Route a Telegram command, optionally scoped to a forum topic (thread_id)."""
+def _route_telegram_command(text):
     text = (text or "").strip()
     if not text:
         return {"text": _help_text()}
     cmd = _first_word(text)
     rest = _rest(text)
-
-    # Map thread_id -> agent for topic-scoped commands
-    agent_for_thread = {}
-    try:
-        tmap = json.loads((HERMES_HOME / "agentbus" / "topic_map.json").read_text())
-        agent_for_thread = {v: k for k, v in tmap.items()}
-    except Exception:
-        pass
-
-    current_agent = agent_for_thread.get(thread_id) if thread_id else None
-
     m = {
         "/help": lambda: {"text": _help_text()},
         "/status": lambda: _call("/system-health"),
@@ -2954,7 +2874,7 @@ def _route_telegram_command(text, thread_id=None):
          "/proactive": lambda: _call("/proactive", args=rest),
          "/cap": lambda: _call("/cap", args=rest),
          "/cost": lambda: _call("/cost", args=rest),
-
+ 
         "/jobs-latest": lambda: _call("/jobs-latest", args=rest),
         "/providers-status": lambda: _call("/providers-status", args=rest),
         "/provider-status": lambda: _call("/providers-status", args=rest),
@@ -2970,8 +2890,7 @@ def _route_telegram_command(text, thread_id=None):
         "/skip": lambda: _call("/skip", args=rest) if rest else {"text": "❌ Usage: /skip <proposal_id>"},
         "/proposals": lambda: _call("/proposals"),
         "/claude": lambda: _claude_delegate(rest, category="infra") if rest else {"text": "Usage: /claude <task>\nDelegates to Claude Code (headless). Results sent to Infra topic."},
-        "/delegate": lambda: _delegate_to_agent(rest) if rest else {"text": "Usage: /delegate <agent> <task>\nAgents: jenny, homelab, baseplate, vault, courier, inference, finlay, housekeep, calendula, connector"},
-        "/team": lambda: _team_status(),
+        "/delegate": lambda: _claude_delegate(rest, category="infra") if rest else {"text": "Usage: /delegate <task>\nAlias for /claude."},
         "/habit": lambda: _call("/habit", args=rest) if rest else {"text": "Usage: /habit checkoff <id> <value> | /habit prompts | /habit summaries"},
         "/habits": lambda: _call("/habit", args="streaks"),
         "/memory": lambda: _call("/memory", args=rest) if rest else {"text": "Usage: /memory scan | /memory notify"},
@@ -2982,28 +2901,14 @@ def _route_telegram_command(text, thread_id=None):
         "/claude-load-session": lambda: _call("/claude-load-session", args=rest) if rest else {"text": "Usage: /claude-load-session <topic>"},
         "/claude-resume-session": lambda: _call("/claude-resume-session", args=rest) if rest else {"text": "Usage: /claude-resume-session <topic>"},
     }
-
-    # ─── Agent-specific commands ───
-    agent_cmds = {
-        "/homelab": lambda: _agent_cmd("homelab", rest),
-        "/personal": lambda: _agent_cmd("personal", rest),
-        "/jenny": lambda: _agent_cmd("jenny", rest),
-    }
-        "/new": lambda: {"text": "🆕 Started new chat — how can I help?"},
-        "/reset": lambda: {"text": "🔄 Reset done — fresh context. What would you like to do?"},
-    m.update(agent_cmds)
-
     handler_fn = m.get(cmd)
     if not handler_fn:
         if not cmd.startswith("/"):
-            # Topic-scoped plain text → route to that agent
-            if current_agent:
-                return _agent_cmd(current_agent, text)
-            # Fallback: sidecar agent path
+            # Sidecar agent path: plain (non-command) text goes to the local model.
             _low = text.lower()
             if "jobs pipeline" in _low or "job pipeline" in _low:
                 return _run_jobs_pipeline(text)
-            return _sidecar_reply(text)
+            return _magnitude_reply(text)
         return {"text": f"Unknown command `{cmd}`. Try `/help`."}
     try:
         result = handler_fn()
@@ -3012,269 +2917,12 @@ def _route_telegram_command(text, thread_id=None):
     return {"text": _fmt(result)}
 
 
-def _bus_req(method: str, path: str, payload: dict = None) -> dict:
-    """Small agentbus client for /task + /board so the bridge can enqueue work."""
-    url = "http://127.0.0.1:9107" + path
-    data = json.dumps(payload).encode() if payload is not None else None
-    req = urllib.request.Request(url, data=data, method=method,
-                                 headers={"Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=6) as r:
-            return json.loads(r.read().decode())
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
-
-
-TEAM_AGENTS = ["jenny", "homelab", "baseplate", "vault", "courier", "inference",
-               "finlay", "housekeep", "calendula", "connector"]
-
-
-def _jenny_directive(text: str) -> dict:
-    """Task Jenny (Chief of Staff): enqueue a directive for her next cycle."""
-    text = (text or "").strip()
-    if not text:
-        return {"text": "Usage: /jenny <instruction>\nTasks Jenny to coordinate/delegate across the team.\nExample: /jenny check container health and follow up on backups"}
-    import hashlib, time as _t
-    key = f"jenny-{int(_t.time())}-{hashlib.md5(text.encode()).hexdigest()[:6]}"
-    res = _bus_req("POST", "/task", {
-        "op": "add", "key": key, "title": text, "area": "jenny", "owner": "rohit",
-        "priority": "high", "note": "directive from Rohit via bridge",
-        "status": "ready", "due": "",
-    })
-    if not res.get("ok"):
-        return {"text": f"❌ Failed to task Jenny: {res.get('error', 'bus unreachable')}"}
-    return {"text": f"📥 Tasked Jenny (Coordination):\n\"{text}\"\nTask queued."}
-
-
-def _team_status() -> dict:
-    """/team — roster, presence age, and open board tasks per agent."""
-    import datetime as _dt
-    import time as _t
-    status = _bus_req("GET", "/status")
-    board = _bus_req("GET", "/board")
-    p = status.get("presence", {}) if isinstance(status, dict) else {}
-    if not isinstance(p, dict):
-        p = {}
-    tasks = board.get("tasks", board if isinstance(board, dict) else {}) if isinstance(board, dict) else {}
-    if isinstance(tasks, list):
-        tasks = {t.get("key", i): t for i, t in enumerate(tasks)}
-    now = _t.time()
-
-    lines = ["👥 *Agent Roster*"]
-    for agent in TEAM_AGENTS:
-        pr = p.get(agent, {})
-        if isinstance(pr, dict) and pr.get("ts"):
-            ts = pr.get("ts")
-            try:
-                age = int(max(0, now - float(ts)) // 60)
-            except Exception:
-                age = None
-            kind = pr.get("kind", "")
-            suffix = f" ({age}m ago)" if age is not None else ""
-            lines.append(f"  • {agent}: {kind}{suffix}")
-        else:
-            lines.append(f"  • {agent}: ⚪ not reporting")
-    open_tasks = [t for t in tasks.values() if isinstance(t, dict) and t.get("status") not in ("done", "cancelled")]
-    if open_tasks:
-        from collections import Counter as _C
-        counts = _C(t.get("area", "?") for t in open_tasks)
-        lines.append("\n📋 *Open tasks*: " + ", ".join(f"{a}={c}" for a, c in counts.most_common()))
-    else:
-        lines.append("\n📋 *Open tasks*: none")
-    return {"text": "\n".join(lines)}
-
-
-def _delegate_to_agent(args: str) -> dict:
-    """/delegate <agent> <task> — enqueue a task directly on the bus for an agent.
-    Backward-compatible: if the first token isn't a known agent, fall back to
-    delegating the whole string to Claude Code (old /delegate behavior)."""
-    args = (args or "").strip()
-    if not args:
-        return {"text": "Usage: /delegate <agent> <task>\nAgents: jenny, homelab, baseplate, vault, courier, inference, finlay, housekeep, calendula, connector\nLegacy: /delegate <task> delegates to Claude Code."}
-    parts = args.split(None, 1)
-    agent = parts[0].lower().strip().strip("/").replace("--member", "")
-    task = parts[1].strip() if len(parts) > 1 else ""
-    valid = set(TEAM_AGENTS)
-    if agent in valid and task:
-        import hashlib, time as _t
-        key = f"{agent}-{int(_t.time())}-{hashlib.md5(task.encode()).hexdigest()[:6]}"
-        res = _bus_req("POST", "/task", {
-            "op": "add", "key": key, "title": task, "area": agent, "owner": "rohit",
-            "priority": "normal", "note": "direct delegation via bridge", "status": "ready", "due": "",
-        })
-        if not res.get("ok"):
-            return {"text": f"❌ Failed to delegate: {res.get('error', 'bus unreachable')}"}
-        return {"text": f"📤 Delegated to *{agent}*:\n\"{task}\"\ncomplete."}
-    # Legacy: /delegate <task> → Claude Code
-    return _claude_delegate(args, category="infra")
-
-
-def _agent_cmd(agent: str, args: str) -> dict:
-    """Invoke an agent with the given args via the orchestrator or direct script."""
-    args = (args or "").strip()
-    try:
-        sys.path.insert(0, str(HERMES_HOME / "scripts"))
-        if agent == "homelab":
-            from homelab_agent import homelab_agent as _agent_fn
-            task = {"content": args or "check", "type": args.split()[0] if args else "check"}
-            result = _agent_fn(task)
-            if result.get("status") == "completed":
-                health = result.get("health") or result.get("report", {})
-                overall = health.get("overall", "?")
-                lines = [f"🏗️ *Homelab* — {overall}"]
-                for name, check in health.get("checks", {}).items():
-                    status = check.get("status", "?")
-                    if status not in ("healthy", "not_configured", "current"):
-                        lines.append(f"  {name}: *{status}*")
-                return {"text": "\n".join(lines)}
-            return {"text": f"Homelab: {result.get('status', '?')}"}
-
-        elif agent == "jenny":
-            if args:
-                # Task Jenny with a directive → she coordinates/delegates across the team
-                return _jenny_directive(args)
-            # Force a brief
-            import io
-            sys.path.insert(0, str(HERMES_HOME / "agentbus"))
-            from jenny_brief import main as _jenny_main
-            old_argv = sys.argv
-            sys.argv = ["jenny_brief.py", "--now"]
-            old_stdout = sys.stdout
-            sys.stdout = io.StringIO()
-            try:
-                _jenny_main()
-                output = sys.stdout.getvalue()
-            finally:
-                sys.argv = old_argv
-                sys.stdout = old_stdout
-            return {"text": f"📋 Jenny brief triggered:\n{output}"}
-
-        elif agent == "personal":
-            # Personal agents: finlay, housekeep, calendula, connector
-            # Usage: /personal finlay check, /personal housekeep check, etc.
-            # Also: /personal import gmail [--dry-run] [--live] — bulk-create Finlay/Calendula from last 30d Gmail
-            subparts = args.split()
-            if not subparts:
-                return {"text": "Usage: /personal <finlay|housekeep|calendula|connector> <check|report|...>\n       /personal import gmail [--dry-run|--live] [--days 30] [--limit 100]"}
-            # Bulk import: /personal import gmail
-            if subparts[0].lower() == "import" and len(subparts) >= 2 and subparts[1].lower() in ("gmail", "gmail-dry", "gmail-live"):
-                # Supports: import gmail, import gmail --dry-run, import gmail --live, import gmail --days 30 --limit 50 --query "after:2026/08/01"
-                rest_import = " ".join(subparts[2:]) if len(subparts) > 2 else ""
-                # default dry-run for safety; --live required to write
-                import_args = []
-                if "--live" in args or " --live" in rest_import:
-                    import_args.append("--live")
-                else:
-                    import_args.append("--dry-run")
-                # propagate days/limit/query if present
-                for flag in ["--days", "--limit", "--query", "--hermes-home"]:
-                    if flag in args:
-                        # extract value after flag
-                        try:
-                            idx = args.split().index(flag)
-                            val = args.split()[idx+1] if idx+1 < len(args.split()) else ""
-                            # handle --query with spaces: take rest after flag up to next -- or end
-                            if flag == "--query":
-                                # grab quoted or remainder
-                                import re as _re
-                                m = _re.search(r"--query\s+(.+?)(?:\s+--|\s*$)", args)
-                                if m:
-                                    val = m.group(1).strip().strip('"').strip("'")
-                                    import_args += [flag, val]
-                                elif val:
-                                    import_args += [flag, val]
-                            elif val:
-                                import_args += [flag, val]
-                        except Exception:
-                            pass
-                # locate script: HERMES_HOME/scripts/personal_import_gmail.py else collab code/scripts
-                import subprocess as _sp
-                candidates = [
-                    HERMES_HOME / "scripts" / "personal_import_gmail.py",
-                    HERMES_HOME / "collaborator-memory" / "code" / "scripts" / "personal_import_gmail.py",
-                    Path.home() / ".hermes" / "scripts" / "personal_import_gmail.py",
-                    Path.home() / ".hermes" / "collaborator-memory" / "code" / "scripts" / "personal_import_gmail.py",
-                ]
-                script_path = next((p for p in candidates if p.exists()), candidates[0])
-                r = _sp.run(
-                    ["python3", str(script_path)] + import_args,
-                    capture_output=True, text=True, timeout=90,
-                    env={**os.environ, "HERMES_HOME": str(HERMES_HOME)},
-                )
-                out = (r.stdout or "").strip()
-                err = (r.stderr or "").strip()
-                # truncate to Telegram limit
-                combined = out[-3500:] if out else err[-1000:]
-                if r.returncode != 0:
-                    return {"text": f"❌ import gmail failed (rc={r.returncode}):\n{err or out}"[:4000]}
-                # summarize counts from JSON if present
-                try:
-                    import json as _json
-                    # last JSON blob in output
-                    j = _json.loads(out[out.rfind("{"):out.rfind("}")+1]) if "{" in out else None
-                    if j and "finlay_would_add" in j:
-                        mode = "dry-run" if "--dry-run" in import_args else "live"
-                        return {"text": f"📥 import gmail ({mode}) — {j.get('messages_scanned', '?')} msgs scanned, {len(j.get('candidates', []))} candidates → finlay +{j.get('finlay_would_add',0)} (before {j.get('finlay_before',0)}→{j.get('finlay_after',0)}), calendula +{j.get('calendula_would_add',0)} (before {j.get('calendula_before',0)}→{j.get('calendula_after',0)}), dups {j.get('skipped_dup',0)}\n\n{combined[:2500]}"}
-                except Exception:
-                    pass
-                return {"text": f"📥 import gmail:\n{combined[:3500]}"}
-            subagent = subparts[0]
-            subargs = " ".join(subparts[1:]) if len(subparts) > 1 else "check"
-            script_map = {
-                "finlay": "finlay",
-                "housekeep": "housekeep",
-                "calendula": "calendula",
-                "connector": "connector",
-            }
-            script_name = script_map.get(subagent)
-            if not script_name:
-                return {"text": f"Unknown personal agent: {subagent}. Use: finlay, housekeep, calendula, connector\n       or: /personal import gmail [--dry-run|--live]"}
-            import subprocess
-            r = subprocess.run(
-                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), subagent] + (subargs.split() if subargs else []),
-                capture_output=True, text=True, timeout=30,
-                env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
-            )
-            out = (r.stdout or "").strip()
-            err = (r.stderr or "").strip()
-            if r.returncode != 0:
-                return {"text": f"❌ {subagent} {subargs} failed: {err or out}"}
-            return {"text": f"✅ {subagent} {subargs}:\n{out[:3000]}"}
-
-        else:
-            # finlay, housekeep, calendula, connector — use their scripts
-            script_map = {
-                "finlay": "finlay",
-                "housekeep": "housekeep",
-                "calendula": "calendula",
-                "connector": "connector",
-            }
-            script_name = script_map.get(agent)
-            if not script_name:
-                return {"text": f"Unknown agent: {agent}"}
-            # Invoke via agentbus task (async) or direct subprocess
-            import subprocess
-            cmd = args.split()[0] if args else "check"
-            r = subprocess.run(
-                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), cmd] + (args.split()[1:] if len(args.split()) > 1 else []),
-                capture_output=True, text=True, timeout=30,
-                env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
-            )
-            out = (r.stdout or "").strip()
-            err = (r.stderr or "").strip()
-            if r.returncode != 0:
-                return {"text": f"❌ {agent} {cmd} failed: {err or out}"}
-            return {"text": f"✅ {agent} {cmd}:\n{out[:3000]}"}
-
-    except Exception as e:
-        return {"text": f"⚠️ {agent} error: {e}"}
-
-
 def _route_recall(query: str) -> dict:
     """Semantic search over Hermes' episodic memory — closes cross-cycle recall loop."""
     if not query:
         return {"error": "usage: /recall <search term>"}
     try:
+        HERMES_HOME = Path.home() / ".hermes"
         sys.path.insert(0, str(HERMES_HOME / "scripts"))
         import narrative_memory as _nm
         results = _nm.retrieve_similar(query, k=5)
@@ -3292,6 +2940,7 @@ def _route_recall(query: str) -> dict:
 def _route_goals():
     """Show active life goals from personal_model."""
     try:
+        HERMES_HOME = Path.home() / ".hermes"
         sys.path.insert(0, str(HERMES_HOME / "scripts"))
         import personal_model as _pm
         pm = _pm._load_state()
@@ -3324,8 +2973,18 @@ def handle_memory_write(data):
     if isinstance(tags, str):
         tags = [tags]
     args = ["store", namespace, key, text, "--domain", domain, "--tags", *tags]
-    ok, so, se = _hostctl("/script", {"name": "unified_memory.py", "args": args, "timeout": 30})
-    r = {"success": ok, "output": so[-3000:], "error": se[-500:], "code": 0 if ok else 1}
+    try:
+        pr = subprocess.run(
+            ["sudo", "-n", "env", "HOME=/home/rohit", sys.executable,
+             str(_HH / "scripts" / "unified_memory.py"), *args],
+            capture_output=True, text=True, timeout=30, cwd="/home/rohit",
+        )
+        r = {"success": pr.returncode == 0, "output": pr.stdout[-3000:],
+             "error": pr.stderr[-500:], "code": pr.returncode}
+    except subprocess.TimeoutExpired:
+        r = {"success": False, "output": "", "error": "timed out", "code": -1}
+    except Exception as e:
+        r = {"success": False, "output": "", "error": str(e), "code": -1}
     if r["success"]:
         return {"stored": True, "id": f"{namespace}/{key}", "domain": domain}
     return {"stored": False, "error": r["error"] or r["output"]}
