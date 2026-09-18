@@ -2912,6 +2912,7 @@ def _route_telegram_command(text, thread_id=None):
         "/claude-save-session": lambda: _call("/claude-save-session", args=rest) if rest else {"text": "Usage: /claude-save-session <topic>"},
         "/claude-load-session": lambda: _call("/claude-load-session", args=rest) if rest else {"text": "Usage: /claude-load-session <topic>"},
         "/claude-resume-session": lambda: _call("/claude-resume-session", args=rest) if rest else {"text": "Usage: /claude-resume-session <topic>"},
+        "/heavy": lambda: _heavy_cmd(rest),
     }
 
     # ─── Agent-specific commands ───
@@ -2954,6 +2955,48 @@ def _bus_req(method: str, path: str, payload: dict = None) -> dict:
             return json.loads(r.read().decode())
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+
+def _heavy_cmd(rest: str) -> dict:
+    """/heavy — manage full-Hermes heavy-lifter jobs (approval-gated)."""
+    parts = (rest or "").strip().split(None, 1)
+    sub = (parts[0] or "status").lower() if parts else "status"
+    arg = parts[1].strip() if len(parts) > 1 else ""
+    if sub == "propose":
+        if not arg:
+            return {"text": "Usage: /heavy propose <title> [ | <prompt> ]\nEnqueues a heavy job; a human must approve it."}
+        title, sep, note = arg.partition(" | ")
+        key = f"heavy-{int(time.time())}"
+        res = _bus_req("POST", "/task", {
+            "op": "add", "key": key, "title": title.strip(), "area": "heavy",
+            "owner": "hermes-heavy", "priority": "normal",
+            "note": note.strip() or title.strip(), "status": "ready", "due": "",
+        })
+        if res.get("ok"):
+            return {"text": f"🔬 Heavy job `{key}` enqueued — a human must approve it.\nApprove: `/heavy approve {key}`\nDeny: `/heavy deny {key}`"}
+        return {"text": f"❌ failed to enqueue: {res.get('error', '?')}"}
+    if sub in ("approve", "deny", "cancel"):
+        if not arg:
+            return {"text": f"Usage: /heavy {sub} <id>"}
+        status = "approved" if sub == "approve" else "cancelled"
+        res = _bus_req("POST", "/task", {
+            "op": "set", "key": arg,
+            "status": status,
+            "proof": f"{sub} by user via bridge",
+        })
+        return {"text": f"✅ `{arg}` -> {status}" if res.get("ok") else f"❌ {res.get('error', '?')}"}
+    return _heavy_status()
+
+
+def _heavy_status() -> dict:
+    res = _bus_req("GET", "/board")
+    if not res.get("ok"):
+        return {"text": f"❌ {res.get('error', '?')}"}
+    heavy = [t for t in res.get("tasks", {}).values() if t.get("owner") == "hermes-heavy"]
+    if not heavy:
+        return {"text": "no heavy jobs"}
+    lines = [f"{t.get('status','?'):9} {t.get('title','?')[:40]}" for t in sorted(heavy, key=lambda x: x.get("created", ""))]
+    return {"text": "🔬 heavy jobs:\n" + "\n".join(lines)}
 
 
 def _jenny_directive(text: str) -> dict:
