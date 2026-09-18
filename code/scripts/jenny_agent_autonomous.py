@@ -592,7 +592,13 @@ class JennyAgent(AutonomousAgent):
                     "dedup_key": insight.get("dedup_key"),
                 })
             elif action == "check_agent":
-                agent = insight.get("content", "").split()[-1] if insight.get("content") else "unknown"
+                # Agent name lives in dedup_key ("missing:<agent>"), not the last word.
+                agent = ""
+                dk = insight.get("dedup_key") or ""
+                if dk.startswith("missing:"):
+                    agent = dk.split(":", 1)[1]
+                if agent not in self._DELEGATE_TARGETS:
+                    agent = self._route_directive(insight.get("content", ""))
                 plans.append({
                     "action": "delegate",
                     "target": agent,
