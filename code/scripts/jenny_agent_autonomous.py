@@ -401,9 +401,7 @@ class JennyAgent(AutonomousAgent):
                 })
 
         # Anticipate daily brief (context only), 15 min before window start.
-        now = datetime.now()
-        bh, bmin, bend_min = self._BRIEF_WINDOW[0], self._BRIEF_WINDOW[1], self._BRIEF_WINDOW[2]
-        if now.hour == bh and bmin - 15 <= now.minute <= bend_min:
+        if self._in_brief_window(self._BRIEF_WINDOW, lead_min=15):
             anticipations.append({
                 "type": "scheduled",
                 "content": "05:00 org brief due soon",
@@ -429,6 +427,32 @@ class JennyAgent(AutonomousAgent):
     _MAX_PLANS = 6
     # 05:00 org brief window (local). Guardrail override target via YAML.
     _BRIEF_WINDOW = (4, 50, 10)
+
+    @staticmethod
+    def _in_brief_window(window: tuple, now=None, lead_min: int = 0) -> bool:
+        """True if `now` (datetime, default utcnow) falls inside the brief window.
+
+        Handles both shapes:
+          (h, start_min, end_min)      — brief window within hour `h`; if end_min
+                                         < start_min it wraps into hour h+1
+                                         (default (4,50,10) == 04:50-05:10).
+          (h1, m1, h2, m2)             — full start-time / end-time override set
+                                         from YAML brief_window: ["HH:MM","HH:MM"].
+        lead_min shifts the window start earlier (used for "15 min before" cues).
+        Windows are same-day minute-of-day ranges (start must not cross midnight).
+        """
+        if now is None:
+            now = datetime.now()
+        if len(window) == 4:
+            h1, m1, h2, m2 = window
+            start, end = h1 * 60 + m1, h2 * 60 + m2
+        else:
+            h, s_min, e_min = window
+            start = h * 60 + s_min
+            end = (h + 1) * 60 + e_min if e_min < s_min else h * 60 + e_min
+        start -= lead_min
+        cur = now.hour * 60 + now.minute
+        return start <= cur <= end
 
     def _org_digest(self, signals: dict, insights: list, anticipations: list) -> str:
         lines = []
@@ -458,8 +482,7 @@ class JennyAgent(AutonomousAgent):
             ant_txt = "\n".join("  - %s (suggests=%s)" % (a.get("content", "")[:100], a.get("action")) for a in anticipations[:5]) or "  (none)"
             targets = ", ".join(self._DELEGATE_TARGETS)
             now = datetime.now()
-            bh, bmin, bend_min = self._BRIEF_WINDOW[0], self._BRIEF_WINDOW[1], self._BRIEF_WINDOW[2]
-            brief_ok = "yes" if (now.hour == bh and bmin <= now.minute <= bend_min) else "no"
+            brief_ok = "yes" if self._in_brief_window(self._BRIEF_WINDOW, now) else "no"
             prompt = (
                 "You are Jenny, Chief of Staff of a homelab agent team. Decide the minimal, safe action set for this periodic cycle.\n\n"
                 f"Org overview:\n{digest}\n\n"
@@ -523,9 +546,7 @@ class JennyAgent(AutonomousAgent):
         if action == "nothing":
             return True, ""
         if action == "generate_brief":
-            now = datetime.now()
-            bh, bmin, bend_min = self._BRIEF_WINDOW[0], self._BRIEF_WINDOW[1], self._BRIEF_WINDOW[2]
-            if not (now.hour == bh and bmin <= now.minute <= bend_min):
+            if not self._in_brief_window(self._BRIEF_WINDOW):
                 return False, "generate_brief outside allowed window"
             return True, ""
 
@@ -697,10 +718,8 @@ class JennyAgent(AutonomousAgent):
                     "dedup_key": insight.get("dedup_key"),
                 })
         
-        # Daily brief at 5am (window end minus 5 min)
-        now = datetime.now()
-        bh, bmin, bend_min = self._BRIEF_WINDOW[0], self._BRIEF_WINDOW[1], self._BRIEF_WINDOW[2]
-        if now.hour == bh and now.minute >= bend_min - 5:
+        # Daily brief at 5am (fallback when hop is down: fire when inside window)
+        if self._in_brief_window(self._BRIEF_WINDOW):
             plans.append({
                 "action": "generate_brief",
                 "content": "Generate and send 05:00 org brief",

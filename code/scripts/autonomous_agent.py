@@ -71,7 +71,7 @@ except ImportError:
     _HAS_INSIGHT = False
 
 try:
-    from agent_orchestrator import dispatch_plan, decompose_plan
+    from agent_orchestrator import dispatch_plan, decompose_plan, SPECIALISTS
     _HAS_ORCHESTRATOR = True
 except ImportError:
     _HAS_ORCHESTRATOR = False
@@ -328,16 +328,43 @@ class AutonomousAgent(ABC):
     # ─── Cross-agent coordination ────────────────────────────────────────────
     
     def delegate_to_agent(self, target_agent: str, task: str, priority: int = 5) -> dict:
-        """Delegate a task to another agent via orchestrator."""
+        """Delegate a task to another agent.
+
+        Orchestrator specialists (homelab, career_agent, ... ) are dispatched
+        through the orchestrator. Any other target (roster members such as
+        finlay/vault/courier, which run their own agent_loop daemon) is
+        delegated as a bus task tagged area=<target> — that is the queue their
+        `consume_assigned_tasks()` actually reads. Routing an arbitrary target
+        through the orchestrator silently re-classified it to knowledge_miner,
+        and the intended agent never saw the task.
+        """
+        if target_agent == self.name:
+            return {"status": "self_delegation_skipped",
+                    "detail": f"won't delegate to self ({target_agent})"}
         if _HAS_ORCHESTRATOR:
-            plan = {
-                "action": "add_task",
-                "content": task,
-                "goal_domain": target_agent,
-                "priority": priority,
-                "confidence": 0.7,
-            }
-            return dispatch_plan(plan)
+            if target_agent in SPECIALISTS or target_agent in ("infra", "career", "knowledge"):
+                plan = {
+                    "action": "add_task",
+                    "content": task,
+                    "goal_domain": target_agent,
+                    "priority": priority,
+                    "confidence": 0.7,
+                }
+                return dispatch_plan(plan)
+            payload = json.dumps({"op": "add", "area": target_agent, "title": task,
+                                  "owner": self.name, "priority": priority,
+                                  "status": "ready"}).encode()
+            try:
+                import urllib.request
+                req = urllib.request.Request("http://127.0.0.1:9107/task", data=payload,
+                                             method="POST", headers={"Content-Type": "application/json"})
+                with urllib.request.urlopen(req, timeout=5) as resp:
+                    body = resp.read().decode() or "{}"
+                    ok = bool(json.loads(body).get("ok", True))
+                return {"status": "delegated" if ok else "error",
+                        "route": f"bus_task:{target_agent}", "ok": ok}
+            except Exception as e:
+                return {"status": "error", "route": f"bus_task:{target_agent}", "error": str(e)}
         return {"status": "orchestrator_unavailable"}
     
     def publish_to_bus(self, channel: str, type_: str, text: str, data: dict = None) -> bool:
