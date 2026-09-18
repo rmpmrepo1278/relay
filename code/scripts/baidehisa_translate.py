@@ -24,19 +24,11 @@ ONLY = [int(x) for x in os.environ.get("BAIDEHI_ONLY", "").split(",") if x.strip
 WM = "Agamnigam Digital Presevation Foundation"
 
 INSTR = (
-    "You are translating the 1980 Devanagari-script bilingual edition of the Odia\n"
-    "classic Baiddehisha-Bilasa (Bidehisha-Bilasa) by the poet Upendra Bhanja.\n"
-    "Below is one BOOK PAGE from that edition. It contains some of: original Odia\n"
-    "verse lines transliterated into Devanagari; Hindi 'saralarth' prose\n"
-    "explanations of each stanza; lists of word-meaning glosses; running page\n"
-    "headers. Translate EVERYTHING into clear, faithful, fluent English.\n"
-    "Formatting rules:\n"
-    "- Keep each original verse line as its own line (do not merge).\n"
-    "- Translate the Hindi prose explanation as prose.\n"
-    "- Word glosses: keep each as '- <Odia word>: <English meaning>'.\n"
-    "- Keep verse ordinal numbers like '33.' at the end of the verse line.\n"
-    "- Drop literals that are clearly OCR noise (stray glyphs, page furniture).\n"
-    "- Output ONLY the English translation, no preamble.\n\n"
+    "This is a page from the 1980 Devanagari bilingual edition of Baidehisha-Bilasa "
+    "(Upendra Bhanja): Odia verse lines (Devanagari), Hindi 'saralarth' prose, and "
+    "word glosses. Translate all of it to clear English. Verse lines stay as separate "
+    "lines with their numbered '33.' endings. Glosses as '- word: meaning'. "
+    "Ignore OCR noise. Output only English.\n\n"
 )
 
 def split_pages(raw):
@@ -66,7 +58,7 @@ def translate(text):
     for attempt in range(2):
         for model in MODELS:
             payload = {"model": model, "messages": [{"role": "user", "content": INSTR + text}],
-                       "max_tokens": 2000, "temperature": 0.2}
+                       "max_tokens": 1500, "temperature": 0.2}
             req = urllib.request.Request(HOP, data=json.dumps(payload).encode(),
                                          headers={"Content-Type": "application/json"})
             try:
@@ -99,8 +91,8 @@ def main():
     def work(i):
         pg = pages[i]
         text = "\n".join(clean(pg))
-        if len(text) > 9000:
-            text = text[:9000] + "\n[...]"
+        if len(text) > 7000:
+            text = text[:7000] + "\n[...]"
         try:
             en = translate(text)
             rec = {"ok": True, "page": i, "printed": page_header(pg), "en": en,
