@@ -550,14 +550,25 @@ def pull_docker_images() -> Dict:
     return {"status": "ok" if r["ok"] else "error", "output": r["stdout"][-500:]}
 
 
+# Full kopia repository verify is heavy: never run it more than once per
+# interval regardless of caller (mind_loop dispatches a homelab check task every
+# 5 min — previously this re-ran a full verify each time, around the clock).
+_VERIFY_LOCK = {"last": 0.0}
+_VERIFY_MIN_INTERVAL = 6 * 3600  # 6h
+
+
 def verify_backups() -> Dict:
-    """Verify Kopia repository integrity."""
+    """Verify Kopia repository integrity. Self-throttled to once per 6h and
+    run via sudo (the repo is under root's config)."""
+    import time as _t
+    now = _t.time()
+    if now - _VERIFY_LOCK["last"] < _VERIFY_MIN_INTERVAL:
+        return {"status": "skipped_throttled",
+                "note": "kopia verify ran recently; next full verify within 6h",
+                "last_ran": _VERIFY_LOCK["last"]}
     _log("Verifying Kopia backups")
-    import traceback
-    with open("/home/rohit/.hermes/state/verify_caller.txt","a") as _f:
-        _f.write("\n===== caller trace =====\n")
-        traceback.print_stack(file=_f)
-    r = _run_cmd("kopia repository verify 2>/dev/null || echo 'verify failed'", timeout=300)
+    _VERIFY_LOCK["last"] = now
+    r = _run_cmd("sudo -n kopia repository verify 2>/dev/null || echo 'verify failed'", timeout=600)
     return {"status": "ok" if "ERROR" not in r["stdout"] else "error", "output": r["stdout"][-500:]}
 
 
