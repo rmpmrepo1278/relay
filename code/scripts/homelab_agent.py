@@ -420,12 +420,12 @@ def auto_heal(check_result: Dict) -> List[Dict]:
     """Attempt to auto-heal issues found in health check."""
     actions = []
     checks = check_result.get("checks", {})
+    state = _load_state()
 
     # Docker unhealthy containers
     docker = checks.get("docker", {})
     for container in docker.get("unhealthy", []):
         # Rate limit: don't restart same container more than once per hour
-        state = _load_state()
         last = state.get("known_issues", {}).get(f"docker:{container}", {}).get("last_heal")
         if last:
             try:
