@@ -117,14 +117,16 @@ def test_telegram_egress():
     same token the bridge loads, require ok:true + message_id (delivered), then
     deleteMessage to self-clean. This is the check tg-send's throttle-acceptance
     could never catch — Round-9: TELEGRAM_BOT_TOKEN never loaded in the bridge,
-    so every send was a silent botNone/getUpdates-style 404 while the bridge
-    poller looked healthy. A plain bridge OK must no longer count as delivery."""
+    so every send was a silent botNone-style 404 while the poller looked healthy.
+    Target: home channel General topic (no thread; the configured
+    TELEGRAM_HOME_CHANNEL_THREAD_ID=7338 is a deleted topic -> "message thread
+    not found"). Probe is deleted immediately -> invisible. A plain bridge OK
+    must no longer count as delivery."""
     token = _env_file("TELEGRAM_BOT_TOKEN")
     if not token:
         return 1, "TELEGRAM_BOT_TOKEN missing from .env -> egress impossible (Round-9 failure mode)"
     chat = _env_file("TELEGRAM_HOME_CHANNEL") or _DEFAULT_CHAT
-    thread = _env_file("TELEGRAM_HOME_CHANNEL_THREAD_ID")
-    payload = {"chat_id": chat, "message_thread_id": int(thread),
+    payload = {"chat_id": int(chat),
                "text": f"regression egress probe {time.strftime('%m%d%H%M%S')} (auto-deleted)"}
     try:
         req = urllib.request.Request(
@@ -137,25 +139,28 @@ def test_telegram_egress():
     except urllib.error.HTTPError as e:
         try:
             body = json.loads(e.read().decode() or "{}")
-            desc = body.get("description", e)
         except Exception:
-            desc = e
+            body = {}
+        desc = body.get("description", f"HTTP {e.code} {e.reason}")
+        # token present but rejected -> the exact Round-9 silent-fail shape
+        if e.code in (400, 401, 403):
+            return 1, f"egress DENIED: {desc}"
         return 1, f"egress FAIL (HTTP {e.code}): {desc}"
     except Exception as e:
-        return 1, f"egress FAIL (send): {str(e)[:140]}"
+        return 1, f"egress FAIL (network): {str(e)[:140]}"
     if not resp.get("ok"):
         return 1, f"egress FAIL: {resp.get('description', '?')[:140]}"
     mid = resp.get("result", {}).get("message_id")
     try:
         req = urllib.request.Request(
             f"https://api.telegram.org/bot{token}/deleteMessage",
-            data=json.dumps({"chat_id": chat, "message_id": mid}).encode(),
+            data=json.dumps({"chat_id": int(chat), "message_id": mid}).encode(),
             headers={"Content-Type": "application/json"},
         )
         urllib.request.urlopen(req, timeout=20)
     except Exception:
         pass
-    return 0, f"egress OK: delivered to chat {chat} (thread {thread}), msg_id={mid}, deleted"
+    return 0, f"egress OK: delivered to chat {chat} (General), msg_id={mid}, deleted"
 
 
 def test_docker_ps():
