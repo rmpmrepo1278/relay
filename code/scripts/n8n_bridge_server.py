@@ -1423,8 +1423,8 @@ def _telegram_poller():
                         global _tg_chat_ctx
                         _tg_chat_ctx = {"chat_id": chat_id, "thread_id": thread_id}
 
-                        # Route command through existing router
-                        result = _route_telegram_command(text)
+                        # Route command through existing router (topic-scoped)
+                        result = _route_telegram_command(text, thread_id)
 
                         # Send the response back to Telegram
                         if result and "text" in result:
@@ -2837,12 +2837,24 @@ def _run_jobs_pipeline(text=None) -> dict:
     return {"text": body[:4000]}
 
 
-def _route_telegram_command(text):
+def _route_telegram_command(text, thread_id=None):
+    """Route a Telegram command, optionally scoped to a forum topic (thread_id)."""
     text = (text or "").strip()
     if not text:
         return {"text": _help_text()}
     cmd = _first_word(text)
     rest = _rest(text)
+
+    # Map thread_id -> agent for topic-scoped commands
+    agent_for_thread = {}
+    try:
+        tmap = json.loads((HERMES_HOME / "agentbus" / "topic_map.json").read_text())
+        agent_for_thread = {v: k for k, v in tmap.items()}
+    except Exception:
+        pass
+
+    current_agent = agent_for_thread.get(thread_id) if thread_id else None
+
     m = {
         "/help": lambda: {"text": _help_text()},
         "/status": lambda: _call("/system-health"),
@@ -2901,9 +2913,21 @@ def _route_telegram_command(text):
         "/claude-load-session": lambda: _call("/claude-load-session", args=rest) if rest else {"text": "Usage: /claude-load-session <topic>"},
         "/claude-resume-session": lambda: _call("/claude-resume-session", args=rest) if rest else {"text": "Usage: /claude-resume-session <topic>"},
     }
+
+    # ─── Agent-specific commands ───
+    agent_cmds = {
+        "/homelab": lambda: _agent_cmd("homelab", rest),
+        "/personal": lambda: _agent_cmd("personal", rest),
+        "/jenny": lambda: _agent_cmd("jenny", rest),
+    }
+    m.update(agent_cmds)
+
     handler_fn = m.get(cmd)
     if not handler_fn:
         if not cmd.startswith("/"):
+            # Topic-scoped plain text → route to that agent (thread → jenny/homelab…)
+            if current_agent:
+                return _agent_cmd(current_agent, text)
             # Sidecar agent path: plain (non-command) text goes to the local model.
             _low = text.lower()
             if "jobs pipeline" in _low or "job pipeline" in _low:
@@ -2915,6 +2939,184 @@ def _route_telegram_command(text):
     except Exception as e:
         return {"text": f"⚠️ error: {e}"}
     return {"text": _fmt(result)}
+
+
+# ─── Agent command routing (restored from fcdcc7c^:code/scripts/n8n_bridge_server.py) ───
+
+def _bus_req(method: str, path: str, payload: dict = None) -> dict:
+    """Small agentbus client for /task + /board so the bridge can enqueue work."""
+    url = "http://127.0.0.1:9107" + path
+    data = json.dumps(payload).encode() if payload is not None else None
+    req = urllib.request.Request(url, data=data, method=method,
+                                 headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=6) as r:
+            return json.loads(r.read().decode())
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+def _jenny_directive(text: str) -> dict:
+    """Task Jenny (Chief of Staff): enqueue a directive for her next cycle."""
+    text = (text or "").strip()
+    if not text:
+        return {"text": "Usage: /jenny <instruction>\nTasks Jenny to coordinate/delegate across the team.\nExample: /jenny check container health and follow up on backups"}
+    import hashlib, time as _t
+    key = f"jenny-{int(_t.time())}-{hashlib.md5(text.encode()).hexdigest()[:6]}"
+    res = _bus_req("POST", "/task", {
+        "op": "add", "key": key, "title": text, "area": "jenny", "owner": "rohit",
+        "priority": "high", "note": "directive from Rohit via bridge",
+        "status": "ready", "due": "",
+    })
+    if not res.get("ok"):
+        return {"text": f"❌ Failed to task Jenny: {res.get('error', 'bus unreachable')}"}
+    return {"text": f"📥 Tasked Jenny (Coordination):\n\"{text}\"\nTask queued."}
+
+
+def _agent_cmd(agent: str, args: str) -> dict:
+    """Invoke an agent with the given args via the orchestrator or direct script."""
+    args = (args or "").strip()
+    try:
+        sys.path.insert(0, str(HERMES_HOME / "scripts"))
+        if agent == "homelab":
+            from homelab_agent import homelab_agent as _agent_fn
+            task = {"content": args or "check", "type": args.split()[0] if args else "check"}
+            result = _agent_fn(task)
+            if result.get("status") == "completed":
+                health = result.get("health") or result.get("report", {})
+                overall = health.get("overall", "?")
+                lines = [f"🏗️ *Homelab* — {overall}"]
+                for name, check in health.get("checks", {}).items():
+                    status = check.get("status", "?")
+                    if status not in ("healthy", "not_configured", "current"):
+                        lines.append(f"  {name}: *{status}*")
+                return {"text": "\n".join(lines)}
+            return {"text": f"Homelab: {result.get('status', '?')}"}
+
+        elif agent == "jenny":
+            if args:
+                # Task Jenny with a directive → she coordinates/delegates across the team
+                return _jenny_directive(args)
+            # Force a brief
+            import io
+            sys.path.insert(0, str(HERMES_HOME / "agentbus"))
+            from jenny_brief import main as _jenny_main
+            old_argv = sys.argv
+            sys.argv = ["jenny_brief.py", "--now"]
+            old_stdout = sys.stdout
+            sys.stdout = io.StringIO()
+            try:
+                _jenny_main()
+                output = sys.stdout.getvalue()
+            finally:
+                sys.argv = old_argv
+                sys.stdout = old_stdout
+            return {"text": f"📋 Jenny brief triggered:\n{output}"}
+
+        elif agent == "personal":
+            subparts = args.split()
+            if not subparts:
+                return {"text": "Usage: /personal <finlay|housekeep|calendula|connector> <check|report|...>\n       /personal import gmail [--dry-run|--live] [--days 30] [--limit 100]"}
+            if subparts[0].lower() == "import" and len(subparts) >= 2 and subparts[1].lower() in ("gmail", "gmail-dry", "gmail-live"):
+                rest_import = " ".join(subparts[2:]) if len(subparts) > 2 else ""
+                import_args = []
+                if "--live" in args or " --live" in rest_import:
+                    import_args.append("--live")
+                else:
+                    import_args.append("--dry-run")
+                for flag in ["--days", "--limit", "--query", "--hermes-home"]:
+                    if flag in args:
+                        try:
+                            idx = args.split().index(flag)
+                            val = args.split()[idx+1] if idx+1 < len(args.split()) else ""
+                            if flag == "--query":
+                                import re as _re
+                                m = _re.search(r"--query\s+(.+?)(?:\s+--|\s*$)", args)
+                                if m:
+                                    val = m.group(1).strip().strip('"').strip("'")
+                                    import_args += [flag, val]
+                                elif val:
+                                    import_args += [flag, val]
+                            elif val:
+                                import_args += [flag, val]
+                        except Exception:
+                            pass
+                import subprocess as _sp
+                candidates = [
+                    HERMES_HOME / "scripts" / "personal_import_gmail.py",
+                    HERMES_HOME / "collaborator-memory" / "code" / "scripts" / "personal_import_gmail.py",
+                    Path.home() / ".hermes" / "scripts" / "personal_import_gmail.py",
+                    Path.home() / ".hermes" / "collaborator-memory" / "code" / "scripts" / "personal_import_gmail.py",
+                ]
+                script_path = next((p for p in candidates if p.exists()), candidates[0])
+                r = _sp.run(
+                    ["python3", str(script_path)] + import_args,
+                    capture_output=True, text=True, timeout=90,
+                    env={**os.environ, "HERMES_HOME": str(HERMES_HOME)},
+                )
+                out = (r.stdout or "").strip()
+                err = (r.stderr or "").strip()
+                combined = out[-3500:] if out else err[-1000:]
+                if r.returncode != 0:
+                    return {"text": f"❌ import gmail failed (rc={r.returncode}):\n{err or out}"[:4000]}
+                try:
+                    import json as _json
+                    j = _json.loads(out[out.rfind("{"):out.rfind("}")+1]) if "{" in out else None
+                    if j and "finlay_would_add" in j:
+                        mode = "dry-run" if "--dry-run" in import_args else "live"
+                        return {"text": f"📥 import gmail ({mode}) — {j.get('messages_scanned', '?')} msgs scanned, {len(j.get('candidates', []))} candidates → finlay +{j.get('finlay_would_add',0)} (before {j.get('finlay_before',0)}→{j.get('finlay_after',0)}), calendula +{j.get('calendula_would_add',0)} (before {j.get('calendula_before',0)}→{j.get('calendula_after',0)}), dups {j.get('skipped_dup',0)}\n\n{combined[:2500]}"}
+                except Exception:
+                    pass
+                return {"text": f"📥 import gmail:\n{combined[:3500]}"}
+            subagent = subparts[0]
+            subargs = " ".join(subparts[1:]) if len(subparts) > 1 else "check"
+            script_map = {
+                "finlay": "finlay",
+                "housekeep": "housekeep",
+                "calendula": "calendula",
+                "connector": "connector",
+            }
+            script_name = script_map.get(subagent)
+            if not script_name:
+                return {"text": f"Unknown personal agent: {subagent}. Use: finlay, housekeep, calendula, connector\n       or: /personal import gmail [--dry-run|--live]"}
+            import subprocess
+            r = subprocess.run(
+                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), subagent] + (subargs.split() if subargs else []),
+                capture_output=True, text=True, timeout=30,
+                env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
+            )
+            out = (r.stdout or "").strip()
+            err = (r.stderr or "").strip()
+            if r.returncode != 0:
+                return {"text": f"❌ {subagent} {subargs} failed: {err or out}"}
+            return {"text": f"✅ {subagent} {subargs}:\n{out[:3000]}"}
+
+        else:
+            # finlay, housekeep, calendula, connector — use their scripts
+            script_map = {
+                "finlay": "finlay",
+                "housekeep": "housekeep",
+                "calendula": "calendula",
+                "connector": "connector",
+            }
+            script_name = script_map.get(agent)
+            if not script_name:
+                return {"text": f"Unknown agent: {agent}"}
+            import subprocess
+            cmd = args.split()[0] if args else "check"
+            r = subprocess.run(
+                ["python3", str(HERMES_HOME / "agents" / f"{script_name}.py"), cmd] + (args.split()[1:] if len(args.split()) > 1 else []),
+                capture_output=True, text=True, timeout=30,
+                env={**os.environ, "AGENTBUS_URL": "http://127.0.0.1:9107"}
+            )
+            out = (r.stdout or "").strip()
+            err = (r.stderr or "").strip()
+            if r.returncode != 0:
+                return {"text": f"❌ {agent} {cmd} failed: {err or out}"}
+            return {"text": f"✅ {agent} {cmd}:\n{out[:3000]}"}
+
+    except Exception as e:
+        return {"text": f"⚠️ {agent} error: {e}"}
 
 
 def _route_recall(query: str) -> dict:
