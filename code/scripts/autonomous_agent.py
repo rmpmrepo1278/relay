@@ -39,6 +39,14 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 # ─── Shared imports ─────────────────────────────────────────────────────────
 sys.path.insert(0, str(HERMES_HOME / "scripts"))
 
+# World-class layer: decision ledger, message critique, two-tap review,
+# verify-after-act, research, reflection rollup (all fail-open).
+try:
+    sys.path.insert(0, str(HERMES_HOME / "agents"))
+    import agentscape
+except Exception:
+    agentscape = None
+
 # Core Hermes modules (all optional - graceful degradation)
 try:
     import narrative_memory as _narrative_memory
@@ -115,6 +123,9 @@ class AutonomousAgent(ABC):
         self.topic_id = topic_id
         self.cycle_interval = cycle_interval_minutes
         self.tools = tools or {}
+        # agentscape knobs (subclasses may narrow)
+        self.two_tap_actions = ("heal", "apply_updates", "clean_disk", "notify")
+        self.verify_actions = ("heal",)
         
         # State files
         self.state_file = STATE_DIR / f"{name}_state.json"
@@ -249,6 +260,12 @@ class AutonomousAgent(ABC):
         
         try:
             tid = thread_id or self.topic_id
+            if agentscape:
+                keep, revised = agentscape.critique_message(self.name, text)
+                if not keep:
+                    _log(self.name, "outbound message rejected by critique", "WARN")
+                    return False
+                text = revised
             if parse_mode == "Markdown" and _HAS_TELEGRAM:
                 try:
                     text = _md_escape(text)
@@ -429,9 +446,49 @@ class AutonomousAgent(ABC):
         # 4. PLAN
         plans = self.plan(signals, insights, anticipations)
         
+        # 4b. TWO-TAP: second model review before high-impact actions execute
+        try:
+            if agentscape and plans:
+                _filtered = []
+                for _p in plans:
+                    _a = _p.get("action")
+                    if _a in self.two_tap_actions:
+                        _ok, _why = agentscape.critique_decision(
+                            self.name, _a, json.dumps(_p)[:500], json.dumps(signals)[:700])
+                        if _ok:
+                            _filtered.append(_p)
+                        else:
+                            _log(self.name, f"two-tap rejected {_a}: {_why[:90]}", "WARN")
+                    else:
+                        _filtered.append(_p)
+                plans = _filtered
+        except Exception:
+            pass
+        
         # 5. ACT
         results = self.act(plans, signals)
         self.state["action_history"] = (self.state.get("action_history", []) + results)[-100:]
+        
+        # 5b. LEDGER + VERIFY: every action lands in the unified decision ledger
+        try:
+            if agentscape:
+                _outmap = {"ok": "success", "sent": "sent", "added": "added", "done": "success",
+                           "skipped": "skipped", "blocked": "blocked", "error": "failed", "failed": "failed"}
+                for _r in results:
+                    _act = _r.get("action", "?")
+                    _st = _r.get("status", "unknown")
+                    _out = _outmap.get(_st, _st or "unknown")
+                    _ev = _r.get("detail") or ""
+                    _tgt = _r.get("target", "") or _r.get("domain", "") or ""
+                    if _act in self.verify_actions:
+                        _vout, _vev = agentscape.verify_target(self.name, _act, _tgt)
+                        if _vout != "unknown":
+                            _out = _vout
+                        _ev = _vev or _ev
+                    agentscape.record(self.name, _act, json.dumps(_r)[:200], outcome=_out,
+                                      target=_tgt, evidence=str(_ev)[:200])
+        except Exception:
+            pass
         
         # 6. REFLECT
         reflection = self.reflect(signals, insights, plans, results)

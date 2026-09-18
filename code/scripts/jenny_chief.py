@@ -33,6 +33,12 @@ from jenny_agent_autonomous import JennyAgent
 import agent_manager
 import jenny_llm
 
+try:
+    sys.path.insert(0, str(Path.home() / ".hermes" / "agents"))
+    import agentscape
+except Exception:
+    agentscape = None
+
 PRIO = {"high": 8, "normal": 5, "low": 3}
 
 
@@ -204,24 +210,35 @@ class JennyChief(JennyAgent):
 
     def _run_tool(self, tool: str, args: str) -> bool:
         try:
+            _r = False
             if tool == "send_telegram":
-                return self.send_to_own_topic(str(args)[:2000])
-            if tool == "create_bus_task":
+                _r = self.send_to_own_topic(str(args)[:2000])
+                _out = "sent"
+            elif tool == "create_bus_task":
                 self.create_bus_task("jenny-span", str(args), owner="jenny")
-                return True
-            if tool == "run_command":
+                _r = True
+                _out = "added"
+            elif tool == "run_command":
                 cmd = str(args).strip()
                 if _log and self._SHELL_BAD.search(cmd):
                     _log(self.name, "run_command REJECTED (unsafe pattern): %s" % cmd[:120], "WARN")
-                    return False
-                allowed = any(cmd.startswith(p) for p in self._ALLOWED_COMMAND_PREFIXES)
-                if not allowed:
-                    _log(self.name, "run_command REJECTED (not in allowlist): %s" % cmd[:120], "WARN")
-                    return False
-                from autonomous_agent import _run_cmd
-                res = _run_cmd(cmd, timeout=30)
-                return bool(res.get("ok"))
-            return False
+                    _r, _out = False, "blocked"
+                else:
+                    allowed = any(cmd.startswith(p) for p in self._ALLOWED_COMMAND_PREFIXES)
+                    if not allowed:
+                        _log(self.name, "run_command REJECTED (not in allowlist): %s" % cmd[:120], "WARN")
+                        _r, _out = False, "blocked"
+                    else:
+                        from autonomous_agent import _run_cmd
+                        res = _run_cmd(cmd, timeout=30)
+                        _r, _out = bool(res.get("ok")), ("success" if res.get("ok") else "failed")
+            try:
+                if agentscape:
+                    agentscape.record("jenny_chief", tool, str(args)[:200], outcome=_out,
+                                      target="", evidence="", risk=(tool in ("run_command", "create_bus_task")))
+            except Exception:
+                pass
+            return _r
         except Exception as e:
             _log(self.name, "tool %s failed: %s" % (tool, e), "ERROR")
             return False

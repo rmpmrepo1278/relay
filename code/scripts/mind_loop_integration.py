@@ -114,6 +114,17 @@ def llm_plan_overlay(plans: list, insights: list, anticipations: list) -> list:
         p.setdefault("_llm_overlay", True)
         selected.append(p)
 
+    # Ledger: meta-planner decision is observable like any other action.
+    try:
+        sys.path.insert(0, str(Path.home() / ".hermes" / "agents"))
+        import agentscape
+        agentscape.record("mind_loop", "llm_plan_overlay",
+                          f"kept {len(keep)}/{len(plans)}, deferred {len(defer)}; {data.get('note', '')[:120]}",
+                          outcome="success", params={"kept": sorted(keep), "deferred": sorted(defer)},
+                          risk=False)
+    except Exception:
+        pass
+
     # One bounded proposal, only from the harmless action family.
     propose = data.get("propose")
     if isinstance(propose, dict):
