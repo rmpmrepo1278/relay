@@ -17,8 +17,8 @@ HOP = os.environ.get("BAIDEHI_HOP", "http://127.0.0.1:8083/v1/chat/completions")
 MODEL = os.environ.get("BAIDEHI_MODEL", "claude-sonnet-4-20250514")
 MODELS = [m.strip() for m in os.environ.get("BAIDEHI_MODELS", "").split(",") if m.strip()]
 if not MODELS:
-    MODELS = [MODEL, "gemini/gemini-2.5-flash", "haiku-4.5"]
-WORKERS = int(os.environ.get("BAIDEHI_WORKERS", "3"))
+    MODELS = ["claude-sonnet-4-20250514", "haiku-4.5"]
+WORKERS = int(os.environ.get("BAIDEHI_WORKERS", "1"))
 ONLY = [int(x) for x in os.environ.get("BAIDEHI_ONLY", "").split(",") if x.strip()]
 
 WM = "Agamnigam Digital Presevation Foundation"
@@ -63,21 +63,22 @@ def page_header(pg):
 
 def translate(text):
     last = None
-    for model in MODELS:
-        payload = {"model": model, "messages": [{"role": "user", "content": INSTR + text}],
-                   "max_tokens": 2000, "temperature": 0.2}
-        req = urllib.request.Request(HOP, data=json.dumps(payload).encode(),
-                                     headers={"Content-Type": "application/json"})
-        try:
-            with urllib.request.urlopen(req, timeout=50) as r:
-                d = json.load(r)
-            out = (d.get("choices") or [{}])[0].get("message", {}).get("content", "")
-            if not out.strip():
-                raise RuntimeError("empty content")
-            return out.strip()
-        except Exception as e:
-            last = f"{model}: {type(e).__name__}: {str(e)[:80]}"
-            time.sleep(1)
+    for attempt in range(2):
+        for model in MODELS:
+            payload = {"model": model, "messages": [{"role": "user", "content": INSTR + text}],
+                       "max_tokens": 2000, "temperature": 0.2}
+            req = urllib.request.Request(HOP, data=json.dumps(payload).encode(),
+                                         headers={"Content-Type": "application/json"})
+            try:
+                with urllib.request.urlopen(req, timeout=45) as r:
+                    d = json.load(r)
+                out = (d.get("choices") or [{}])[0].get("message", {}).get("content", "")
+                if not out.strip():
+                    raise RuntimeError("empty content")
+                return out.strip()
+            except Exception as e:
+                last = f"{model}: {type(e).__name__}: {str(e)[:70]}"
+                time.sleep(1)
     raise RuntimeError(last or "all models failed")
 
 def main():
