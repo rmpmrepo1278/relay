@@ -267,7 +267,7 @@ def anticipate_intelligence(state, signals, insights, anticipations):
             if improvement["proposed"] > 0:
                 anticipations.append({
                     "type": "self_improvement",
-                    "content": f"Applied {improvement["proposed"]} improvements from {improvement["pending"]} pending learnings",
+                    "content": f"Applied {improvement['proposed']} improvements from {improvement['pending']} pending learnings",
                     "urgency": "low",
                 })
         except Exception:
@@ -348,7 +348,7 @@ def plan_intelligence(insights, anticipations, plans):
             if next_goal:
                 plans.append({
                     "action": "pursue_goal",
-                    "content": f"Next goal: {next_goal["title"]} ({next_goal["progress"]:.0%})",
+                    "content": f"Next goal: {next_goal['title']} ({next_goal['progress']:.0%})",
                     "priority": "high",
                 })
 
@@ -362,20 +362,18 @@ def plan_intelligence(insights, anticipations, plans):
         except Exception:
             pass
 
-    # Safety: ensure all plans have required keys
+    # Safety: ensure all plans have required keys but NEVER strip payload keys
+    # (command/confidence/verify/requires_confirm/proposal_id/tag ...). Stripping
+    # them made run_command plans fire with an empty command and broke the
+    # /send confirmation contract.
     safe_plans = []
     for p in plans:
         if not isinstance(p, dict):
             continue
-        safe_p = {
-            "action": p.get("action", "generic"),
-            "content": p.get("content", ""),
-            "priority": p.get("priority", "medium"),
-        }
-        # Preserve extra keys (like simulation data)
-        for key in ("simulation", "goal_id", "reason", "source_insight"):
-            if key in p:
-                safe_p[key] = p[key]
+        safe_p = dict(p)
+        safe_p.setdefault("action", "generic")
+        safe_p.setdefault("content", "")
+        safe_p.setdefault("priority", "medium")
         safe_plans.append(safe_p)
 
     return safe_plans

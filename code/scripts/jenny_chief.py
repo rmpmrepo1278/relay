@@ -82,14 +82,22 @@ class JennyChief(JennyAgent):
         for task in directives:
             title = task.get("title", "")
             key = task.get("key")
-            self._mark_handled("directive:%s" % key)
             try:
                 intent = jenny_llm.decide(title, self._board_snapshot())
                 outcome = self._execute_intent(intent, task)
             except Exception as e:
                 _log(self.name, "REACTIVE LLM cycle failed, using fallback: %s" % e, "ERROR")
                 fallback = jenny_llm.fallback_intent(title)
-                outcome = self._execute_intent(fallback, task)
+                try:
+                    outcome = self._execute_intent(fallback, task)
+                except Exception as e2:
+                    _log(self.name, "REACTIVE fallback ALSO failed: %s" % e2, "ERROR")
+                    # Do NOT mark handled and do NOT touch the board task: it stays
+                    # ready, so the next SSE wake / periodic cycle retries it.
+                    self.send_to_own_topic(
+                        "⚠️ I couldn't process: %s — will retry." % title[:100])
+                    continue
+            self._mark_handled("directive:%s" % key)
             results.append(outcome)
             _log(self.name, "REACTIVE %s -> %s" % (title[:50], json.dumps(outcome)[:200]))
         return results

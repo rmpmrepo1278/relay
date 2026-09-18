@@ -32,6 +32,7 @@ Usage:
 from __future__ import annotations
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -87,12 +88,54 @@ if _tracer is None:
 
     _tracer = _NullTracer()
 
+# Fail-closed action gate: uses the shared guardrails module (guardrails.yaml
+# overrides via load_guardrails("mind_loop")) and enforces a read-only
+# diagnostic allowlist for run_command. Anything off the allowlist is blocked.
 try:
-    from guardrails import Guardrails, Policy
-    _guardrails = Guardrails()
-    # Register domain policies
-    for domain in ("INFRA", "CAREER", "KNOWLEDGE", "PERSONAL", "MEDIA"):
-        _guardrails.add_policy(Policy.defaults(domain))
+    from guardrails import load_guardrails as _load_mind_guardrails
+    _mind_guardrail_overrides = _load_mind_guardrails("mind_loop")
+
+    _READONLY_DIAGNOSTIC_CMDS = {
+        "git status --porcelain",
+        "git rev-parse --show-toplevel",
+        "df -h / /mnt/usb",
+        "df -h",
+        "free -h",
+        "uptime && df -h",
+        "kopia snapshot list --json | head -5",
+        "sudo kopia snapshot list --json",
+        "ls -la /mnt/usb/kopia-repo-volumes 2>/dev/null || echo 'kopia mount check'",
+        "cat /proc/meminfo | head -5",
+    }
+    _READONLY_CMD_PREFIXES = ("git status", "git rev-parse", "df ", "free ",
+                              "uptime", "kopia snapshot list", "ls -la ",
+                              "cat /proc/meminfo", "sudo kopia snapshot list")
+    _CMD_DANGER = r"(;|\brm\b|\bdd\b|\bmv\b|\bmkfs\b|\breboot\b|\bshutdown\b|\bchmod\b|\bchown\b|>>?)"
+
+    class _PolicyResult:
+        def __init__(self, allowed, required_confirmation=False, reason=""):
+            self.allowed = allowed
+            self.required_confirmation = required_confirmation
+            self.reason = reason
+
+    class _Guardrails:
+        def check(self, domain, action, content, command=""):
+            if action in ("send_telegram", "add_task", "create_event", "send_email"):
+                return _PolicyResult(True)
+            if action == "run_command":
+                cmd = (command or "").strip()
+                extra = set(_mind_guardrail_overrides.get("extra_plan_actions", []))
+                if cmd in _READONLY_DIAGNOSTIC_CMDS or cmd in extra:
+                    return _PolicyResult(True)
+                if (any(cmd.startswith(p) for p in _READONLY_CMD_PREFIXES)
+                        and not re.search(_CMD_DANGER, cmd)):
+                    return _PolicyResult(True)
+                return _PolicyResult(False, False,
+                    f"run_command not on the read-only diagnostic allowlist: "
+                    f"{cmd[:100]!r} (extend via guardrails.yaml mind_loop.extra_plan_actions)")
+            return _PolicyResult(False, False,
+                                 f"action {action!r} not authorized by mind_loop guardrails")
+    _guardrails = _Guardrails()
 except Exception:
     _guardrails = None
 
@@ -215,19 +258,35 @@ def observe_health() -> dict:
 
 
 def observe_email() -> dict:
-    """Check for new emails. The full digest is generated once per day by the
-    scheduler (email_intelligence job, 12:00). This loop only surfaces a digest
-    if one was pushed today — it never re-runs the generator, which is what
-    caused duplicate email messages every 30s cycle."""
+    """Check today's pushed email digest (alerts_inbox.jsonl, written by the
+    scheduler's email_intelligence job). The loop only surfaces a digest that
+    was pushed — it never re-runs the generator. Parses the whole-file JSON
+    array so 'Actionable' headers and real sender addresses are seen."""
     digest_file = HERMES_HOME / "data" / "alerts_inbox.jsonl"
-    if digest_file.exists():
-        try:
-            content = digest_file.read_text()
-            if "email" in content.lower() or "digest" in content.lower():
-                return {"has_actionable": "actionable" in content.lower()}
-        except Exception:
-            pass
-    return {}
+    if not digest_file.exists():
+        return {}
+    try:
+        content = digest_file.read_text(encoding="utf-8")
+        data = json.loads(content)
+    except Exception:
+        # tolerate a generator mid-write / non-JSON leftovers
+        return {}
+    if not isinstance(data, list):
+        return {}
+    actionable = []
+    for record in data:
+        if not isinstance(record, dict):
+            continue
+        msg = str(record.get("message", ""))
+        addr_m = re.search(r"<([^<>@\s]+@[^<>@\s]+)>", msg)
+        if "actionable" in msg.lower():
+            actionable.append({
+                "summary": msg[:240],
+                "from": addr_m.group(1) if addr_m else "",
+                "severity": record.get("severity", "info"),
+            })
+    return {"has_actionable": bool(actionable), "actionable": actionable[:5],
+            "count": len(actionable)}
 
 
 def observe_calendar() -> dict:
@@ -244,8 +303,17 @@ def observe_calendar() -> dict:
     return {}
 
 
+_external_fetch_ts = 0.0
+
+
 def observe_external_signals() -> dict:
-    """Monitor external signals: HN, arXiv, GitHub trending, job market."""
+    """Monitor external signals: HN, arXiv, GitHub trending, job market.
+    Fetched at most hourly — HN cadence was ~288 requests/day (every 5-min
+    cycle); hourly is plenty for trend detection."""
+    global _external_fetch_ts
+    if time.time() - _external_fetch_ts < 3600:
+        return {}
+    _external_fetch_ts = time.time()
     signals = {}
 
     # Hn-buzz: trending topics
@@ -284,25 +352,6 @@ for i in ids[:5]:
     return signals
 
 
-def observe_telegram_history() -> dict:
-    """Read recent Telegram conversation for context + extract commitments."""
-    log_file = HERMES_HOME / "logs" / "agent.log"
-    if not log_file.exists():
-        return {}
-    try:
-        # Get last 50 lines of inbound messages
-        result = subprocess.run(
-            ["grep", "inbound message", str(log_file)],
-            capture_output=True, text=True, timeout=5,
-        )
-        if result.returncode == 0:
-            lines = result.stdout.strip().split("\n")[-20:]
-            return {"recent_messages": lines}
-    except Exception:
-        pass
-    return {}
-
-
 def observe_commitments() -> dict:
     """Check commitment status — overdue, upcoming, health."""
     try:
@@ -331,7 +380,6 @@ def run_observation() -> dict:
         "email": observe_email(),
         "calendar": observe_calendar(),
         "external": observe_external_signals(),
-        "telegram": observe_telegram_history(),
         "commitments": observe_commitments(),
     }
     log(f"Observation complete. Health score: {signals['health'].get('score', '?')}")
@@ -780,7 +828,8 @@ def execute_plan(plans: list, state: dict) -> list:
             # Guardrail check before execution
             if _guardrails:
                 domain = ACTION_DOMAINS.get(action, "GENERAL")
-                guard = _guardrails.check(domain, action, plan.get("content", ""))
+                guard = _guardrails.check(domain, action, plan.get("content", ""),
+                                          plan.get("command", ""))
                 if not guard.allowed and not guard.required_confirmation:
                     results.append({"action": action, "status": "blocked", "reason": guard.reason})
                     log(f"Action blocked by guardrails: {action} — {guard.reason}", level="WARN")
@@ -961,60 +1010,30 @@ def _record_self_outcome(action: str, outcome: str, confidence: float | None = N
 
 def _propose_authoring_action(insight: dict, state: dict) -> dict | None:
     """
-    Close the insight→done loop by proposing an authoring action (email reply,
-    calendar event, command, Telegram message) for a cross-domain insight.
-    Registers the proposal in the bridge's proposal queue so /send or /skip
-    can execute/skip it. Returns a plan dict with action='send_telegram' (the
-    preview message) + proposal_id for confirmation tracking.
+    Close the insight→done loop by proposing ONE grounded authoring action.
+    Only emails with a REAL recipient from today's digest are proposed — no
+    placeholder addresses, no recurring phantom calendar blocks. Registers the
+    proposal in the bridge queue so /send or /skip can execute/skip it, and
+    returns a plan dict for confirmation tracking in execute_plan.
     """
-    content = insight.get("content", "").lower()
-    suggestions = []
-
-    # Actionable email → draft a reply template
-    if "actionable" in content or "invoice" in content or "payment" in content:
-        suggestions.append({
-            "action": "send_email",
-            "payload": {
-                "to": "vendor@example.com",
-                "subject": f"Re: {insight.get('content', '')[:60]}",
-                "body": f"Hi,\n\nI noticed the invoice/payment reminder. I'll process this today and confirm back.\n\n— Hermes (on your behalf)",
-            },
-            "priority": 7,
-            "tag": "email_draft",
-        })
-
-    # Calendar + email overlap → propose a meeting
-    cal = state.get("last_signals", {}).get("calendar", {})
     email = state.get("last_signals", {}).get("email", {})
-    if cal.get("upcoming") and email.get("has_actionable"):
-        from datetime import timedelta
-        now = datetime.now(timezone.utc) + timedelta(days=2)
-        suggestions.append({
-            "action": "create_event",
-            "payload": {
-                "summary": "Address actionable emails",
-                "start": now.isoformat(),
-                "end": (now + timedelta(minutes=30)).isoformat(),
-                "description": "Block time to process pending actionable emails from last 24h.",
-            },
-            "priority": 6,
-            "tag": "calendar_proposal",
-        })
-
-    # Streak break (wellness) → suggest break
-    wellness = state.get("last_signals", {}).get("wellness", {})
-    if wellness.get("stress_level", "") == "high":
-        suggestions.append({
-            "action": "send_telegram",
-            "payload": {
-                "content": "🧘‍♂️ Stress detected. Suggest: take a 10-min walk or deep-work break. Reply /done or /skip",
-            },
-            "priority": 5,
-            "tag": "wellness_nudge",
-        })
-
-    if not suggestions:
+    actionable = email.get("actionable", []) or []
+    targets = [a for a in actionable if a.get("from")]
+    if not targets:
         return None
+
+    best = targets[0]
+    suggestions = [{
+        "action": "send_email",
+        "payload": {
+            "to": best["from"],
+            "subject": "Re: your message",
+            "body": (f"Hi,\n\nThanks for your note — {best['summary'][:80]}\n"
+                     "I'll look into this and get back to you.\n\n— Hermes (on your behalf)"),
+        },
+        "priority": 7,
+        "tag": "email_draft",
+    }]
 
     s = max(suggestions, key=lambda x: x["priority"])
 
@@ -1306,7 +1325,27 @@ def run_cycle():
         # 5. ACT  — execute plans via multi-agent sub-specialists
         with tracer.span("act", parent=cycle_span) as act_span:
             all_results = []
+            # Gate FIRST so the orchestrator never sees an unauthorized plan.
+            gated_plans = []
+            blocked_counts = {}
             for plan in plans:
+                action = plan.get("action")
+                if _guardrails:
+                    domain = ACTION_DOMAINS.get(action, "GENERAL")
+                    guard = _guardrails.check(domain, action,
+                                              plan.get("content", ""),
+                                              plan.get("command", ""))
+                    if not guard.allowed and not guard.required_confirmation:
+                        all_results.append({"action": action, "status": "blocked",
+                                            "reason": guard.reason})
+                        blocked_counts[action] = blocked_counts.get(action, 0) + 1
+                        continue
+                gated_plans.append(plan)
+            if blocked_counts:
+                log("Blocked by guardrails: "
+                    + ", ".join(f"{a}×{n}" for a, n in blocked_counts.items()),
+                    level="WARN")
+            for plan in gated_plans:
                 # Decompose plan into sub-tasks + dispatch to specialist agents
                 if _NEW_MODULES:
                     try:
