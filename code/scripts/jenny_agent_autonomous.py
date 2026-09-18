@@ -54,7 +54,7 @@ class JennyAgent(AutonomousAgent):
                     pass
             if g:
                 self._guardrails_override = g
-                _log("jenny guardrails: active overrides %s" % sorted(g.keys(), key=str))
+                _log("jenny", "guardrails: active overrides %s" % sorted(g.keys(), key=str))
         except ImportError:
             pass
     

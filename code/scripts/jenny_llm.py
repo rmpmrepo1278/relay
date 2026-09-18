@@ -47,7 +47,7 @@ try:
         ALLOWED_INTENTS |= set(_G["extra_intents"])
     for _k in ("max_delegations", "max_steps", "max_reply", "max_args"):
         if _G.get(_k):
-            globals()[_k] = _G[_k]
+            globals()[_k.upper()] = _G[_k]
     if _G:
         try:
             os.makedirs(os.path.expanduser("~/.hermes/logs"), exist_ok=True)

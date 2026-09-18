@@ -73,7 +73,7 @@ try:
     if _G.get("clean_disk_allow_volumes"):
         CLEAN_DISK_ALLOW_VOLUMES = True
     if _G:
-        _log("homelab guardrails: active overrides %s" % sorted((k for k, _ in _G.items()), key=str))
+        _log("homelab", "guardrails: active overrides %s" % sorted((k for k, _ in _G.items()), key=str))
 except ImportError:
     _G = {}
 

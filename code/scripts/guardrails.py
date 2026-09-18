@@ -83,14 +83,18 @@ def _validate(agent: str, section: dict) -> dict:
     for key in ("extra_actions", "extra_heal_targets", "extra_delegate_targets",
                 "extra_plan_actions", "extra_tools", "extra_intents"):
         v = section.get(key, [])
-        if isinstance(v, list):
+        if isinstance(v, list) and v:
             out[key] = [str(x) for x in v if isinstance(x, str)]
+            if not out[key]:
+                del out[key]
 
     for key in ("cooldown_min",):
         v = section.get(key, {})
-        if isinstance(v, dict):
+        if isinstance(v, dict) and v:
             out[key] = {k: _as_positive_num(k, x) for k, x in v.items()
                         if isinstance(x, (int, float)) and x > 0}
+            if not out[key]:
+                del out[key]
 
     for key in ("max_plans", "max_delegations", "max_steps", "max_reply",
                 "max_args", "notify_max_len", "disk_warn_pct"):
