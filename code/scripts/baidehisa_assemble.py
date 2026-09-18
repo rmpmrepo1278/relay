@@ -26,6 +26,11 @@ def fmt(text):
     return "<br>\n".join(out)
 
 def para(text):
+    # drop scan-header noise lines the model sometimes passes through
+    noise = re.compile(
+        r"^(Chandigarh|, Chandigarh|.*Odia \(Devanagari Script.*\)$|[\d०-९]{1,4}\s+Odia)|^\.\s*$", re.I)
+    kept = [l for l in text.split("\n") if not noise.match(l.strip())]
+    text = "\n".join(kept)
     # group consecutive non-empty lines into paragraphs, blank line separates
     blocks = []
     cur = []
