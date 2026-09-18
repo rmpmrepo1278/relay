@@ -189,6 +189,9 @@ def _run_job(task_id, task):
     return ok
 
 
+_ACTIVE = {"job": None}
+
+
 def _tick(state, budget):
     daily_cap = int(os.environ.get("HEAVY_DAILY_TOKEN_BUDGET", "500000"))
     tasks = _all_tasks()
@@ -197,6 +200,18 @@ def _tick(state, budget):
     for tid, t in sorted(heavy.items()):
         st = t.get("status")
         title = t.get("title", tid)
+        if st == "running" and _ACTIVE["job"] != tid:
+            # A `running` task with no in-process run means the previous
+            # dispatcher died mid-job. Retry exactly up to 3 times.
+            retries = state.get("retries", {}).get(tid, 0) + 1
+            if retries >= 3:
+                _set(tid, status="failed", proof=f"interrupted {retries}x, giving up", result="interrupted")
+                state["retries"][tid] = retries
+                continue
+            state["retries"][tid] = retries
+            _set(tid, status="approved", proof=f"recovered from interrupted run ({retries})")
+            _record("hermes-heavy", "recover", title, outcome="retry", target=tid,
+                    evidence=f"retry {retries}")
         if st == "ready":
             dup = state.get("last_run")
             if dup and title == dup.get("title") and (now - datetime.fromisoformat(dup.get("at", _now()))).total_seconds() < 6 * 3600:
@@ -220,7 +235,9 @@ def _tick(state, budget):
                 continue
             _set(tid, status="running", proof=f"started {_now()}")
             _record("hermes-heavy", "dispatch_start", title, outcome="running", target=tid)
+            _ACTIVE["job"] = tid
             ok = _run_job(tid, t)
+            _ACTIVE["job"] = None
             state["last_run"] = {"title": title, "at": now.isoformat()}
             state["failures"][tid] = state.get("failures", {}).get(tid, 0) + (0 if ok else 1)
     _save(STATE_FILE, state)
@@ -229,7 +246,7 @@ def _tick(state, budget):
 def main():
     once = "--once" in sys.argv or "-1" in sys.argv
     _log(f"heavy-dispatcher up: toolsets=[{TOOLSETS}] runtime={RUNTIME} topic={PERSONAL_TOPIC}")
-    state = _load(STATE_FILE, {"proposals": {}, "failures": {}, "last_run": None})
+    state = _load(STATE_FILE, {"proposals": {}, "failures": {}, "last_run": None, "retries": {}})
     while True:
         try:
             budget = _budget()
