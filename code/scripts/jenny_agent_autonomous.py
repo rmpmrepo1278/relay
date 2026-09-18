@@ -538,6 +538,10 @@ class JennyAgent(AutonomousAgent):
 
     def plan(self, signals: dict, insights: list, anticipations: list) -> list:
         """Create coordination plans. LLM-first with deterministic fallback."""
+        # Nothing to decide: no fresh insights and no scheduled work → no LLM call.
+        if not insights and not anticipations:
+            return []
+
         llm_plans = self._llm_plan(signals, insights, anticipations)
         if llm_plans:
             validated = []
