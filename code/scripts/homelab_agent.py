@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone, timedelta
@@ -106,6 +107,8 @@ def _run_cmd(cmd: str, timeout: int = 30) -> Dict:
 
 def check_docker() -> Dict:
     """Check Docker container health."""
+    if not shutil.which("docker"):
+        return {"status": "n/a", "error": "no docker CLI in this environment"}
     # Get running containers with status (Health field not always available)
     r = _run_cmd("docker ps --format '{{.Names}}|{{.Status}}'")
     if not r["ok"]:
@@ -131,6 +134,8 @@ def check_docker() -> Dict:
 
 def check_systemd(services: List[str] = None) -> Dict:
     """Check systemd user services."""
+    if not shutil.which("systemctl"):
+        return {"status": "n/a", "error": "no systemctl in this environment"}
     if services is None:
         services = [
             "agentbus", "agentbus-monitor", "hermes-mind-loop",
@@ -174,8 +179,13 @@ def check_systemd(services: List[str] = None) -> Dict:
 
 def check_disk(paths: List[str] = None) -> Dict:
     """Check disk usage."""
+    if not shutil.which("df"):
+        return {"status": "n/a", "error": "no df in this environment"}
     if paths is None:
         paths = ["/", "/home", "/mnt/usb", "/var/lib/docker"]
+    # Never let a nonexistent mount drag a healthy host into "error" — probes
+    # run in odd environments (bridge container) with different mounts.
+    paths = [p for p in paths if os.path.exists(p)] or ["/"]
     r = _run_cmd("df -h " + " ".join(paths))
     if not r["ok"]:
         return {"status": "error", "error": r["stderr"]}
@@ -197,6 +207,8 @@ def check_disk(paths: List[str] = None) -> Dict:
 
 def check_memory() -> Dict:
     """Check memory usage."""
+    if not shutil.which("free"):
+        return {"status": "n/a", "error": "no free in this environment"}
     r = _run_cmd("free -h")
     if not r["ok"]:
         return {"status": "error", "error": r["stderr"]}
@@ -223,12 +235,16 @@ def check_memory() -> Dict:
 
 
 def check_backups() -> Dict:
-    """Check Kopia backup status."""
-    r = _run_cmd("kopia repository status 2>&1")
+    """Check Kopia backup status (repository lives under root's config — the
+    backup jobs run via `sudo -n kopia`; plain `kopia` reports "not connected"
+    and we were alerting on that as a config gap)."""
+    if not shutil.which("kopia"):
+        return {"status": "n/a", "error": "no kopia CLI in this environment"}
+    r = _run_cmd("sudo -n kopia repository status 2>&1")
     if "not connected" in r["stdout"].lower() or "not initialized" in r["stdout"].lower():
         return {"status": "not_configured", "note": "Kopia repository not connected"}
 
-    r = _run_cmd("kopia snapshot list --json 2>/dev/null | tail -20")
+    r = _run_cmd("sudo -n kopia snapshot list --json 2>/dev/null | tail -20")
     if not r["ok"] or not r["stdout"]:
         return {"status": "warning", "error": "kopia snapshots not available"}
 
@@ -287,9 +303,15 @@ def check_updates() -> Dict:
 
 
 def check_agentbus() -> Dict:
-    """Check agentbus health."""
+    """Check agentbus health. agentbus binds loopback on the HOST only; a
+    connection refused from inside a container is an environment artifact, not
+    a host outage (the host daemon reports it truthfully)."""
+    if not shutil.which("curl"):
+        return {"status": "n/a", "error": "no curl in this environment"}
     r = _run_cmd("curl -s http://127.0.0.1:9107/status")
     if not r["ok"] or not r["stdout"]:
+        if "refused" in (r.get("stderr", "") or "").lower():
+            return {"status": "n/a", "error": "agentbus is host-loopback only; not reachable in this environment"}
         return {"status": "down", "error": "agentbus unreachable"}
 
     try:
@@ -316,8 +338,13 @@ def run_full_health_check() -> Dict:
         "agentbus": check_agentbus(),
     }
 
+    # Probes that cannot run in this environment ("n/a", e.g. the bridge container
+    # has no docker/systemd/df view of the host) must NOT drag the overall into
+    # "critical" — they are ignored, not treated as failures.
+    real = [c.get("status", "unknown") for c in checks.values() if c.get("status") != "n/a"]
+
     # Determine overall status
-    statuses = [c.get("status", "unknown") for c in checks.values()]
+    statuses = real
     if any(s in ("down", "error") for s in statuses):
         overall = "critical"
     elif any(s in ("degraded", "stale", "warning", "aging") for s in statuses):
@@ -329,28 +356,11 @@ def run_full_health_check() -> Dict:
     else:
         overall = "healthy"
 
-    # Build notification if not healthy
-    if overall != "healthy":
-        thread_id = _get_topic_id()
-        lines = [f"🏗️ *Homelab Health: {overall.upper()}*"]
-        for name, check in checks.items():
-            status = check.get("status", "?")
-            if status not in ("healthy", "not_configured", "current"):
-                detail = ""
-                if name == "docker" and check.get("unhealthy"):
-                    detail = f" — unhealthy: {', '.join(check['unhealthy'])}"
-                elif name == "systemd" and check.get("failed"):
-                    detail = f" — failed: {', '.join(check['failed'])}"
-                elif name == "disk" and check.get("issues"):
-                    parts = [f'{i["mount"]} {i["usage_pct"]}%' for i in check["issues"]]
-                    detail = " — " + ", ".join(parts)
-                elif name == "backups":
-                    detail = f" — age: {check.get('age_hours', '?')}h"
-                elif name == "updates":
-                    detail = f" — {check.get('total', 0)} updates ({check.get('security', 0)} security)"
-                lines.append(f"  {name}: *{status}*{detail}")
-        lines.append(f"\n_Use `homelab status` for details_")
-        _send_telegram("\n".join(lines), thread_id=thread_id)
+    # NO auto-send of the health card from here. Callers decide (the 15-min
+    # daemon notifies on transitions; the bridge formats its own reply). This
+    # function previously sent "🏗️ Homelab Health: CRITICAL" on every non-healthy
+    # invocation — which fired inside the bridge container against wrong-env
+    # probes and spammed the topic.
 
     # Record to narrative
     _record_narrative("observation", f"Homelab health check: {overall}", {

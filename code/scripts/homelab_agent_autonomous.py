@@ -48,8 +48,12 @@ RISK_COOLDOWN_MIN = {
     "heal": 30,            # don't restart-loop a flapping container
     "apply_updates": 360,  # at most ~4/day
     "clean_disk": 120,
-    "notify": 15,          # rate-limit Telegram spam
+    "notify": 15,          # rate-limit Telegram spam (floor; transition policy on top)
+    "verify_backups": 360, # kopia verify is heavy — max ~4/day, not every cycle
 }
+# Alerts are transition-only: same (domain,status) is never re-notified within
+# this window even if the LLM asks. Keeps steady-state noise out of the topic.
+NOTIFY_MIN_INTERVAL = 6 * 3600  # 6h floor for repeats on the same signature
 DISK_WARN_PCT = 85
 NOTIFY_MAX_LEN = 400
 FULL_UPGRADE = os.environ.get("HOMELAB_ALLOW_FULL_UPGRADE", "").lower() in ("1", "true", "yes")
@@ -176,10 +180,15 @@ class HomelabAgent(AutonomousAgent):
 
     def _check_backups(self) -> dict:
         try:
-            r = subprocess.run("kopia repository status 2>&1", shell=True, capture_output=True, text=True, timeout=10)
-            if "not connected" in r.stdout.lower():
-                return {"status": "not_configured", "note": "Kopia repository not connected"}
-            r2 = subprocess.run("kopia snapshot list --json 2>/dev/null | tail -5", shell=True, capture_output=True, text=True, timeout=10)
+            # The Kopia repository lives under root's config (backup jobs run via
+            # sudo -n); running plain `kopia` bellows "not connected" and we were
+            # alerting on that as "not configured" — a false alarm.
+            r = subprocess.run("sudo -n kopia repository status 2>&1", shell=True, capture_output=True, text=True, timeout=15)
+            if "not connected" in (r.stdout + r.stderr).lower() or "not initialized" in (r.stdout + r.stderr).lower():
+                return {"status": "error", "error": "Kopia repository not connected"}
+            if r.returncode != 0 and "sudo" not in r.stderr:
+                return {"status": "error", "error": (r.stderr or r.stdout)[:200]}
+            r2 = subprocess.run("sudo -n kopia snapshot list --json 2>/dev/null | tail -5", shell=True, capture_output=True, text=True, timeout=15)
             snaps = []
             for line in r2.stdout.strip().splitlines():
                 try:
@@ -187,7 +196,7 @@ class HomelabAgent(AutonomousAgent):
                 except Exception:
                     pass
             if not snaps:
-                return {"status": "warning", "error": "no snapshots"}
+                return {"status": "error", "error": "no snapshots"}
             latest = snaps[-1]
             age_h = 0
             ts = latest.get("startTime", "")
@@ -434,6 +443,50 @@ class HomelabAgent(AutonomousAgent):
     def _apply_cooldown(self, action: str):
         self.state.setdefault("cooldowns", {})[action] = time.time() + RISK_COOLDOWN_MIN.get(action, 60) * 60
 
+    def _notify_sig(self, plan: dict, signals: dict) -> str:
+        """Stable alert signature = (domain, status) of the abnormal signal, so
+        steady-state noise never re-fires and a transition always alerts once."""
+        abnormal = {
+            name: ch.get("status")
+            for name, ch in signals.items()
+            if name != "timestamp" and ch.get("status") in (
+                "down", "error", "stale", "aging", "warning", "degraded",
+                "updates_available", "not_configured")
+        }
+        if not abnormal:
+            return "general|"
+        content = str(plan.get("content") or plan.get("text") or "").lower()
+        domain = str(plan.get("domain") or plan.get("source") or "").lower()
+        if domain not in abnormal:
+            # Match the abnormal signal the notify is actually about.
+            for name in abnormal:
+                if name in content:
+                    domain = name
+                    break
+        if domain not in abnormal:
+            # Unanchored alert — only allow if exactly one thing is wrong.
+            if len(abnormal) == 1:
+                domain = next(iter(abnormal))
+            else:
+                return "general|"
+        return f"{domain}|{abnormal[domain]}"
+
+    def _notify_policy(self, plan: dict, signals: dict) -> tuple:
+        """Transition + silence-window alerting. Rejects empty prose (the old
+        'infra update' fallback) and repeats of the same (domain,status)
+        within NOTIFY_MIN_INTERVAL."""
+        sig = self._notify_sig(plan, signals)
+        if sig == "general|":
+            return False, "no abnormal signal to report (or multiple unanchored)"
+        now = time.time()
+        notified = self.state.setdefault("notified", {})
+        last = notified.get(sig)
+        if last and (now - last) < NOTIFY_MIN_INTERVAL:
+            return False, f"{sig} already alerted (6h window)"
+        notified[sig] = now
+        self.state.setdefault("last_signal_status", {})
+        return True, ""
+
     def _fallback_plan(self, signals: dict, insights: List[dict], anticipations: List[dict]) -> List[dict]:
         """Deterministic fallback when the LLM planner is unavailable/rejected."""
         plans = []
@@ -504,10 +557,18 @@ class HomelabAgent(AutonomousAgent):
                     results.append({"action": "apply_updates", "scope": scope, "status": "ok", "detail": self._apply_updates(scope)})
 
                 elif action == "notify":
-                    content = str(plan.get("content") or plan.get("text") or "infra update")[:NOTIFY_MAX_LEN]
-                    self.send_to_own_topic(f"⚠️ {content}")
+                    content = str(plan.get("content") or plan.get("text") or "").strip()
+                    if not content:
+                        results.append({"action": "notify", "status": "skipped", "reason": "empty content"})
+                        continue
+                    ok, why = self._notify_policy(plan, signals)
+                    if not ok:
+                        _log(self.name, f"notify rejected: {why}", "WARN")
+                        results.append({"action": "notify", "status": "skipped", "reason": why})
+                        continue
+                    self.send_to_own_topic(f"⚠️ {content[:NOTIFY_MAX_LEN]}")
                     self._apply_cooldown(action)
-                    results.append({"action": "notify", "status": "ok"})
+                    results.append({"action": "notify", "status": "ok", "text": content[:80]})
 
                 elif action == "nothing":
                     results.append({"action": "nothing", "status": "ok"})
@@ -549,7 +610,7 @@ class HomelabAgent(AutonomousAgent):
         return {"error": f"Unknown domain: {domain}"}
 
     def _verify_backups(self) -> dict:
-        result = subprocess.run("kopia repository verify 2>/dev/null || echo 'verify failed'", shell=True, capture_output=True, text=True, timeout=300)
+        result = subprocess.run("sudo -n kopia repository verify 2>/dev/null || echo 'verify failed'", shell=True, capture_output=True, text=True, timeout=300)
         return {"ok": "ERROR" not in result.stdout}
 
     def _clean_disk(self) -> dict:
@@ -579,6 +640,13 @@ class HomelabAgent(AutonomousAgent):
             hist = self.state.get("health_history", [])
             hist.append({"ts": datetime.now(timezone.utc).isoformat(), "docker_status": health})
             self.state["health_history"] = hist[-100:]
+
+        # Remember last-seen status per domain → notify becomes transition-only.
+        lss = self.state.setdefault("last_signal_status", {})
+        for name, check in signals.items():
+            if name == "timestamp":
+                continue
+            lss[name] = check.get("status", "?")
 
         # Record planner provenance so we can audit deterministic vs LLM decisions.
         reflection["planner"] = {
