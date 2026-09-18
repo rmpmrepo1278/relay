@@ -13,6 +13,8 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any
 import json
 import os
+import re
+import time
 from pathlib import Path
 
 
@@ -351,35 +353,218 @@ class JennyAgent(AutonomousAgent):
         
         return insights
     
-    # ─── ANTICIPATE ──────────────────────────────────────────────────────────
-    
+# ─── ANTICIPATE ──────────────────────────────────────────────────────────
+
     def anticipate(self, signals: dict, insights: list) -> list:
-        """Predict coordination needs."""
+        """Forecast coordination needs. Context only — the LLM planner decides."""
         anticipations = []
-        
-        # If bills due soon, anticipate Finlay → Homelab coordination
-        # (handled by Finlay agent, but Jenny anticipates cross-agent needs)
-        
-        # If agents missing, anticipate health check (deduped)
+
+        # Missing agents → surface as anticipation (planner may delegate a health check).
         presence = signals.get("presence", {})
         missing = [a for a in ["homelab", "finlay", "housekeep", "calendula", "connector"] if a not in presence]
         for agent in missing:
             key = f"missing:{agent}"
             if not self._is_handled(key, ttl_hours=6):
-                self.delegate_to_agent(agent, f"health_check: {agent} not reporting", priority=7)
-                self._mark_handled(key)
-        
-        # Anticipate daily brief
+                anticipations.append({
+                    "type": "preventive",
+                    "content": f"Agent {agent} not reporting on bus — recommend a health-check delegation",
+                    "action": "delegate_health_check",
+                    "target": agent,
+                    "dedup_key": key,
+                })
+
+        # Anticipate daily brief (context only).
         now = datetime.now()
-        if now.hour == 4 and now.minute >= 45:  # Before 5am brief
-            self.send_to_own_topic("📋 Preparing 05:00 org brief...")
-        
+        if now.hour == 4 and now.minute >= 45:
+            anticipations.append({
+                "type": "scheduled",
+                "content": "05:00 org brief due soon",
+                "action": "generate_brief",
+            })
+
+        return anticipations
+
+    # ─── PLAN (LLM-determined within guardrails, deterministic fallback) ─────
+
+    _DELEGATE_TARGETS = (
+        "homelab", "baseplate", "vault", "courier", "inference",
+        "finlay", "housekeep", "calendula", "connector",
+    )
+    _PLAN_ACTIONS = (
+        "send_telegram", "coordinate_cross_agent", "delegate", "reply_chat",
+        "initiate_onboarding", "generate_brief", "nothing",
+    )
+    _PLAN_COOLDOWN_MIN = {
+        "send_telegram": 30, "delegate": 10, "coordinate_cross_agent": 15,
+        "reply_chat": 5, "initiate_onboarding": 240,
+    }
+    _MAX_PLANS = 6
+
+    def _org_digest(self, signals: dict, insights: list, anticipations: list) -> str:
+        lines = []
+        ready = signals.get("ready_tasks", [])
+        lines.append("ready_tasks=%d" % len(ready))
+        for t in ready[:8]:
+            lines.append("  - %s | %s | owner=%s" % (t.get("area", "?"), (t.get("title") or "?")[:60], t.get("owner", "?")))
+        lines.append("overdue_tasks=%d" % len(signals.get("overdue_tasks", [])))
+        missing = signals.get("presence", {})
+        exp = ["homelab", "finlay", "housekeep", "calendula", "connector"]
+        lines.append("missing_from_presence=%s" % [a for a in exp if a not in missing])
+        return "\n".join(lines)
+
+    def _llm_plan(self, signals: dict, insights: list, anticipations: list) -> list:
+        """Ask the local LLM for the periodic plan. Returns raw plans or []."""
+        import jenny_llm
+        if not (jenny_llm.HOP.startswith("http") and jenny_llm.HOP_MODEL):
+            return []
+        try:
+            digest = self._org_digest(signals, insights, anticipations)
+            ins_lines = []
+            for i, ins in enumerate(insights[:8]):
+                ins_lines.append("  [%d] %s (severity=%s, suggests=%s)" % (
+                    i, ins.get("content", "")[:120], ins.get("severity", "medium"),
+                    ins.get("action_suggested", "?")))
+            ins_txt = "\n".join(ins_lines) or "  (none)"
+            ant_txt = "\n".join("  - %s (suggests=%s)" % (a.get("content", "")[:100], a.get("action")) for a in anticipations[:5]) or "  (none)"
+            targets = ", ".join(self._DELEGATE_TARGETS)
+            now = datetime.now()
+            brief_ok = "yes" if (now.hour == 4 and 50 <= now.minute <= 10) else "no"
+            prompt = (
+                "You are Jenny, Chief of Staff of a homelab agent team. Decide the minimal, safe action set for this periodic cycle.\n\n"
+                f"Org overview:\n{digest}\n\n"
+                "Fresh insights (only these are actionable):\n%s\n\n"
+                "Forecasts (context only):\n%s\n\n" % (ins_txt, ant_txt) +
+                "Available actions (ONLY these, strict JSON array):\n"
+                '  {"action": "reply_chat", "content": "<short reply>", "ins_id": <int>}\n'
+                '  {"action": "delegate", "target": "<one of: %s>", "content": "<task>", "ins_id": <int>}\n' % targets +
+                '  {"action": "coordinate_cross_agent", "content": "<plan>", "ins_id": <int>}\n'
+                '  {"action": "send_telegram", "content": "<escalation>", "ins_id": <int>}\n'
+                '  {"action": "initiate_onboarding", "content": "<note>", "ins_id": <int>}\n'
+                '  {"action": "generate_brief"}   — 05:00 org brief, only if now allows\n'
+                '  {"action": "nothing"}\n'
+                f"generate_brief allowed now: {brief_ok}\n"
+                "Rules:\n"
+                "- Every action EXCEPT nothing/generate_brief MUST carry ins_id of the insight it addresses.\n"
+                "- reply_chat ONLY for genuine Rohit small-talk/greetings; otherwise delegate.\n"
+                "- delegate target must be exactly one of the listed team members.\n"
+                "- Never invent timelines or due dates.\n"
+                "- Prefer 'nothing' when nothing urgent. Be conservative.\n"
+                'Reply with ONLY valid JSON, a single array. No markdown fences.\n'
+                'Example: [{"action": "delegate", "target": "homelab", "content": "restart unhealthy n8n", "ins_id": 0}]\n'
+                'If nothing needs doing: [{"action": "nothing"}]'
+            )
+            text = jenny_llm.hop_ask(prompt, max_tokens=400)
+            if not text:
+                return []
+            return self._parse_plans(text)
+        except Exception as e:
+            _log(self.name, "LLM plan error: %s" % e, "WARN")
+            return []
+
+    def _parse_plans(self, text: str) -> list:
+        try:
+            cleaned = text.strip()
+            if cleaned.startswith("```"):
+                cleaned = re.sub(r"^```[a-zA-Z]*\n?", "", cleaned)
+                cleaned = re.sub(r"\n?```$", "", cleaned)
+            data = json.loads(cleaned)
+            if isinstance(data, list):
+                return [d for d in data if isinstance(d, dict)]
+        except Exception:
+            pass
+        try:
+            m = re.search(r"\[.*\]", text, re.DOTALL)
+            if m:
+                data = json.loads(m.group(0))
+                if isinstance(data, list):
+                    return [d for d in data if isinstance(d, dict)]
+        except Exception:
+            pass
         return []
-    
-    # ─── PLAN ────────────────────────────────────────────────────────────────
-    
+
+    def _validate_plan(self, plan: dict, signals: dict, insights: list) -> tuple:
+        """Reject ungrounded, mis-targeted, or cooldown-violating plans."""
+        action = str(plan.get("action", ""))
+        if action not in self._PLAN_ACTIONS:
+            return False, "'%s' not in allowlist" % action
+
+        # nothing / generate_brief: no grounding required.
+        if action == "nothing":
+            return True, ""
+        if action == "generate_brief":
+            now = datetime.now()
+            if not (now.hour == 4 and 50 <= now.minute <= 10):
+                return False, "generate_brief outside allowed window"
+            return True, ""
+
+        # Every other action must be grounded on a real, present insight.
+        ins_id = plan.get("ins_id")
+        if not isinstance(ins_id, int) or not (0 <= ins_id < len(insights)):
+            return False, "%s: ins_id missing/out of range (ungrounded action)" % action
+        ins = insights[ins_id]
+        src_task = ins.get("source_task") or {}
+        plan["source_task"] = src_task if isinstance(src_task, dict) and src_task else None
+        if ins.get("dedup_key"):
+            plan["dedup_key"] = ins["dedup_key"]
+        plan["insight_content"] = ins.get("content", "")[:200]
+
+        if action == "delegate":
+            target = str(plan.get("target", "")).strip().lower()
+            if target not in self._DELEGATE_TARGETS:
+                return False, "delegate target '%s' not in roster" % target
+            plan["target"] = target
+            if not str(plan.get("content", "")).strip():
+                return False, "delegate: empty task"
+
+        elif action == "reply_chat":
+            if ins.get("type") != "user_directive":
+                return False, "reply_chat grounded on non-directive insight"
+
+        elif action == "initiate_onboarding":
+            if ins.get("type") != "onboarding_request":
+                return False, "initiate_onboarding grounded on non-onboarding insight"
+
+        # Cooldown guard (applied once the plan is otherwise valid).
+        cooldowns = self.state.setdefault("plan_cooldowns", {})
+        key = ":%s" % action if action != "delegate" else ":%s:%s" % (action, plan.get("target"))
+        cd = cooldowns.get(key, 0)
+        if time.time() < cd:
+            return False, "%s: in cooldown" % action
+        return True, ""
+
+    def _apply_cooldown(self, action: str, target: str = ""):
+        key = ":%s" % action if action != "delegate" else ":%s:%s" % (action, target)
+        self.state.setdefault("plan_cooldowns", {})[key] = time.time() + self._PLAN_COOLDOWN_MIN.get(action, 10) * 60
+
     def plan(self, signals: dict, insights: list, anticipations: list) -> list:
-        """Create coordination plans."""
+        """Create coordination plans. LLM-first with deterministic fallback."""
+        llm_plans = self._llm_plan(signals, insights, anticipations)
+        if llm_plans:
+            validated = []
+            taken_actions = 0
+            for p in llm_plans:
+                if taken_actions >= self._MAX_PLANS:
+                    break
+                ok, why = self._validate_plan(p, signals, insights)
+                if ok:
+                    p["confidence"] = p.get("confidence", 0.75)
+                    p["_llm"] = True
+                    if p.get("action") not in ("nothing", "generate_brief"):
+                        self._apply_cooldown(p["action"], p.get("target", ""))
+                    validated.append(p)
+                    taken_actions += 1
+                else:
+                    _log(self.name, "LLM plan REJECTED (%s): %s" % (p.get("action"), why), "WARN")
+            if validated:
+                _log(self.name, "LLM planned: " + ", ".join(str(v.get("action")) for v in validated))
+                return validated
+            _log(self.name, "LLM produced no valid plan — deterministic fallback", "WARN")
+        else:
+            _log(self.name, "LLM planner unavailable — deterministic fallback", "WARN")
+        return self._fallback_plan(signals, insights, anticipations)
+
+    def _fallback_plan(self, signals: dict, insights: list, anticipations: list) -> list:
+        """Deterministic keyword planning (LLM offline / rejected output)."""
         plans = []
         
         # Process insights into actions
@@ -497,7 +682,11 @@ class JennyAgent(AutonomousAgent):
             action = plan.get("action")
             dedup_key = plan.get("dedup_key")
             try:
-                if action == "send_telegram":
+                if action == "nothing":
+                    results.append({"action": "nothing", "status": "ok"})
+                    sent += 1
+
+                elif action == "send_telegram":
                     self.send_to_own_topic(plan.get("content", ""))
                     results.append({"action": "send_telegram", "status": "ok"})
                     if dedup_key:
@@ -531,7 +720,10 @@ class JennyAgent(AutonomousAgent):
                 
                 elif action == "reply_chat":
                     content = plan.get("content", "")
-                    greeting = self._friendly_reply(content)
+                    if plan.get("_llm") and str(content).strip():
+                        greeting = str(content)[:400]
+                    else:
+                        greeting = self._friendly_reply(content)
                     self.send_to_own_topic(greeting)
                     if isinstance(plan, dict) and plan.get("source_task"):
                         key = plan["source_task"].get("key")
@@ -570,6 +762,16 @@ class JennyAgent(AutonomousAgent):
                 results.append({"action": plan.get("action"), "status": "error", "error": str(e)})
         
         return results
+
+    def reflect(self, signals: dict, insights: list, plans: list, results: list) -> dict:
+        reflection = super().reflect(signals, insights, plans, results)
+        reflection["planner"] = {
+            "cycle": self.cycle_count,
+            "planned_by_llm": any(p.get("_llm", False) for p in plans),
+            "actions": [r.get("action") for r in results],
+            "skipped": [r.get("reason") for r in results if r.get("status") == "skipped"],
+        }
+        return reflection
 
 
 if __name__ == "__main__":

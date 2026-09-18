@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -179,6 +180,19 @@ class JennyChief(JennyAgent):
         self._mark_task_ended(key, "done", "handled:%s" % kind)
         return {"kind": kind or "unknown", "status": "ok"}
 
+    # ─── bounded tools (dispatch targets — never arbitrary LLM shell) ────────
+
+    # run_command is the one shell escape hatch; gate it to a read-only /
+    # maintenance allowlist so the LLM can never pass arbitrary shell text.
+    _ALLOWED_COMMAND_PREFIXES = (
+        "systemctl --user status", "systemctl --user is-active", "systemctl --user is-failed",
+        "systemctl --user list-units", "ps aux", "free -h", "df -h",
+        "docker ps", "docker stats --no-stream", "docker images",
+        "kopia snapshot list", "kopia repository status",
+        "uptime", "date", "whoami", "hostname",
+    )
+    _SHELL_BAD = re.compile(r"[;&|`]|\$\(|>\s|\brm\s+|\bmkfs|\bdd\b|\bshutdown|\breboot|\bsudo\s+rm")
+
     def _run_tool(self, tool: str, args: str) -> bool:
         try:
             if tool == "send_telegram":
@@ -187,8 +201,16 @@ class JennyChief(JennyAgent):
                 self.create_bus_task("jenny-span", str(args), owner="jenny")
                 return True
             if tool == "run_command":
+                cmd = str(args).strip()
+                if _log and self._SHELL_BAD.search(cmd):
+                    _log(self.name, "run_command REJECTED (unsafe pattern): %s" % cmd[:120], "WARN")
+                    return False
+                allowed = any(cmd.startswith(p) for p in self._ALLOWED_COMMAND_PREFIXES)
+                if not allowed:
+                    _log(self.name, "run_command REJECTED (not in allowlist): %s" % cmd[:120], "WARN")
+                    return False
                 from autonomous_agent import _run_cmd
-                res = _run_cmd(str(args), timeout=30)
+                res = _run_cmd(cmd, timeout=30)
                 return bool(res.get("ok"))
             return False
         except Exception as e:

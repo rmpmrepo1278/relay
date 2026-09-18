@@ -92,11 +92,10 @@ def fallback_intent(directive: str) -> dict:
     if best:
         prio = "high" if is_fast else "normal"
         return {"intent": "delegate", "delegations": [{"agent": best, "priority": prio,
-                                                       "task": directive,
-                                                       "priority": "normal"}]}
-    return {"intent": "execute",
-            "reply": f"I'll handle: {directive[:120]}",
-            "tools": [{"tool": "run_command", "args": directive}]}
+                                                       "task": directive}]}
+    # Last resort: route to homelab ops (safe default), never raw shell on the directive.
+    return {"intent": "delegate", "delegations": [{"agent": "homelab", "priority": is_fast and "high" or "normal",
+                                                   "task": directive}]}
 
 
 # ─── LLM intent parsing ──────────────────────────────────────────────────────
@@ -161,6 +160,104 @@ def _parse_json(text: str) -> dict | None:
         return None
 
 
+ALLOWED_TOOLS = {"send_telegram", "create_bus_task", "run_command"}
+ALLOWED_INTENTS = {"chat", "execute", "delegate", "coordinate", "spawn", "retire"}
+MAX_DELEGATIONS = 3
+MAX_STEPS = 5
+MAX_REPLY = 600
+MAX_ARGS = 300
+
+
+def validate_intent(intent: dict | None) -> dict | None:
+    """Guardrail pass over the LLM's structured intent.
+
+    Binds every free-text vector: tools → allowlist, delegations/steps →
+    roster-only targets, spawn/retire → name sanity. Unfixable intents are
+    downgraded to 'chat' so Jenny never executes something unbounded.
+    """
+    if not isinstance(intent, dict):
+        return None
+    kind = intent.get("intent")
+    if kind not in ALLOWED_INTENTS:
+        return None
+
+    # Tools: allowlist only, clamp args.
+    tools = []
+    for t in intent.get("tools", [])[:4]:
+        if not isinstance(t, dict):
+            continue
+        tool = t.get("tool")
+        if tool not in ALLOWED_TOOLS:
+            continue
+        tools.append({"tool": tool, "args": str(t.get("args", ""))[:MAX_ARGS]})
+    intent["tools"] = tools
+
+    # Delegations: roster-only targets, non-empty tasks, capped count.
+    dels = []
+    for d in intent.get("delegations", [])[:MAX_DELEGATIONS]:
+        if not isinstance(d, dict):
+            continue
+        agent = str(d.get("agent", "")).strip().lower()
+        task = str(d.get("task", "")).strip()
+        if agent not in TEAM or not task:
+            continue
+        prio = str(d.get("priority", "normal"))
+        if prio not in ("high", "normal", "low"):
+            prio = "normal"
+        dels.append({"agent": agent, "task": task[:400], "priority": prio})
+    intent["delegations"] = dels
+
+    # Steps: roster-only targets, capped count.
+    steps = []
+    for s in intent.get("steps", [])[:MAX_STEPS]:
+        if not isinstance(s, dict):
+            continue
+        agent = str(s.get("agent", "")).strip().lower()
+        task = str(s.get("task", "")).strip()
+        if agent not in TEAM or not task:
+            continue
+        steps.append({"agent": agent, "task": task[:400]})
+    intent["steps"] = steps
+
+    # Spawn: name sanity only (agent_manager enforces the real rules).
+    spawn = intent.get("spawn")
+    if isinstance(spawn, dict):
+        name = str(spawn.get("name") or "").strip().lower()
+        if not re.match(r"^[a-z][a-z0-9_]{1,19}$", name):
+            intent.pop("spawn", None)
+            kind = "chat"  # invalid spawn name → don't run spawn
+        else:
+            role = str(spawn.get("role") or "")[:200].strip()
+            triggers = [str(t)[:40].strip() for t in (spawn.get("triggers") or []) if str(t).strip()][:5]
+            if not role:
+                intent.pop("spawn", None)
+                kind = "chat"
+            else:
+                intent["spawn"] = {"name": name, "role": role, "triggers": triggers}
+    elif intent.get("spawn"):
+        intent.pop("spawn", None)
+
+    # Retire: roster-only; never spawn-empty.
+    retire = str(intent.get("retire") or "").strip().lower()
+    if retire:
+        intent["retire"] = retire if retire in TEAM else None
+    else:
+        intent["retire"] = None
+
+    # A non-chat intent that lost every actionable payload degrades to chat.
+    if kind in ("delegate", "coordinate", "execute"):
+        if kind == "delegate" and not intent["delegations"]:
+            kind = "chat"
+        elif kind == "coordinate" and not intent["steps"] and not intent["delegations"]:
+            kind = "chat"
+        elif kind == "execute" and not intent["tools"]:
+            kind = "chat"
+
+    intent["intent"] = kind
+    intent["reply"] = str(intent.get("reply") or "On it.")[:MAX_REPLY]
+    return intent
+
+
 def decide(directive: str, board_snapshot: str = "") -> dict:
     """Return a structured intent. LLM first, deterministic fallback second."""
     prompt = _build_prompt(directive, board_snapshot)
@@ -179,5 +276,5 @@ def decide(directive: str, board_snapshot: str = "") -> dict:
         parsed.setdefault("tools", [])
         parsed.setdefault("delegations", [])
         parsed.setdefault("steps", [])
-        return parsed
+        return validate_intent(parsed) or fallback_intent(directive)
     return fallback_intent(directive)
