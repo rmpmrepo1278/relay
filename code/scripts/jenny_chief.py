@@ -197,6 +197,7 @@ class JennyChief(JennyAgent):
         "systemctl --user list-units", "ps aux", "free -h", "df -h",
         "docker ps", "docker stats --no-stream", "docker images",
         "kopia snapshot list", "kopia repository status",
+        "journalctl --user", "cat /proc/loadavg",
         "uptime", "date", "whoami", "hostname",
     )
     _SHELL_BAD = re.compile(r"[;&|`]|\$\(|>\s|\brm\s+|\bmkfs|\bdd\b|\bshutdown|\breboot|\bsudo\s+rm")
