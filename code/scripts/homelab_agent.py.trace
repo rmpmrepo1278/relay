@@ -553,10 +553,6 @@ def pull_docker_images() -> Dict:
 def verify_backups() -> Dict:
     """Verify Kopia repository integrity."""
     _log("Verifying Kopia backups")
-    import traceback
-    with open("/home/rohit/.hermes/state/verify_caller.txt","a") as _f:
-        _f.write("\n===== caller trace =====\n")
-        traceback.print_stack(file=_f)
     r = _run_cmd("kopia repository verify 2>/dev/null || echo 'verify failed'", timeout=300)
     return {"status": "ok" if "ERROR" not in r["stdout"] else "error", "output": r["stdout"][-500:]}
 
