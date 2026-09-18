@@ -244,22 +244,24 @@ def check_backups() -> Dict:
     if "not connected" in r["stdout"].lower() or "not initialized" in r["stdout"].lower():
         return {"status": "not_configured", "note": "Kopia repository not connected"}
 
-    r = _run_cmd("sudo -n kopia snapshot list --json 2>/dev/null | tail -20")
+    r = _run_cmd("sudo -n kopia snapshot list --json 2>/dev/null")
     if not r["ok"] or not r["stdout"]:
         return {"status": "warning", "error": "kopia snapshots not available"}
 
     try:
-        snapshots = []
-        for line in r["stdout"].splitlines():
-            try:
-                snapshots.append(json.loads(line))
-            except Exception:
-                pass
+        snapshots = _parse_json_stream(r["stdout"])
 
         if not snapshots:
             return {"status": "warning", "error": "no snapshots found"}
 
-        latest = snapshots[-1]
+        def _ts(snap):
+            t = snap.get("startTime", "")
+            try:
+                return datetime.fromisoformat(t.replace("Z", "+00:00"))
+            except Exception:
+                return datetime.min.replace(tzinfo=timezone.utc)
+
+        latest = max(snapshots, key=_ts)
         latest_time = latest.get("startTime", "")
         age_hours = 0
         if latest_time:
@@ -285,9 +287,40 @@ def check_backups() -> Dict:
         return {"status": "error", "error": str(e)}
 
 
+def _parse_json_stream(text: str) -> list:
+    """Parse kopia snapshot list --json output. Modern kopia prints ONE pretty-
+    printed JSON array; older/newer builds may emit concatenated objects. Handle
+    both, returning a list of snapshot dicts."""
+    if not text:
+        return []
+    try:
+        data = json.loads(text)
+        if isinstance(data, list):
+            return data
+        if isinstance(data, dict):
+            return [data]
+    except json.JSONDecodeError:
+        pass
+    dec = json.JSONDecoder()
+    data = text.lstrip()
+    out = []
+    while data:
+        try:
+            obj, idx = dec.raw_decode(data)
+        except json.JSONDecodeError:
+            break
+        if isinstance(obj, list):
+            out.extend(obj)
+        else:
+            out.append(obj)
+        data = data[idx:].lstrip()
+    return out
+
+
 def check_updates() -> Dict:
     """Check for available system updates."""
-    r = _run_cmd("apt list --upgradable 2>/dev/null | grep -v 'Listing...'")
+    # `grep` exits 1 when nothing matches — that's "current", not an error.
+    r = _run_cmd("apt list --upgradable 2>/dev/null | grep -v 'Listing...' || true")
     if not r["ok"]:
         return {"status": "error", "error": r["stderr"]}
 

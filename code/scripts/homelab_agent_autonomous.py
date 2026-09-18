@@ -188,16 +188,16 @@ class HomelabAgent(AutonomousAgent):
                 return {"status": "error", "error": "Kopia repository not connected"}
             if r.returncode != 0 and "sudo" not in r.stderr:
                 return {"status": "error", "error": (r.stderr or r.stdout)[:200]}
-            r2 = subprocess.run("sudo -n kopia snapshot list --json 2>/dev/null | tail -5", shell=True, capture_output=True, text=True, timeout=15)
-            snaps = []
-            for line in r2.stdout.strip().splitlines():
-                try:
-                    snaps.append(json.loads(line))
-                except Exception:
-                    pass
+            r2 = subprocess.run("sudo -n kopia snapshot list --json 2>/dev/null", shell=True, capture_output=True, text=True, timeout=15)
+            snaps = self._parse_json_stream(r2.stdout)
             if not snaps:
                 return {"status": "error", "error": "no snapshots"}
-            latest = snaps[-1]
+            latest = max(
+                snaps,
+                key=lambda s: datetime.fromisoformat(
+                    (s.get("startTime", "") or "").replace("Z", "+00:00"))
+                if s.get("startTime") else datetime.min.replace(tzinfo=timezone.utc),
+            )
             age_h = 0
             ts = latest.get("startTime", "")
             if ts:
@@ -212,6 +212,35 @@ class HomelabAgent(AutonomousAgent):
             return {"status": status, "latest": latest.get("id", "")[:12], "age_h": round(age_h, 1), "total": len(snaps)}
         except Exception as e:
             return {"status": "error", "error": str(e)}
+
+    @staticmethod
+    def _parse_json_stream(text: str) -> list:
+        """Parse kopia snapshot list --json: modern kopia prints ONE pretty-
+        printed JSON array; some builds emit concatenated objects. Handle both."""
+        if not text:
+            return []
+        try:
+            data = json.loads(text)
+            if isinstance(data, list):
+                return data
+            if isinstance(data, dict):
+                return [data]
+        except json.JSONDecodeError:
+            pass
+        dec = json.JSONDecoder()
+        data = text.lstrip()
+        out = []
+        while data:
+            try:
+                obj, idx = dec.raw_decode(data)
+            except json.JSONDecodeError:
+                break
+            if isinstance(obj, list):
+                out.extend(obj)
+            else:
+                out.append(obj)
+            data = data[idx:].lstrip()
+        return out
 
     def _check_updates(self) -> dict:
         try:

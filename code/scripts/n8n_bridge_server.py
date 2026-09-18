@@ -2973,12 +2973,80 @@ def _jenny_directive(text: str) -> dict:
     return {"text": f"📥 Tasked Jenny (Coordination):\n\"{text}\"\nTask queued."}
 
 
+def _homelab_cached_signals(max_age_s: int = 1500):
+    """Host-accurate homelab status from the autonomous daemon's last cycle.
+
+    Reads ~/.hermes/state/homelab_state.json (last_signals refreshed on the host
+    every ~15 min). Returns a formatted dict, or None when stale/missing so the
+    caller falls back to a live (in-container) check. timestamp is RFC3339 UTC.
+    """
+    try:
+        import os
+        st = HERMES_HOME / "state" / "homelab_state.json"
+        if not os.path.exists(st):
+            return None
+        data = json.loads(open(st).read())
+        ls = data.get("last_signals") or {}
+        ts_raw = ls.get("timestamp")
+        if not ts_raw:
+            return None
+        from datetime import datetime, timezone
+        ts = ts_raw
+        if ts.endswith("Z"):
+            ts = ts[:-1] + "+00:00"
+        dt = datetime.fromisoformat(ts)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        age = (datetime.now(timezone.utc) - dt).total_seconds()
+        if age > max_age_s or age < -300:
+            return None
+        # healthy against the daemon's own classifications
+        bad = ("down", "error", "stale", "aging", "warning", "degraded", "updates_available")
+        counts = {b: 0 for b in bad}
+        for ch in ls.values():
+            if isinstance(ch, dict):
+                s = ch.get("status", "")
+                if s in counts:
+                    counts[s] += 1
+        overall = "healthy"
+        if counts["down"] or counts["error"]:
+            overall = "critical"
+        elif counts["degraded"] or counts["stale"] or counts["aging"] or counts["warning"]:
+            overall = "degraded"
+        elif counts["updates_available"]:
+            overall = "maintenance_needed"
+        return {"overall": overall, "checks": ls,
+                "ts": dt.strftime("%Y-%m-%d %H:%M") + "Z"}
+    except Exception:
+        return None
+
+
 def _agent_cmd(agent: str, args: str) -> dict:
     """Invoke an agent with the given args via the orchestrator or direct script."""
     args = (args or "").strip()
     try:
         sys.path.insert(0, str(HERMES_HOME / "scripts"))
         if agent == "homelab":
+            # Prefer the host daemon's fresh cached probes (homelab-agent.service
+            # runs ON the host every ~15 min and reports real docker/systemd/disk
+            # state). Running homelab_agent's probes inside THIS container sees no
+            # host docker/systemctl/df → fabricates a bogus "critical" card.
+            sig = _homelab_cached_signals(max_age_s=25 * 60)
+            if sig is not None:
+                lines = [f"🏗️ *Homelab* — {sig['overall']}"]
+                for name, check in sig.get("checks", {}).items():
+                    status = check.get("status", "?")
+                    if status not in ("healthy", "not_configured", "current", "n/a"):
+                        detail = ""
+                        if name == "updates" and check.get("total"):
+                            detail = f" — {check['total']} updates ({check.get('security', 0)} security)"
+                        elif name == "backups" and check.get("age_h", 0):
+                            detail = f" — age {check['age_h']}h"
+                        lines.append(f"  {name}: *{status}*{detail}")
+                if args:
+                    lines.append(f"\n_asked: {args[:60]}_")
+                lines.append(f"\n_checked {sig.get('ts')} (host daemon)_")
+                return {"text": "\n".join(lines)}
             from homelab_agent import homelab_agent as _agent_fn
             task = {"content": args or "check", "type": args.split()[0] if args else "check"}
             result = _agent_fn(task)
@@ -2988,7 +3056,7 @@ def _agent_cmd(agent: str, args: str) -> dict:
                 lines = [f"🏗️ *Homelab* — {overall}"]
                 for name, check in health.get("checks", {}).items():
                     status = check.get("status", "?")
-                    if status not in ("healthy", "not_configured", "current"):
+                    if status not in ("healthy", "not_configured", "current", "n/a"):
                         lines.append(f"  {name}: *{status}*")
                 return {"text": "\n".join(lines)}
             return {"text": f"Homelab: {result.get('status', '?')}"}
