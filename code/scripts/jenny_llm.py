@@ -193,14 +193,6 @@ def _parse_json(text: str) -> dict | None:
         return None
 
 
-ALLOWED_TOOLS = {"send_telegram", "create_bus_task", "run_command"}
-ALLOWED_INTENTS = {"chat", "execute", "delegate", "coordinate", "spawn", "retire"}
-MAX_DELEGATIONS = 3
-MAX_STEPS = 5
-MAX_REPLY = 600
-MAX_ARGS = 300
-
-
 def validate_intent(intent: dict | None) -> dict | None:
     """Guardrail pass over the LLM's structured intent.
 
