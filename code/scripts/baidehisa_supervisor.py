@@ -25,7 +25,8 @@ WORK = bt.WORK
 STATUS = os.path.join(WORK, "baidehisa_status.json")
 LOG = os.path.join(WORK, "baidehisa_supervisor.log")
 
-bt.MODELS = ["combo/pi-free-fallback", "haiku-4.5", "claude-sonnet-4-20250514"]
+bt.MODELS = ["no-think/openai-compatible-chat-atria-dawn/Atria-Dawn-Preview",
+             "combo/pi-free-fallback", "haiku-4.5", "claude-sonnet-4-20250514"]
 bt.TIMEOUT = 60
 MAX_ATTEMPTS_PER_PAGE = 15
 
