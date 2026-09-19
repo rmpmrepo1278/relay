@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
-"""Full autonomous pipeline: batch (chunked) -> fill passes -> assemble PDF.
+"""Full autonomous pipeline: translate every page -> fill stragglers -> assemble PDF.
 
-Run as a systemd user service so the entire book translation completes even if
-the originating session ends. Resume-safe (per-page JSON cache).
+Run as a systemd user service so the ENTIRE book translation completes even if
+the originating session ends. Resume-safe per-page JSON cache.
 
-Farm etiquette (learned the hard way): sustained single-page 45s-timeout calls
-cause per-request stalls + empty-content, compounding through retries. Instead:
-  - CHUNK=3 pages per LLM call  -> 3x fewer requests.
-  - haiku-first then sonnet fallback (fleet-workhorse priority).
-  - empty content -> immediate failover, no wasted wait.
-  - cool-down after every call + a longer recovery pause every K calls.
-Phases:
-  1. BATCH   : translate every not-yet-successful page, chunked (70s call cap).
-  2. FILL    : repeated passes over still-failing pages, chunked, gentler.
-  3. ASSEMBLE: build the English PDF + txt from the finished cache.
-Status written to work/baidehisa_status.json.
+Farm reality (measured): hop lanes succeed fast (~1s) but return empty ~50-70%
+of the time at random, and every big prompt empties. Design therefore:
+  - ONE page per request (small prompts only).
+  - Infinite retries per page (each attempt is cheap); a page parks after 15
+    attempts so a genuinely dead lane can't wedge the loop, and is retried on
+    the next global pass.
+  - Lane rotation: combo/pi-free-fallback -> haiku-4.5 -> claude-sonnet.
+  - Pacing: 0.4s after success, 2s after failure, 15s pause every 25 calls.
+Phases: BATCH (unbounded passes) -> FILL (stragglers only) -> ASSEMBLE.
 """
-import importlib.util, json, os, re, subprocess, sys, time
+import importlib.util, json, os, subprocess, sys, time
 
 ROOT = os.path.expanduser("~/.hermes/scripts")
 spec = importlib.util.spec_from_file_location("bt", os.path.join(ROOT, "baidehisa_translate.py"))
@@ -27,13 +25,10 @@ WORK = bt.WORK
 STATUS = os.path.join(WORK, "baidehisa_status.json")
 LOG = os.path.join(WORK, "baidehisa_supervisor.log")
 
-CHUNK = 3
-CHUNK_INSTR = (
-    "You translate Odia/Hindi devotional poetry (Upendra Bhanja, Baidehisha Bilasa) into "
-    "simple, readable, accurate English prose. Translate the meaning faithfully; keep names "
-    "transliterated; do NOT add commentary. Return ONLY the translations, each prefixed with "
-    "exactly the same marker you received, on its own line.\n\n"
-)
+bt.MODELS = ["combo/pi-free-fallback", "haiku-4.5", "claude-sonnet-4-20250514"]
+bt.TIMEOUT = 60
+MAX_ATTEMPTS_PER_PAGE = 15
+
 
 def log(msg):
     line = f"[{time.strftime('%H:%M:%S')}] {msg}"
@@ -41,120 +36,123 @@ def log(msg):
     with open(LOG, "a") as f:
         f.write(line + "\n")
 
+
 def status(**kw):
     base = {"ts": time.time()}
     base.update(kw)
     json.dump(base, open(STATUS, "w"))
+
 
 def cache():
     if os.path.exists(bt.CACHE):
         return {str(k): v for k, v in json.load(open(bt.CACHE)).items()}
     return {}
 
+
 def save_cache(c):
     json.dump(c, open(bt.CACHE, "w"))
 
-def chunks_of(idxs, n):
-    for i in range(0, len(idxs), n):
-        yield idxs[i:i + n]
 
-def build_prompt(pages, chunk):
-    parts = []
-    for i in chunk:
-        text = "\n".join(bt.clean(pages[i]))
-        if len(text) > 7000:
-            text = text[:7000] + "\n[...]"
-        parts.append(f"---PAGE {i}---\n{text}")
-    return CHUNK_INSTR + "\n\n".join(parts)
+def clean(pages, i):
+    return "\n".join(bt.clean(pages[i]))[:5000]
 
-_MARK = re.compile(r"---PAGE\s+(\d+)---")
 
-def run_chunk_pass(pages, idxs, label, timeout, cooldown, every_k):
-    c = cache()
-    todo = [i for i in idxs if str(i) not in c or not c[str(i)].get("ok")]
-    ok_add, fail = 0, []
-    calls = 0
-    bt.TIMEOUT = timeout
-    for chunk in chunks_of(todo, CHUNK):
-        calls += 1
+def pass_todo(pages, idxs, label):
+    ok_add, fail, calls = 0, [], 0
+    for i in idxs:
+        k = str(i)
         c = cache()
-        prompt = build_prompt(pages, chunk)
+        if k in c and c[k].get("ok"):
+            continue
+        n = (c.get(k) or {}).get("attempts", 0)
+        if n >= MAX_ATTEMPTS_PER_PAGE:
+            fail.append(i)
+            continue
+        calls += 1
         try:
-            out = bt.translate_raw(prompt)
-            got = {}
-            for m in _MARK.finditer(out):
-                try:
-                    got[int(m.group(1))] = out[m.end():next_mark_end(out, m.end())].strip()
-                except Exception:
-                    continue
-            # salvage whichever pages came back; missing ones -> fail (refiled later)
-            for i in chunk:
-                k = str(i)
-                en = got.get(i)
-                if en:
-                    c[k] = {"ok": True, "page": i, "printed": bt.page_header(pages[i]), "en": en}
-                    ok_add += 1
-                else:
-                    c[k] = {"ok": False, "page": i, "err": "missing in chunk"}
-                    fail.append(i)
+            en = bt.translate(clean(pages, i))
+            c[k] = {"ok": True, "page": i, "printed": bt.page_header(pages[i]),
+                    "en": en, "attempts": n}
             save_cache(c)
-            log(f"{label} chunk {len(chunk)}p -> {len(got)} ok_added={ok_add}")
+            ok_add += 1
+            time.sleep(0.4)
+            log(f"{label} ok p{i} (attempt {n + 1})")
         except Exception as e:
-            for i in chunk:
-                k = str(i)
-                c[k] = {"ok": False, "page": i, "err": str(e)[:160]}
-                fail.append(i)
+            c[k] = {"ok": False, "page": i, "err": str(e)[:120], "attempts": n + 1}
             save_cache(c)
-            log(f"{label} chunk FAIL p{chunk[0]}-{chunk[-1]}: {str(e)[:70]}")
-            time.sleep(8)
-        time.sleep(cooldown)
-        if calls % every_k == 0:
-            time.sleep(20)
-        if calls % 4 == 0:
-            status(phase=label, done=ok_add + len(idxs) - len(todo), failed=len(fail))
-            log(f"{label} progress calls={calls} ok_added={ok_add} fails={len(fail)}")
-    return ok_add, [i for i in fail if str(i) not in cache() or not cache()[str(i)].get("ok")]
+            fail.append(i)
+            log(f"{label} FAIL p{i} ({type(e).__name__}): {str(e)[:60]}")
+            time.sleep(2)
+        status(phase=label,
+               done=sum(1 for v in cache().values() if v.get("ok")),
+               failed=sum(1 for v in cache().values() if not v.get("ok")))
+        if calls % 25 == 0:
+            log(f"{label} pacing pause")
+            time.sleep(15)
+    ok_now = sum(1 for v in cache().values() if v.get("ok"))
+    log(f"{label} pass done ok_added={ok_add} ok_total={ok_now} fails={len(fail)}")
+    return ok_add, fail
 
-def next_mark_end(out, pos):
-    m = _MARK.search(out, pos)
-    return m.start() if m else len(out)
+
+def unfinished(idxs):
+    c = cache()
+    return [i for i in idxs if str(i) not in c or not c[str(i)].get("ok")]
+
 
 def main():
     os.makedirs(WORK, exist_ok=True)
-    log("supervisor start (chunked)")
+    log("supervisor start (single-page, infinite retry)")
     pages = bt.split_pages(open(bt.SRC, encoding="utf-8", errors="replace").read())
     idxs = [i for i in range(len(pages)) if len(bt.clean(pages[i])) >= 8]
     target = len(idxs)
-    c = cache()
-    todo = [i for i in idxs if str(i) not in c or not c[str(i)].get("ok")]
-    log(f"target={target} cached_ok={sum(1 for v in c.values() if v.get('ok'))} todo={len(todo)}")
+    log(f"target={target} ok={sum(1 for v in cache().values() if v.get('ok'))} "
+        f"todo={len(unfinished(idxs))}")
 
-    added, fail = run_chunk_pass(pages, todo, "batch", 70, 2.0, 4)
-
-    still = fail
-    for rnd in range(1, 6):
-        if not still:
+    rounds = 0
+    while rounds < 60:
+        u = unfinished(idxs)
+        if not u:
+            log("all pages ok")
             break
-        log(f"fill round {rnd}/5 on {len(still)} pages")
-        time.sleep(6)
-        a, f = run_chunk_pass(pages, still, f"fill{rnd}", 90, 3.0, 3)
-        log(f"fill round {rnd} added={a} still_failing={len(f)}")
-        if not a and len(f) == len(still):
+        ok_add, fail = pass_todo(pages, u, "pass")
+        rounds += 1
+        if ok_add == 0 and not fail:
+            log("no unfinished pages but no fails -> stop")
             break
-        still = f
+        # stop looping only when a pass produced zero new successes
+        if ok_add == 0:
+            log(f"zero-progress pass {rounds}; parked attempts will reset in fill")
+            break
+    log("batch passes complete")
+
+    still = unfinished(idxs)
+    if still:
+        reset = {k: dict(v, attempts=0) for k, v in cache().items()}
+        save_cache(reset)
+        for rnd in range(1, 4):
+            s = unfinished(idxs)
+            if not s:
+                break
+            time.sleep(5)
+            a, f = pass_todo(pages, s, f"fill{rnd}")
+            if not a:
+                break
+    still = unfinished(idxs)
 
     c = cache()
-    final_ok = sum(1 for v in c.values() if v.get("ok"))
-    log(f"phases done: ok={final_ok}/{target} failing={target - final_ok}")
+    final_ok = len(idxs) - len(still)
+    log(f"phases done: ok={final_ok}/{target}")
     status(phase="assemble", ok=final_ok, target=target)
     res = subprocess.run([sys.executable, os.path.join(ROOT, "baidehisa_assemble.py")],
                          capture_output=True, text=True, timeout=600)
     log("assemble rc=%s out=%s" % (res.returncode, res.stdout.strip()[-200:]))
     if res.returncode != 0:
         log("assemble err: %s" % res.stderr.strip()[-400:])
-    status(phase="done", ok=final_ok, target=target, assemble_rc=res.returncode)
+    status(phase="done", ok=final_ok, target=target, assemble_rc=res.returncode,
+           missing=still)
     log(f"SUPERVISOR DONE ok={final_ok}/{target}")
-    sys.exit(0 if final_ok == target else (2 if final_ok == 0 else 3))
+    sys.exit(0 if final_ok == target else 3)
+
 
 if __name__ == "__main__":
     main()
