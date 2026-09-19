@@ -14,6 +14,7 @@ WORK = os.path.join(ROOT, "work")
 CACHE = os.path.join(WORK, "baidehisa_en_cache.json")
 LOG = os.path.join(WORK, "baidehisa_progress.json")
 HOP = os.environ.get("BAIDEHI_HOP", "http://127.0.0.1:8083/v1/chat/completions")
+TIMEOUT = int(os.environ.get("BAIDEHI_TIMEOUT", "45"))
 MODEL = os.environ.get("BAIDEHI_MODEL", "claude-sonnet-4-20250514")
 MODELS = [m.strip() for m in os.environ.get("BAIDEHI_MODELS", "").split(",") if m.strip()]
 if not MODELS:
@@ -62,7 +63,7 @@ def translate(text):
             req = urllib.request.Request(HOP, data=json.dumps(payload).encode(),
                                          headers={"Content-Type": "application/json"})
             try:
-                with urllib.request.urlopen(req, timeout=45) as r:
+                with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
                     d = json.load(r)
                 out = (d.get("choices") or [{}])[0].get("message", {}).get("content", "")
                 if not out.strip():
