@@ -47,7 +47,7 @@ PROXY_TIMEOUT = 30  # seconds for health checks
 # Model the probe exercises. MUST be the local leg, not an auto/* alias:
 # auto/* is cloud-first now, so a cloud outage would false-positive recovery
 # and a dead local leg would be missed entirely. This explicitly hits :8089.
-PROBE_MODEL = "coder/qwen3-coder-30b-a3b"
+PROBE_MODEL = "openai-compatible-chat-local-coder-8089/qwen3-coder-30b-a3b"
 # llama.cpp local legs restarted when hop is up but generates empty content.
 LOCAL_LLM_SERVICES = ("chatllm-coder30b",)
 
