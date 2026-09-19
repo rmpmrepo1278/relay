@@ -42,6 +42,13 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   superseded by **TokenJuice Hop (8083)**; consumers (Hermes, Jarvis, Claude delegate) all route through it.
   Kept `:8080` as cold standby during cutover (agentharness-proxy.service disabled after verification),
   then stopped. Direct-provider legs (Groq, b.ai) now live in hop.py, not agentproxy.
+- **Atria (api.atria-asi.ai, OpenAI-compatible) — ADDED 2026-09-18**: free preview tier, ~100M free tokens,
+  single model `Atria-Dawn-Preview` (thinking-heavy: emits `reasoning_content`, keep max_tokens ≥ 128).
+  Wired as OMR provider_connections row `openai-compatible-chat-atria-dawn` / id `atria-dawn` (auth_type
+  apikey, key stored `enc:v1` in `api_key` col, PSD baseUrl `https://api.atria-asi.ai/v1` + browser UA),
+  + manual context override 131072. Added as leg 4 in `combo/pi-free-fallback` (after groq, before
+  gemini-no-creds) and to hop `fast` fallback chain (groq → atria → coder30b → lfm). Verified: direct via
+  hop 200/1.7s; combo & `fast` still win via groq leg 0 (~0.2s).
 - **Magnitude (10100, per-user systemd `~/.config/systemd/user/magnitude.service`, Linger=yes) — ADDED 2026-09-05**:
   open-source local inference server (no cloud) that profiles hardware and tunes models. Detected AMD
   Radeon via Vulkan (RADV RENOIR) + 8C/62Gi. ACTIVE MODEL = `gemma-4-26b-a4b-it-qat:gguf:q4` (Gemma 4
@@ -136,6 +143,26 @@ source: SSH, docker ps, config files, HOMELAB_MAP.md
   `auto/best-chat` non-stream + SSE return real content (gemma), `qwen3:8b` + SIMPLE_CHAT both 200. Caveat:
   `combo/pi-free-fallback` (remote `qwen/qwen3.6-27b`) is itself flaky (intermittently empty) — fallback
   tier only; real degradation is caught by the probe + auto-heal below.
+  **2026-09-18 session (Claude Code → hop + TokenJuice headroom + Atria):**
+  - Claude Code homelab delegate re-verified on `http://127.0.0.1:8083` (was direct OMR :20128 earlier);
+    `~/.claude/settings.json` repaired (was malformed JSON — unclosed hooks object). Small/fast model no
+    longer walks the whole combo: `ANTHROPIC_SMALL_FAST_MODEL=fast`; added
+    `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`; dropped stale `stealth/ox-alpha` modelSettings.
+  - Hop gained an **exact-duplicate response cache** (`RESP_CACHE`, LRU, TTL 300s/128, measured seed 2.4s →
+    replay 6ms; replays JSON + SSE for both shapes; stats under `resp_cache.*` on /v1/token-juice).
+    `TJ_NO_THINK_PROVIDERS` fixed (stale `ollama` → `coder,lfm`); `_direct_fetch` now strips `no-think/`.
+  - `chatllm-coder30b.service` (Qwen3-Coder-30B-A3B, llama.cpp `-np 1`, port 8089) got **stuck once** — a
+    hung singleton slot; `/health` OK but completions hung. Fix = `systemctl --user restart` + ~2min cold
+    load (HTTP 503 "Loading model" during load; watch if it exceeds a few minutes).
+  - Groq direct model id that works = `groq/qwen/qwen3.8-27b` (`qwen3.6-27b` does NOT exist on api.groq.com
+    with this key) — groq direct ~6-9ms; corrects the older "qwen3.6-27b flaky" note below.
+  - **Current verified `combo/pi-free-fallback` leg order (2026-09-18):**
+    groq ×4 → **atria-dawn** → gemini(no creds) ×2 → openrouter/free → apinex ×2 → xkiro → ovh →
+    coder30b(:8089) → lfm(:8086). Local legs = llama.cpp `chatllm-coder30b` (8089) + `chatllm-lfm` (8086),
+    NOT magnitude (magnitude legacy note above predates the llama.cpp legs).
+  - Detail dumps: `journal/relay-claude-hop-repoint-tokenjuice-2026-09-18.md`,
+    `journal/relay-atria-dawn-cascade-2026-09-18.md`.
+
 - **proxy_watchdog.py — generation probe + auto-heal (2026-09-11)** (`~/.hermes/scripts/proxy_watchdog.py`,
   user unit `proxy-watchdog.service`, `--loop=60`): added an ACTUAL generation probe (`auto/best-chat`, tiny
   completion; `/health` alone cannot see port-up-but-empty). Two consecutive empty probes → recover:
