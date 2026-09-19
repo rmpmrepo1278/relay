@@ -221,7 +221,7 @@ def recover_generation() -> bool:
     """Self-heal when hop is up but generates nothing: restart hop, then llama.cpp legs."""
     state = load_state()
     now = time.time()
-    if now - state.get("last_empty_recovery", 0) < 180:
+    if now - state.get("last_empty_recovery", 0) < 900:
         log("Empty-recovery skipped: <180s since last attempt (rate-limited)")
         return False
     state["last_empty_recovery"] = now
@@ -430,7 +430,7 @@ def run_check() -> dict:
     if not gen_ok:
         state["consecutive_empty"] = state.get("consecutive_empty", 0) + 1
         save_state(state)
-        if state["consecutive_empty"] < 2:
+        if state["consecutive_empty"] < 4:
             log(f"Generation empty (transient miss #{state['consecutive_empty']}): {gen_detail}")
         else:
             recovered = recover_generation()
