@@ -2920,6 +2920,15 @@ def _route_telegram_command(text, thread_id=None):
         "/homelab": lambda: _agent_cmd("homelab", rest),
         "/personal": lambda: _agent_cmd("personal", rest),
         "/jenny": lambda: _agent_cmd("jenny", rest),
+        # Domain agent direct routing (autonomous interaction)
+        "/baseplate": lambda: _run_domain_agent("baseplate", rest),
+        "/vault": lambda: _run_domain_agent("vault", rest),
+        "/courier": lambda: _run_domain_agent("courier", rest),
+        "/inference": lambda: _run_domain_agent("inference", rest),
+        "/calendula": lambda: _run_domain_agent("calendula", rest),
+        "/connector": lambda: _run_domain_agent("connector", rest),
+        "/finlay": lambda: _run_domain_agent("finlay", rest),
+        "/housekeep": lambda: _run_domain_agent("housekeep", rest),
     }
     m.update(agent_cmds)
 
@@ -2989,6 +2998,27 @@ def _heavy_cmd(rest: str) -> dict:
 
 
 def _heavy_status() -> dict:
+    res = _bus_req("GET", "/board")
+    if not res.get("ok"):
+        return {"text": f"❌ {res.get('error', '?')}"}
+    heavy = [t for t in res.get("tasks", {}).values() if t.get("owner") == "hermes-heavy"]
+    if not heavy:
+        return {"text": "no heavy jobs"}
+    lines = [f"{t.get('status','?'):9} {t.get('title','?')[:40]}" for t in sorted(heavy, key=lambda x: x.get("created", ""))]
+    return {"text": "🔬 heavy jobs:\n" + "\n".join(lines)}
+
+
+def _run_domain_agent(agent_name: str, args: str) -> dict:
+    """Run any domain agent script via bus/presence and return its response."""
+    try:
+        # Set presence to working while executing
+        bus("/presence", method="POST", payload={
+            "agent": agent_name, "kind": "working", "note": "running via bridge"
+        })
+        # Execute via agentbus (better than direct exec for consistency)
+        return bus(f"/agent-{agent_name}", method="POST", payload={"command": args})
+    except Exception as e:
+        return {"text": f"⚠️ failed to invoke {agent_name}: {str(e)}"}
     res = _bus_req("GET", "/board")
     if not res.get("ok"):
         return {"text": f"❌ {res.get('error', '?')}"}
