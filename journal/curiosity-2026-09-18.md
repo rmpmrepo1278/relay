@@ -109,3 +109,30 @@ Interests: self_hosting, ai_agents, llm_inference
   • guillaumemeyer/watermarks-remover ⭐22315
     A privacy-first app that strips AI watermarks from content you own.
     https://github.com/guillaumemeyer/watermarks-remover
+
+## Curiosity — 20:16 UTC
+Interests: self_hosting, ai_agents, llm_inference
+
+🌱 **Adjacent to ai agents:** rlhf
+  • FSKAX - Fidelity ® Total Market Index Fund | Fidelity Investments
+    https://fundresearch.fidelity.com/mutual-funds/summary/315911693
+  • Fidelity Total Market Index Fund
+    https://institutional.fidelity.com/app/funds-and-products/2361/fidelity-total-market-index-fund-fskax.html
+🔀 **Intersection:** llm inference × ai agents
+📄 **arXiv (self hosting):**
+  • Value-Based Massive Access through Goal-Oriented Irregular Repetition Slotted AL
+    http://arxiv.org/abs/2609.20569v1
+⭐ **Trending on GitHub:**
+  • deepseek-ai/deepseek-harness ⭐229231
+    DeepSeek Harness: Everything is a Plugin.
+    https://github.com/deepseek-ai/deepseek-harness
+  • xai-org/grok-build ⭐26865
+    SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensib
+    https://github.com/xai-org/grok-build
+  • guillaumemeyer/watermarks-remover ⭐22326
+    A privacy-first app that strips AI watermarks from content you own.
+    https://github.com/guillaumemeyer/watermarks-remover
+🎲 **Serendipity:**
+  • Xcode 27.1 Beta Release Notes
+    https://developer.apple.com/documentation/xcode-release-notes/xcode-27_1-release-notes
+    (120 points on HN)
