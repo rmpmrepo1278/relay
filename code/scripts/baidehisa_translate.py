@@ -65,7 +65,10 @@ def translate_raw(prompt):
             try:
                 with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
                     d = json.load(r)
-                out = (d.get("choices") or [{}])[0].get("message", {}).get("content", "")
+                msg = (d.get("choices") or [{}])[0].get("message", {})
+                out = msg.get("content") or ""
+                if not out.strip():
+                    out = msg.get("reasoning_content") or ""
                 if not out.strip():
                     raise RuntimeError("empty content")
                 return out.strip()
