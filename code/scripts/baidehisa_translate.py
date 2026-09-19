@@ -15,10 +15,10 @@ CACHE = os.path.join(WORK, "baidehisa_en_cache.json")
 LOG = os.path.join(WORK, "baidehisa_progress.json")
 HOP = os.environ.get("BAIDEHI_HOP", "http://127.0.0.1:8083/v1/chat/completions")
 TIMEOUT = int(os.environ.get("BAIDEHI_TIMEOUT", "45"))
-MODEL = os.environ.get("BAIDEHI_MODEL", "claude-sonnet-4-20250514")
+MODEL = os.environ.get("BAIDEHI_MODEL", "haiku-4.5")
 MODELS = [m.strip() for m in os.environ.get("BAIDEHI_MODELS", "").split(",") if m.strip()]
 if not MODELS:
-    MODELS = ["claude-sonnet-4-20250514", "haiku-4.5"]
+    MODELS = ["haiku-4.5", "claude-sonnet-4-20250514"]
 WORKERS = int(os.environ.get("BAIDEHI_WORKERS", "1"))
 ONLY = [int(x) for x in os.environ.get("BAIDEHI_ONLY", "").split(",") if x.strip()]
 
@@ -54,12 +54,12 @@ def page_header(pg):
     m = re.search(r"^([०-९\d]{1,4})\s+ओड़िआ", pg, re.M)
     return m.group(1) if m else None
 
-def translate(text):
+def translate_raw(prompt):
     last = None
     for attempt in range(2):
         for model in MODELS:
-            payload = {"model": model, "messages": [{"role": "user", "content": INSTR + text}],
-                       "max_tokens": 1500, "temperature": 0.2}
+            payload = {"model": model, "messages": [{"role": "user", "content": prompt}],
+                       "max_tokens": 1800, "temperature": 0.2}
             req = urllib.request.Request(HOP, data=json.dumps(payload).encode(),
                                          headers={"Content-Type": "application/json"})
             try:
@@ -69,10 +69,15 @@ def translate(text):
                 if not out.strip():
                     raise RuntimeError("empty content")
                 return out.strip()
+            except RuntimeError:
+                raise
             except Exception as e:
                 last = f"{model}: {type(e).__name__}: {str(e)[:70]}"
                 time.sleep(1)
     raise RuntimeError(last or "all models failed")
+
+def translate(text):
+    return translate_raw(INSTR + text)
 
 def main():
     os.makedirs(WORK, exist_ok=True)
